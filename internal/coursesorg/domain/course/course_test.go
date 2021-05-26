@@ -14,8 +14,7 @@ func TestNewCourse(t *testing.T) {
 	testCases := []struct {
 		Name        string
 		Params      course.CreationCourseParams
-		ShouldBeErr bool
-		PossibleErr error
+		ExpectedErr error
 	}{
 		{
 			Name: "valid_course_creation_params",
@@ -26,7 +25,6 @@ func TestNewCourse(t *testing.T) {
 				Period:    course.MustNewPeriod(2022, 2023, course.SecondSemester),
 				Started:   true,
 			},
-			ShouldBeErr: false,
 		},
 		{
 			Name: "empty_course_id",
@@ -36,8 +34,7 @@ func TestNewCourse(t *testing.T) {
 				Period:    course.MustNewPeriod(2021, 2022, course.FirstSemester),
 				Started:   false,
 			},
-			ShouldBeErr: true,
-			PossibleErr: course.ErrEmptyCourseID,
+			ExpectedErr: course.ErrEmptyCourseID,
 		},
 		{
 			Name: "empty_course_creator_id",
@@ -47,8 +44,7 @@ func TestNewCourse(t *testing.T) {
 				Period:  course.MustNewPeriod(2023, 2024, course.SecondSemester),
 				Started: true,
 			},
-			ShouldBeErr: true,
-			PossibleErr: course.ErrEmptyCreatorID,
+			ExpectedErr: course.ErrEmptyCreatorID,
 		},
 		{
 			Name: "empty_course_title",
@@ -58,8 +54,7 @@ func TestNewCourse(t *testing.T) {
 				Period:    course.MustNewPeriod(2024, 2025, course.FirstSemester),
 				Started:   false,
 			},
-			ShouldBeErr: true,
-			PossibleErr: course.ErrEmptyCourseTitle,
+			ExpectedErr: course.ErrEmptyCourseTitle,
 		},
 		{
 			Name: "zero_course_period",
@@ -69,8 +64,7 @@ func TestNewCourse(t *testing.T) {
 				Title:     "Nice React, Awesome Angular",
 				Started:   true,
 			},
-			ShouldBeErr: true,
-			PossibleErr: course.ErrZeroCoursePeriod,
+			ExpectedErr: course.ErrZeroCoursePeriod,
 		},
 	}
 
@@ -81,9 +75,9 @@ func TestNewCourse(t *testing.T) {
 
 			crs, err := course.NewCourse(c.Params)
 
-			if c.ShouldBeErr {
+			if c.ExpectedErr != nil {
 				require.Error(t, err)
-				require.True(t, errors.Is(err, c.PossibleErr))
+				require.True(t, errors.Is(err, c.ExpectedErr))
 				return
 			}
 			require.NoError(t, err)
