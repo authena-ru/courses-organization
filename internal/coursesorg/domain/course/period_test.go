@@ -16,39 +16,34 @@ func TestNewPeriod(t *testing.T) {
 		AcademicStartYear int
 		AcademicEndYear   int
 		Semester          course.Semester
-		ShouldBeErr       bool
-		PossibleErr       error
+		ExpectedErr       error
 	}{
 		{
 			Name:              "valid_course_period",
 			AcademicStartYear: 2021,
 			AcademicEndYear:   2022,
 			Semester:          course.FirstSemester,
-			ShouldBeErr:       false,
 		},
 		{
 			Name:              "academic_start_year_after_end",
 			AcademicStartYear: 2024,
 			AcademicEndYear:   2023,
 			Semester:          course.SecondSemester,
-			ShouldBeErr:       true,
-			PossibleErr:       course.ErrStartYearAfterEnd,
+			ExpectedErr:       course.ErrStartYearAfterEnd,
 		},
 		{
 			Name:              "academic_year_duration_over_year",
 			AcademicStartYear: 2022,
 			AcademicEndYear:   2024,
 			Semester:          course.FirstSemester,
-			ShouldBeErr:       true,
-			PossibleErr:       course.ErrYearDurationOverYear,
+			ExpectedErr:       course.ErrYearDurationOverYear,
 		},
 		{
 			Name:              "academic_start_year_equals_end_year",
 			AcademicStartYear: 2023,
 			AcademicEndYear:   2023,
 			Semester:          course.FirstSemester,
-			ShouldBeErr:       true,
-			PossibleErr:       course.ErrStartYearEqualsEndYear,
+			ExpectedErr:       course.ErrStartYearEqualsEndYear,
 		},
 	}
 
@@ -57,9 +52,9 @@ func TestNewPeriod(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 			period, err := course.NewPeriod(c.AcademicStartYear, c.AcademicEndYear, c.Semester)
-			if c.ShouldBeErr {
+			if c.ExpectedErr != nil {
 				require.Error(t, err)
-				require.True(t, errors.Is(err, c.PossibleErr))
+				require.True(t, errors.Is(err, c.ExpectedErr))
 				return
 			}
 			require.NoError(t, err)
