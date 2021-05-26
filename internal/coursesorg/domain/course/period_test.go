@@ -3,6 +3,7 @@ package course_test
 import (
 	"testing"
 
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 
 	"github.com/authena-ru/courses-organization/internal/coursesorg/domain/course"
@@ -16,12 +17,14 @@ func TestNewPeriod(t *testing.T) {
 		AcademicEndYear   int
 		Semester          course.Semester
 		ShouldBeErr       bool
+		PossibleErr       error
 	}{
 		{
 			Name:              "valid_course_period",
 			AcademicStartYear: 2021,
 			AcademicEndYear:   2022,
 			Semester:          course.FirstSemester,
+			ShouldBeErr:       false,
 		},
 		{
 			Name:              "academic_start_year_after_end",
@@ -29,6 +32,7 @@ func TestNewPeriod(t *testing.T) {
 			AcademicEndYear:   2023,
 			Semester:          course.SecondSemester,
 			ShouldBeErr:       true,
+			PossibleErr:       course.ErrStartYearAfterEnd,
 		},
 		{
 			Name:              "academic_year_duration_over_year",
@@ -36,6 +40,7 @@ func TestNewPeriod(t *testing.T) {
 			AcademicEndYear:   2024,
 			Semester:          course.FirstSemester,
 			ShouldBeErr:       true,
+			PossibleErr:       course.ErrYearDurationOverYear,
 		},
 		{
 			Name:              "academic_start_year_equals_end_year",
@@ -43,6 +48,7 @@ func TestNewPeriod(t *testing.T) {
 			AcademicEndYear:   2023,
 			Semester:          course.FirstSemester,
 			ShouldBeErr:       true,
+			PossibleErr:       course.ErrStartYearEqualsEndYear,
 		},
 	}
 
@@ -53,6 +59,7 @@ func TestNewPeriod(t *testing.T) {
 			period, err := course.NewPeriod(c.AcademicStartYear, c.AcademicEndYear, c.Semester)
 			if c.ShouldBeErr {
 				require.Error(t, err)
+				require.True(t, errors.Is(err, c.PossibleErr))
 				return
 			}
 			require.NoError(t, err)
