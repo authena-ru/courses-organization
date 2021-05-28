@@ -29,6 +29,11 @@ var (
 )
 
 func NewCourse(params CreationCourseParams) (*Course, error) {
+	const (
+		defaultCollaboratorsNumber = 5
+		defaultStudentsNumber      = 10
+	)
+
 	if params.ID == "" {
 		return nil, ErrEmptyCourseID
 	}
@@ -42,12 +47,22 @@ func NewCourse(params CreationCourseParams) (*Course, error) {
 		return nil, ErrZeroCoursePeriod
 	}
 	return &Course{
-		id:        params.ID,
-		creatorID: params.CreatorID,
-		title:     params.Title,
-		period:    params.Period,
-		started:   params.Started,
+		id:            params.ID,
+		creatorID:     params.CreatorID,
+		title:         params.Title,
+		period:        params.Period,
+		started:       params.Started,
+		collaborators: make(map[string]bool, defaultCollaboratorsNumber),
+		students:      make(map[string]bool, defaultStudentsNumber),
 	}, nil
+}
+
+func MustNewCourse(params CreationCourseParams) *Course {
+	crs, err := NewCourse(params)
+	if err != nil {
+		panic(err)
+	}
+	return crs
 }
 
 func (c *Course) ID() string {
@@ -84,4 +99,40 @@ func (c *Course) Students() []string {
 		students = append(students, s)
 	}
 	return students
+}
+
+func (c *Course) AddCollaborators(teacherIDs ...string) {
+	for _, tid := range teacherIDs {
+		c.collaborators[tid] = true
+	}
+}
+
+func (c *Course) RemoveCollaborators(teacherIDs ...string) {
+	for _, tid := range teacherIDs {
+		delete(c.collaborators, tid)
+	}
+}
+
+func (c *Course) AddStudents(studentIDs ...string) {
+	for _, sid := range studentIDs {
+		c.students[sid] = true
+	}
+}
+
+func (c *Course) RemoveStudents(studentIDs ...string) {
+	for _, sid := range studentIDs {
+		delete(c.students, sid)
+	}
+}
+
+func (c *Course) hasTeacher(teacherID string) bool {
+	return c.hasCreator(teacherID) || c.collaborators[teacherID]
+}
+
+func (c *Course) hasCreator(teacherID string) bool {
+	return c.creatorID == teacherID
+}
+
+func (c *Course) hasStudent(studentID string) bool {
+	return c.students[studentID]
 }
