@@ -226,3 +226,38 @@ func TestCanAcademicEditCourseWithAccess(t *testing.T) {
 		})
 	}
 }
+
+func TestCanAcademicCreateCourse(t *testing.T) {
+	t.Parallel()
+	testCases := []struct {
+		Name        string
+		Academic    course.Academic
+		ExpectedErr error
+	}{
+		{
+			Name:     "teacher_can_create_course",
+			Academic: course.MustNewAcademic("teacher-id", course.Teacher),
+		},
+		{
+			Name:        "student_cant_create_course",
+			Academic:    course.MustNewAcademic("student-id", course.Student),
+			ExpectedErr: course.ErrNotTeacherCantCreateCourse,
+		},
+	}
+
+	for i := range testCases {
+		c := testCases[i]
+		t.Run(c.Name, func(t *testing.T) {
+			t.Parallel()
+
+			err := course.CanAcademicCreateCourse(c.Academic)
+
+			if c.ExpectedErr != nil {
+				require.Error(t, err)
+				require.True(t, errors.Is(err, c.ExpectedErr))
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}

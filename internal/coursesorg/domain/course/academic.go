@@ -38,8 +38,9 @@ func (at AcademicType) IsValid() bool {
 }
 
 var (
-	ErrEmptyAcademicID     = errors.New("empty course id")
-	ErrInvalidAcademicType = errors.New("invalid academic type")
+	ErrEmptyAcademicID            = errors.New("empty course id")
+	ErrInvalidAcademicType        = errors.New("invalid academic type")
+	ErrNotTeacherCantCreateCourse = errors.New("not teacher can't create course")
 )
 
 func NewAcademic(id string, t AcademicType) (Academic, error) {
@@ -139,4 +140,11 @@ func CanAcademicEditCourseWithAccess(academic Academic, course Course, access Ac
 		requestingAcademicAccess: access,
 		courseID:                 course.ID(),
 	}
+}
+
+func CanAcademicCreateCourse(academic Academic) error {
+	if academic.Type() == Teacher {
+		return nil
+	}
+	return ErrNotTeacherCantCreateCourse
 }
