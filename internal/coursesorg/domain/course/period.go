@@ -2,6 +2,7 @@ package course
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/pkg/errors"
 )
@@ -20,7 +21,7 @@ func (s Semester) String() string {
 	case SecondSemester:
 		return "2nd semester"
 	}
-	return "invalid semester"
+	return "%!Semester(" + strconv.Itoa(int(s)) + ")"
 }
 
 type Period struct {
