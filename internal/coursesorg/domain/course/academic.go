@@ -87,14 +87,17 @@ func IsAcademicCantSeeCourseError(err error) bool {
 	return errors.As(err, &e)
 }
 
-func CanAcademicSeeCourse(academic Academic, course Course) error {
-	if academic.Type() == Teacher && course.hasTeacher(academic.ID()) {
+func (c *Course) CanAcademicSee(academic Academic) error {
+	if academic.Type() == Teacher && c.hasTeacher(academic.ID()) {
 		return nil
 	}
-	if academic.Type() == Student && course.hasStudent(academic.ID()) {
+	if academic.Type() == Student && c.hasStudent(academic.ID()) {
 		return nil
 	}
-	return academicCantSeeCourseError{requestingAcademicID: academic.ID(), courseID: course.ID()}
+	return academicCantSeeCourseError{
+		requestingAcademicID: academic.ID(),
+		courseID:             c.ID(),
+	}
 }
 
 type Access uint8
@@ -126,24 +129,24 @@ func IsAcademicCantEditCourseError(err error) bool {
 	return errors.As(err, &e)
 }
 
-func CanAcademicEditCourseWithAccess(academic Academic, course Course, access Access) error {
+func (c *Course) CanAcademicEditWithAccess(academic Academic, access Access) error {
 	if academic.Type() == Teacher {
-		if access == TeacherAccess && course.hasTeacher(academic.ID()) {
+		if access == TeacherAccess && c.hasTeacher(academic.ID()) {
 			return nil
 		}
-		if access == CreatorAccess && course.hasCreator(academic.ID()) {
+		if access == CreatorAccess && c.hasCreator(academic.ID()) {
 			return nil
 		}
 	}
 	return academicCantEditCourseError{
 		requestingAcademicID:     academic.ID(),
 		requestingAcademicAccess: access,
-		courseID:                 course.ID(),
+		courseID:                 c.ID(),
 	}
 }
 
-func CanAcademicCreateCourse(academic Academic) error {
-	if academic.Type() == Teacher {
+func (a Academic) CanCreateCourse() error {
+	if a.Type() == Teacher {
 		return nil
 	}
 	return ErrNotTeacherCantCreateCourse

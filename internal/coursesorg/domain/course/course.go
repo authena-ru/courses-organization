@@ -14,16 +14,18 @@ type Course struct {
 }
 
 type CreationCourseParams struct {
-	ID        string
-	CreatorID string
-	Title     string
-	Period    Period
-	Started   bool
+	ID            string
+	Creator       Academic
+	Title         string
+	Period        Period
+	Started       bool
+	Collaborators []string
+	Students      []string
 }
 
 var (
 	ErrEmptyCourseID    = errors.New("empty course id")
-	ErrEmptyCreatorID   = errors.New("empty course creator id")
+	ErrZeroCreator      = errors.New("empty course creator id")
 	ErrEmptyCourseTitle = errors.New("empty course title")
 	ErrZeroCoursePeriod = errors.New("zero course period")
 )
@@ -37,8 +39,11 @@ func NewCourse(params CreationCourseParams) (*Course, error) {
 	if params.ID == "" {
 		return nil, ErrEmptyCourseID
 	}
-	if params.CreatorID == "" {
-		return nil, ErrEmptyCreatorID
+	if params.Creator.IsZero() {
+		return nil, ErrZeroCreator
+	}
+	if err := params.Creator.CanCreateCourse(); err != nil {
+		return nil, err
 	}
 	if params.Title == "" {
 		return nil, ErrEmptyCourseTitle
@@ -46,15 +51,18 @@ func NewCourse(params CreationCourseParams) (*Course, error) {
 	if params.Period.IsZero() {
 		return nil, ErrZeroCoursePeriod
 	}
-	return &Course{
+	c := &Course{
 		id:            params.ID,
-		creatorID:     params.CreatorID,
+		creatorID:     params.Creator.ID(),
 		title:         params.Title,
 		period:        params.Period,
 		started:       params.Started,
 		collaborators: make(map[string]bool, defaultCollaboratorsNumber),
 		students:      make(map[string]bool, defaultStudentsNumber),
-	}, nil
+	}
+	c.AddStudents(params.Creator, params.Students...)
+	c.AddCollaborators(params.Creator, params.Collaborators...)
+	return c, nil
 }
 
 func MustNewCourse(params CreationCourseParams) *Course {
@@ -83,56 +91,4 @@ func (c *Course) Started() bool {
 
 func (c *Course) CreatorID() string {
 	return c.creatorID
-}
-
-func (c *Course) Collaborators() []string {
-	collaborators := make([]string, 0, len(c.collaborators))
-	for c := range c.collaborators {
-		collaborators = append(collaborators, c)
-	}
-	return collaborators
-}
-
-func (c *Course) Students() []string {
-	students := make([]string, 0, len(c.students))
-	for s := range c.students {
-		students = append(students, s)
-	}
-	return students
-}
-
-func (c *Course) AddCollaborators(teacherIDs ...string) {
-	for _, tid := range teacherIDs {
-		c.collaborators[tid] = true
-	}
-}
-
-func (c *Course) RemoveCollaborators(teacherIDs ...string) {
-	for _, tid := range teacherIDs {
-		delete(c.collaborators, tid)
-	}
-}
-
-func (c *Course) AddStudents(studentIDs ...string) {
-	for _, sid := range studentIDs {
-		c.students[sid] = true
-	}
-}
-
-func (c *Course) RemoveStudents(studentIDs ...string) {
-	for _, sid := range studentIDs {
-		delete(c.students, sid)
-	}
-}
-
-func (c *Course) hasTeacher(teacherID string) bool {
-	return c.hasCreator(teacherID) || c.collaborators[teacherID]
-}
-
-func (c *Course) hasCreator(teacherID string) bool {
-	return c.creatorID == teacherID
-}
-
-func (c *Course) hasStudent(studentID string) bool {
-	return c.students[studentID]
 }

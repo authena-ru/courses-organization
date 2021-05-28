@@ -83,56 +83,53 @@ func TestAcademic_IsZero(t *testing.T) {
 	}
 }
 
-func TestCanAcademicSeeCourse(t *testing.T) {
+func TestCourse_CanAcademicSee(t *testing.T) {
 	t.Parallel()
 	var (
 		creatorID      = "creator-id"
 		collaboratorID = "collaborator-id"
 		studentID      = "student-id"
+		isErrFreeFunc  = func(err error) bool {
+			return err == nil
+		}
 	)
 	crs := course.MustNewCourse(course.CreationCourseParams{
-		ID:        "course-id",
-		CreatorID: creatorID,
-		Title:     "Nice Python",
-		Period:    course.MustNewPeriod(2020, 2021, course.SecondSemester),
+		ID:            "course-id",
+		Creator:       course.MustNewAcademic(creatorID, course.Teacher),
+		Title:         "Nice Python",
+		Period:        course.MustNewPeriod(2020, 2021, course.SecondSemester),
+		Collaborators: []string{collaboratorID},
+		Students:      []string{studentID},
 	})
-	crs.AddCollaborators(collaboratorID)
-	crs.AddStudents(studentID)
 	testCases := []struct {
-		Name              string
-		Course            course.Course
-		Academic          course.Academic
-		IsExpectedErrFunc func(err error) bool
+		Name     string
+		Course   course.Course
+		Academic course.Academic
+		IsErr    func(err error) bool
 	}{
 		{
 			Name:     "creator_can_see_course",
 			Course:   *crs,
 			Academic: course.MustNewAcademic(creatorID, course.Teacher),
-			IsExpectedErrFunc: func(err error) bool {
-				return err == nil
-			},
+			IsErr:    isErrFreeFunc,
 		},
 		{
 			Name:     "collaborator_can_see_course",
 			Course:   *crs,
 			Academic: course.MustNewAcademic(collaboratorID, course.Teacher),
-			IsExpectedErrFunc: func(err error) bool {
-				return err == nil
-			},
+			IsErr:    isErrFreeFunc,
 		},
 		{
 			Name:     "student_can_see_course",
 			Course:   *crs,
 			Academic: course.MustNewAcademic(studentID, course.Student),
-			IsExpectedErrFunc: func(err error) bool {
-				return err == nil
-			},
+			IsErr:    isErrFreeFunc,
 		},
 		{
-			Name:              "not_participant_cant_see_course",
-			Course:            *crs,
-			Academic:          course.MustNewAcademic("not-participant-id", course.Teacher),
-			IsExpectedErrFunc: course.IsAcademicCantSeeCourseError,
+			Name:     "not_participant_cant_see_course",
+			Course:   *crs,
+			Academic: course.MustNewAcademic("not-participant-id", course.Teacher),
+			IsErr:    course.IsAcademicCantSeeCourseError,
 		},
 	}
 
@@ -141,78 +138,78 @@ func TestCanAcademicSeeCourse(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			err := course.CanAcademicSeeCourse(c.Academic, c.Course)
-			require.True(t, c.IsExpectedErrFunc(err))
+			err := c.Course.CanAcademicSee(c.Academic)
+			require.True(t, c.IsErr(err))
 		})
 	}
 }
 
-func TestCanAcademicEditCourseWithAccess(t *testing.T) {
+func TestCourse_CanAcademicEditWithAccess(t *testing.T) {
 	t.Parallel()
 	var (
 		creatorID      = "creator-id"
 		collaboratorID = "collaborator-id"
 		studentID      = "student-id"
-		isNoErrFunc    = func(err error) bool {
+		isErrFreeFunc  = func(err error) bool {
 			return err == nil
 		}
 	)
 	crs := course.MustNewCourse(course.CreationCourseParams{
-		ID:        "course-id",
-		CreatorID: creatorID,
-		Title:     "Architecture of programming system",
-		Period:    course.MustNewPeriod(2021, 2022, course.FirstSemester),
+		ID:            "course-id",
+		Creator:       course.MustNewAcademic(creatorID, course.Teacher),
+		Title:         "Architecture of programming system",
+		Period:        course.MustNewPeriod(2021, 2022, course.FirstSemester),
+		Collaborators: []string{collaboratorID},
+		Students:      []string{studentID},
 	})
-	crs.AddCollaborators(collaboratorID)
-	crs.AddStudents(studentID)
 	testsCases := []struct {
-		Name              string
-		Course            course.Course
-		Academic          course.Academic
-		Access            course.Access
-		IsExpectedErrFunc func(err error) bool
+		Name     string
+		Course   course.Course
+		Academic course.Academic
+		Access   course.Access
+		IsErr    func(err error) bool
 	}{
 		{
-			Name:              "creator_can_edit_course_with_creator_access",
-			Course:            *crs,
-			Academic:          course.MustNewAcademic(creatorID, course.Teacher),
-			Access:            course.CreatorAccess,
-			IsExpectedErrFunc: isNoErrFunc,
+			Name:     "creator_can_edit_course_with_creator_access",
+			Course:   *crs,
+			Academic: course.MustNewAcademic(creatorID, course.Teacher),
+			Access:   course.CreatorAccess,
+			IsErr:    isErrFreeFunc,
 		},
 		{
-			Name:              "creator_can_edit_course_with_teacher_access",
-			Course:            *crs,
-			Academic:          course.MustNewAcademic(creatorID, course.Teacher),
-			Access:            course.TeacherAccess,
-			IsExpectedErrFunc: isNoErrFunc,
+			Name:     "creator_can_edit_course_with_teacher_access",
+			Course:   *crs,
+			Academic: course.MustNewAcademic(creatorID, course.Teacher),
+			Access:   course.TeacherAccess,
+			IsErr:    isErrFreeFunc,
 		},
 		{
-			Name:              "collaborator_can_edit_course_with_teacher_access",
-			Course:            *crs,
-			Academic:          course.MustNewAcademic(collaboratorID, course.Teacher),
-			Access:            course.TeacherAccess,
-			IsExpectedErrFunc: isNoErrFunc,
+			Name:     "collaborator_can_edit_course_with_teacher_access",
+			Course:   *crs,
+			Academic: course.MustNewAcademic(collaboratorID, course.Teacher),
+			Access:   course.TeacherAccess,
+			IsErr:    isErrFreeFunc,
 		},
 		{
-			Name:              "collaborator_cant_edit_course_with_creator_access",
-			Course:            *crs,
-			Academic:          course.MustNewAcademic(collaboratorID, course.Teacher),
-			Access:            course.CreatorAccess,
-			IsExpectedErrFunc: course.IsAcademicCantEditCourseError,
+			Name:     "collaborator_cant_edit_course_with_creator_access",
+			Course:   *crs,
+			Academic: course.MustNewAcademic(collaboratorID, course.Teacher),
+			Access:   course.CreatorAccess,
+			IsErr:    course.IsAcademicCantEditCourseError,
 		},
 		{
-			Name:              "student_cant_edit_course_with_teacher_access",
-			Course:            *crs,
-			Academic:          course.MustNewAcademic(studentID, course.Student),
-			Access:            course.TeacherAccess,
-			IsExpectedErrFunc: course.IsAcademicCantEditCourseError,
+			Name:     "student_cant_edit_course_with_teacher_access",
+			Course:   *crs,
+			Academic: course.MustNewAcademic(studentID, course.Student),
+			Access:   course.TeacherAccess,
+			IsErr:    course.IsAcademicCantEditCourseError,
 		},
 		{
-			Name:              "student_cant_edit_course_with_creator_access",
-			Course:            *crs,
-			Academic:          course.MustNewAcademic(studentID, course.Student),
-			Access:            course.CreatorAccess,
-			IsExpectedErrFunc: course.IsAcademicCantEditCourseError,
+			Name:     "student_cant_edit_course_with_creator_access",
+			Course:   *crs,
+			Academic: course.MustNewAcademic(studentID, course.Student),
+			Access:   course.CreatorAccess,
+			IsErr:    course.IsAcademicCantEditCourseError,
 		},
 	}
 
@@ -221,13 +218,13 @@ func TestCanAcademicEditCourseWithAccess(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			err := course.CanAcademicEditCourseWithAccess(c.Academic, c.Course, c.Access)
-			require.True(t, c.IsExpectedErrFunc(err))
+			err := c.Course.CanAcademicEditWithAccess(c.Academic, c.Access)
+			require.True(t, c.IsErr(err))
 		})
 	}
 }
 
-func TestCanAcademicCreateCourse(t *testing.T) {
+func TestAcademic_CanCreateCourse(t *testing.T) {
 	t.Parallel()
 	testCases := []struct {
 		Name        string
@@ -250,7 +247,7 @@ func TestCanAcademicCreateCourse(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			err := course.CanAcademicCreateCourse(c.Academic)
+			err := c.Academic.CanCreateCourse()
 
 			if c.ExpectedErr != nil {
 				require.Error(t, err)

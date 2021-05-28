@@ -19,50 +19,61 @@ func TestNewCourse(t *testing.T) {
 		{
 			Name: "valid_course_creation_params",
 			Params: course.CreationCourseParams{
-				ID:        "course-id",
-				CreatorID: "teacher-id",
-				Title:     "Awesome Go in backend",
-				Period:    course.MustNewPeriod(2022, 2023, course.SecondSemester),
-				Started:   true,
+				ID:      "course-id",
+				Creator: course.MustNewAcademic("creator-id", course.Teacher),
+				Title:   "Awesome Go in backend",
+				Period:  course.MustNewPeriod(2022, 2023, course.SecondSemester),
+				Started: true,
 			},
 		},
 		{
 			Name: "empty_course_id",
 			Params: course.CreationCourseParams{
-				CreatorID: "teacher-id",
-				Title:     "Programming architecture",
-				Period:    course.MustNewPeriod(2021, 2022, course.FirstSemester),
-				Started:   false,
+				Creator: course.MustNewAcademic("creator-id", course.Teacher),
+				Title:   "Programming architecture",
+				Period:  course.MustNewPeriod(2021, 2022, course.FirstSemester),
+				Started: false,
 			},
 			ExpectedErr: course.ErrEmptyCourseID,
 		},
 		{
-			Name: "empty_course_creator_id",
+			Name: "zero_course_creator",
 			Params: course.CreationCourseParams{
 				ID:      "course-id",
 				Title:   "JavaScript in browser",
 				Period:  course.MustNewPeriod(2023, 2024, course.SecondSemester),
 				Started: true,
 			},
-			ExpectedErr: course.ErrEmptyCreatorID,
+			ExpectedErr: course.ErrZeroCreator,
+		},
+		{
+			Name: "student_cant_create_course",
+			Params: course.CreationCourseParams{
+				ID:      "course-id",
+				Creator: course.MustNewAcademic("student-id", course.Student),
+				Title:   "Assembly",
+				Period:  course.MustNewPeriod(2020, 2021, course.FirstSemester),
+				Started: false,
+			},
+			ExpectedErr: course.ErrNotTeacherCantCreateCourse,
 		},
 		{
 			Name: "empty_course_title",
 			Params: course.CreationCourseParams{
-				ID:        "course-id",
-				CreatorID: "creator-id",
-				Period:    course.MustNewPeriod(2024, 2025, course.FirstSemester),
-				Started:   false,
+				ID:      "course-id",
+				Creator: course.MustNewAcademic("creator-id", course.Teacher),
+				Period:  course.MustNewPeriod(2024, 2025, course.FirstSemester),
+				Started: false,
 			},
 			ExpectedErr: course.ErrEmptyCourseTitle,
 		},
 		{
 			Name: "zero_course_period",
 			Params: course.CreationCourseParams{
-				ID:        "course-id",
-				CreatorID: "creator-id",
-				Title:     "Nice React, Awesome Angular",
-				Started:   true,
+				ID:      "course-id",
+				Creator: course.MustNewAcademic("creator-id", course.Teacher),
+				Title:   "Nice React, Awesome Angular",
+				Started: true,
 			},
 			ExpectedErr: course.ErrZeroCoursePeriod,
 		},
@@ -82,7 +93,7 @@ func TestNewCourse(t *testing.T) {
 			}
 			require.NoError(t, err)
 			require.Equal(t, c.Params.ID, crs.ID())
-			require.Equal(t, c.Params.CreatorID, crs.CreatorID())
+			require.Equal(t, c.Params.Creator.ID(), crs.CreatorID())
 			require.Equal(t, c.Params.Title, crs.Title())
 			require.Equal(t, c.Params.Period, crs.Period())
 			require.Equal(t, c.Params.Started, crs.Started())
