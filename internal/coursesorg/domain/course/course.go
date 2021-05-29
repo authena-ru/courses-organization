@@ -31,11 +31,6 @@ var (
 )
 
 func NewCourse(params CreationCourseParams) (*Course, error) {
-	const (
-		defaultCollaboratorsNumber = 5
-		defaultStudentsNumber      = 10
-	)
-
 	if params.ID == "" {
 		return nil, ErrEmptyCourseID
 	}
@@ -51,18 +46,22 @@ func NewCourse(params CreationCourseParams) (*Course, error) {
 	if params.Period.IsZero() {
 		return nil, ErrZeroCoursePeriod
 	}
-	c := &Course{
+	crs := &Course{
 		id:            params.ID,
 		creatorID:     params.Creator.ID(),
 		title:         params.Title,
 		period:        params.Period,
 		started:       params.Started,
-		collaborators: make(map[string]bool, defaultCollaboratorsNumber),
-		students:      make(map[string]bool, defaultStudentsNumber),
+		collaborators: make(map[string]bool, len(params.Collaborators)),
+		students:      make(map[string]bool, len(params.Students)),
 	}
-	c.AddStudents(params.Creator, params.Students...)
-	c.AddCollaborators(params.Creator, params.Collaborators...)
-	return c, nil
+	for _, c := range params.Collaborators {
+		crs.collaborators[c] = true
+	}
+	for _, s := range params.Students {
+		crs.students[s] = true
+	}
+	return crs, nil
 }
 
 func MustNewCourse(params CreationCourseParams) *Course {

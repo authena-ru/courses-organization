@@ -19,11 +19,13 @@ func TestNewCourse(t *testing.T) {
 		{
 			Name: "valid_course_creation_params",
 			Params: course.CreationCourseParams{
-				ID:      "course-id",
-				Creator: course.MustNewAcademic("creator-id", course.Teacher),
-				Title:   "Awesome Go in backend",
-				Period:  course.MustNewPeriod(2022, 2023, course.SecondSemester),
-				Started: true,
+				ID:            "course-id",
+				Creator:       course.MustNewAcademic("creator-id", course.Teacher),
+				Title:         "Awesome Go in backend",
+				Period:        course.MustNewPeriod(2022, 2023, course.SecondSemester),
+				Started:       true,
+				Collaborators: []string{"collaborator-1-id", "collaborator-2-id"},
+				Students:      []string{"student-id"},
 			},
 		},
 		{
@@ -97,6 +99,8 @@ func TestNewCourse(t *testing.T) {
 			require.Equal(t, c.Params.Title, crs.Title())
 			require.Equal(t, c.Params.Period, crs.Period())
 			require.Equal(t, c.Params.Started, crs.Started())
+			require.ElementsMatch(t, c.Params.Students, crs.Students())
+			require.ElementsMatch(t, c.Params.Collaborators, crs.Collaborators())
 		})
 	}
 }
