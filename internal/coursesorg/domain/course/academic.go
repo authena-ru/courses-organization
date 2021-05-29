@@ -108,7 +108,13 @@ const (
 )
 
 func (a Access) String() string {
-	return [...]string{"teacher access", "creator access"}[a-1]
+	switch a {
+	case TeacherAccess:
+		return "Teacher access"
+	case CreatorAccess:
+		return "Creator access"
+	}
+	return "%!Access(" + strconv.Itoa(int(a)) + ")"
 }
 
 type academicCantEditCourseError struct {
