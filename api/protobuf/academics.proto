@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package academics;
+
+service AcademicsService {
+    rpc AcademicExists(AcademicExistsRequest) returns (AcademicExistsResponse) {}
+}
+
+message AcademicExistsRequest {
+    string id = 1;
+    enum AcademicType {
+        TEACHER = 0;
+        STUDENT = 1;
+    }
+    AcademicType type = 2;
+}
+
+message AcademicExistsResponse {
+    bool exists = 1;
+}
