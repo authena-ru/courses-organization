@@ -3,13 +3,16 @@ package course
 import "github.com/pkg/errors"
 
 type Course struct {
-	id             string
-	title          string
-	period         Period
-	started        bool
-	creatorID      string
-	collaborators  map[string]bool
-	students       map[string]bool
+	id      string
+	title   string
+	period  Period
+	started bool
+
+	creatorID     string
+	collaborators map[string]bool
+	students      map[string]bool
+
+	tasks          map[uint]Task
 	nextTaskNumber uint
 }
 
