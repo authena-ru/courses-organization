@@ -28,8 +28,6 @@ jobs:
           go build .
 
       - name: Test
-        env:
-          GOPROXY: "https://proxy.golang.org"
         run: |
           cd internal/coursesorg
           go test -v ./...
