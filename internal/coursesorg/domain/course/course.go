@@ -12,8 +12,8 @@ type Course struct {
 	collaborators map[string]bool
 	students      map[string]bool
 
-	tasks          map[uint]Task
-	nextTaskNumber uint
+	tasks          map[int]Task
+	nextTaskNumber int
 }
 
 type CreationCourseParams struct {
