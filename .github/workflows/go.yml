@@ -11,7 +11,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout source code
+        uses: actions/checkout@v2
 
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -19,11 +20,15 @@ jobs:
           go-version: 1.16
 
       - name: Build
+        env:
+          GOPROXY: "https://proxy.golang.org"
         run: |
           cd internal/coursesorg
-          go build -v
+          go build .
 
       - name: Test
+        env:
+          GOPROXY: "https://proxy.golang.org"
         run: |
           cd internal/coursesorg
-          go test -v
+          go test -v .
