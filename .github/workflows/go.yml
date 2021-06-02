@@ -32,4 +32,4 @@ jobs:
           GOPROXY: "https://proxy.golang.org"
         run: |
           cd internal/coursesorg
-          go test -v .
+          go test -v ./...
