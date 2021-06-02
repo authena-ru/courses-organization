@@ -25,9 +25,11 @@ jobs:
         run: |
           cd internal/coursesorg
           go mod tidy
-          go build .
+          go build -v ./...
 
       - name: Test
+        env:
+          GOPROXY: "https://proxy.golang.org"
         run: |
           cd internal/coursesorg
           go test -v ./...
