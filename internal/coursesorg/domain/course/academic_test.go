@@ -93,7 +93,7 @@ func TestCourse_CanAcademicSee(t *testing.T) {
 			return err == nil
 		}
 	)
-	crs := course.MustNewCourse(course.CreationCourseParams{
+	crs := course.MustNewCourse(course.CreationParams{
 		ID:            "course-id",
 		Creator:       course.MustNewAcademic(creatorID, course.Teacher),
 		Title:         "Nice Python",
@@ -154,7 +154,7 @@ func TestCourse_CanAcademicEditWithAccess(t *testing.T) {
 			return err == nil
 		}
 	)
-	crs := course.MustNewCourse(course.CreationCourseParams{
+	crs := course.MustNewCourse(course.CreationParams{
 		ID:            "course-id",
 		Creator:       course.MustNewAcademic(creatorID, course.Teacher),
 		Title:         "Architecture of programming system",

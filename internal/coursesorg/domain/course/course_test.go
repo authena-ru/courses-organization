@@ -13,12 +13,12 @@ func TestNewCourse(t *testing.T) {
 	t.Parallel()
 	testCases := []struct {
 		Name        string
-		Params      course.CreationCourseParams
+		Params      course.CreationParams
 		ExpectedErr error
 	}{
 		{
 			Name: "valid_course_creation_params",
-			Params: course.CreationCourseParams{
+			Params: course.CreationParams{
 				ID:            "course-id",
 				Creator:       course.MustNewAcademic("creator-id", course.Teacher),
 				Title:         "Awesome Go in backend",
@@ -30,7 +30,7 @@ func TestNewCourse(t *testing.T) {
 		},
 		{
 			Name: "empty_course_id",
-			Params: course.CreationCourseParams{
+			Params: course.CreationParams{
 				Creator: course.MustNewAcademic("creator-id", course.Teacher),
 				Title:   "Programming architecture",
 				Period:  course.MustNewPeriod(2021, 2022, course.FirstSemester),
@@ -40,7 +40,7 @@ func TestNewCourse(t *testing.T) {
 		},
 		{
 			Name: "zero_course_creator",
-			Params: course.CreationCourseParams{
+			Params: course.CreationParams{
 				ID:      "course-id",
 				Title:   "JavaScript in browser",
 				Period:  course.MustNewPeriod(2023, 2024, course.SecondSemester),
@@ -50,7 +50,7 @@ func TestNewCourse(t *testing.T) {
 		},
 		{
 			Name: "student_cant_create_course",
-			Params: course.CreationCourseParams{
+			Params: course.CreationParams{
 				ID:      "course-id",
 				Creator: course.MustNewAcademic("student-id", course.Student),
 				Title:   "Assembly",
@@ -61,7 +61,7 @@ func TestNewCourse(t *testing.T) {
 		},
 		{
 			Name: "empty_course_title",
-			Params: course.CreationCourseParams{
+			Params: course.CreationParams{
 				ID:      "course-id",
 				Creator: course.MustNewAcademic("creator-id", course.Teacher),
 				Period:  course.MustNewPeriod(2024, 2025, course.FirstSemester),
@@ -71,7 +71,7 @@ func TestNewCourse(t *testing.T) {
 		},
 		{
 			Name: "zero_course_period",
-			Params: course.CreationCourseParams{
+			Params: course.CreationParams{
 				ID:      "course-id",
 				Creator: course.MustNewAcademic("creator-id", course.Teacher),
 				Title:   "Nice React, Awesome Angular",

@@ -30,7 +30,7 @@ func NewCreateCourseHandler(repository coursesRepository) CreateCourseHandler {
 // Creates course, returns id of new brand course and error.
 func (h CreateCourseHandler) Handle(ctx context.Context, cmd CreateCourseCommand) (string, error) {
 	courseID := uuid.NewString()
-	crs, err := course.NewCourse(course.CreationCourseParams{
+	crs, err := course.NewCourse(course.CreationParams{
 		ID:      courseID,
 		Creator: cmd.Creator,
 		Title:   cmd.CourseTitle,

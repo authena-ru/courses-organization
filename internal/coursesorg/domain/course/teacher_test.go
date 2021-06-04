@@ -16,7 +16,7 @@ func TestCourse_AddCollaborators(t *testing.T) {
 		studentID            = "student-id"
 		collaboratorIDsToAdd = []string{"collaborator-1-id", "collaborator-2-id"}
 	)
-	crs := course.MustNewCourse(course.CreationCourseParams{
+	crs := course.MustNewCourse(course.CreationParams{
 		ID:            "creator-id",
 		Creator:       course.MustNewAcademic(creatorID, course.Teacher),
 		Title:         "ASP.NET in C#",
@@ -79,7 +79,7 @@ func TestCourse_RemoveCollaborators(t *testing.T) {
 		studentID               = "student-id"
 		collaboratorIDsToRemove = []string{"collaborator-1-id", "collaborator-2-id"}
 	)
-	crs := course.MustNewCourse(course.CreationCourseParams{
+	crs := course.MustNewCourse(course.CreationParams{
 		ID:            "course-id",
 		Creator:       course.MustNewAcademic(creatorID, course.Teacher),
 		Title:         "GraphQL",

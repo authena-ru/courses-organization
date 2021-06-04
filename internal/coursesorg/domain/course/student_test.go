@@ -16,7 +16,7 @@ func TestCourse_AddStudents(t *testing.T) {
 		studentID       = "student-id"
 		studentIDsToAdd = []string{"student-1-id", "student-2-id"}
 	)
-	crs := course.MustNewCourse(course.CreationCourseParams{
+	crs := course.MustNewCourse(course.CreationParams{
 		ID:            "course-id",
 		Creator:       course.MustNewAcademic(creatorID, course.Teacher),
 		Title:         "SQL databases",
@@ -80,7 +80,7 @@ func TestCourse_RemoveStudents(t *testing.T) {
 		studentID          = "student-id"
 		studentIDsToRemove = []string{"student-1-id", "student-2-id"}
 	)
-	crs := course.MustNewCourse(course.CreationCourseParams{
+	crs := course.MustNewCourse(course.CreationParams{
 		ID:            "course-id",
 		Creator:       course.MustNewAcademic(creatorID, course.Teacher),
 		Title:         "TypeScript from JavaScript",

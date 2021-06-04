@@ -12,11 +12,11 @@ type Course struct {
 	collaborators map[string]bool
 	students      map[string]bool
 
-	tasks          map[int]Task
+	tasks          map[int]*Task
 	nextTaskNumber int
 }
 
-type CreationCourseParams struct {
+type CreationParams struct {
 	ID            string
 	Creator       Academic
 	Title         string
@@ -33,7 +33,7 @@ var (
 	ErrZeroCoursePeriod = errors.New("zero course period")
 )
 
-func NewCourse(params CreationCourseParams) (*Course, error) {
+func NewCourse(params CreationParams) (*Course, error) {
 	if params.ID == "" {
 		return nil, ErrEmptyCourseID
 	}
@@ -50,13 +50,15 @@ func NewCourse(params CreationCourseParams) (*Course, error) {
 		return nil, ErrZeroCoursePeriod
 	}
 	crs := &Course{
-		id:            params.ID,
-		creatorID:     params.Creator.ID(),
-		title:         params.Title,
-		period:        params.Period,
-		started:       params.Started,
-		collaborators: make(map[string]bool, len(params.Collaborators)),
-		students:      make(map[string]bool, len(params.Students)),
+		id:             params.ID,
+		creatorID:      params.Creator.ID(),
+		title:          params.Title,
+		period:         params.Period,
+		started:        params.Started,
+		collaborators:  make(map[string]bool, len(params.Collaborators)),
+		students:       make(map[string]bool, len(params.Students)),
+		tasks:          make(map[int]*Task),
+		nextTaskNumber: 1,
 	}
 	for _, c := range params.Collaborators {
 		crs.collaborators[c] = true
@@ -67,7 +69,7 @@ func NewCourse(params CreationCourseParams) (*Course, error) {
 	return crs, nil
 }
 
-func MustNewCourse(params CreationCourseParams) *Course {
+func MustNewCourse(params CreationParams) *Course {
 	crs, err := NewCourse(params)
 	if err != nil {
 		panic(err)
