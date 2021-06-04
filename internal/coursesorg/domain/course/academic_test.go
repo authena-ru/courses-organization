@@ -89,9 +89,6 @@ func TestCourse_CanAcademicSee(t *testing.T) {
 		creatorID      = "creator-id"
 		collaboratorID = "collaborator-id"
 		studentID      = "student-id"
-		isErrFreeFunc  = func(err error) bool {
-			return err == nil
-		}
 	)
 	crs := course.MustNewCourse(course.CreationParams{
 		ID:            "course-id",
@@ -111,19 +108,16 @@ func TestCourse_CanAcademicSee(t *testing.T) {
 			Name:     "creator_can_see_course",
 			Course:   *crs,
 			Academic: course.MustNewAcademic(creatorID, course.Teacher),
-			IsErr:    isErrFreeFunc,
 		},
 		{
 			Name:     "collaborator_can_see_course",
 			Course:   *crs,
 			Academic: course.MustNewAcademic(collaboratorID, course.Teacher),
-			IsErr:    isErrFreeFunc,
 		},
 		{
 			Name:     "student_can_see_course",
 			Course:   *crs,
 			Academic: course.MustNewAcademic(studentID, course.Student),
-			IsErr:    isErrFreeFunc,
 		},
 		{
 			Name:     "not_participant_cant_see_course",
@@ -139,7 +133,13 @@ func TestCourse_CanAcademicSee(t *testing.T) {
 			t.Parallel()
 
 			err := c.Course.CanAcademicSee(c.Academic)
-			require.True(t, c.IsErr(err))
+
+			if c.IsErr != nil {
+				require.Error(t, err)
+				require.True(t, c.IsErr(err))
+				return
+			}
+			require.NoError(t, err)
 		})
 	}
 }
@@ -150,9 +150,6 @@ func TestCourse_CanAcademicEditWithAccess(t *testing.T) {
 		creatorID      = "creator-id"
 		collaboratorID = "collaborator-id"
 		studentID      = "student-id"
-		isErrFreeFunc  = func(err error) bool {
-			return err == nil
-		}
 	)
 	crs := course.MustNewCourse(course.CreationParams{
 		ID:            "course-id",
@@ -174,21 +171,18 @@ func TestCourse_CanAcademicEditWithAccess(t *testing.T) {
 			Course:   *crs,
 			Academic: course.MustNewAcademic(creatorID, course.Teacher),
 			Access:   course.CreatorAccess,
-			IsErr:    isErrFreeFunc,
 		},
 		{
 			Name:     "creator_can_edit_course_with_teacher_access",
 			Course:   *crs,
 			Academic: course.MustNewAcademic(creatorID, course.Teacher),
 			Access:   course.TeacherAccess,
-			IsErr:    isErrFreeFunc,
 		},
 		{
 			Name:     "collaborator_can_edit_course_with_teacher_access",
 			Course:   *crs,
 			Academic: course.MustNewAcademic(collaboratorID, course.Teacher),
 			Access:   course.TeacherAccess,
-			IsErr:    isErrFreeFunc,
 		},
 		{
 			Name:     "collaborator_cant_edit_course_with_creator_access",
@@ -219,7 +213,13 @@ func TestCourse_CanAcademicEditWithAccess(t *testing.T) {
 			t.Parallel()
 
 			err := c.Course.CanAcademicEditWithAccess(c.Academic, c.Access)
-			require.True(t, c.IsErr(err))
+
+			if c.IsErr != nil {
+				require.Error(t, err)
+				require.True(t, c.IsErr(err))
+				return
+			}
+			require.NoError(t, err)
 		})
 	}
 }
