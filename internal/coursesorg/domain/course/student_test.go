@@ -61,10 +61,12 @@ func TestCourse_AddStudents(t *testing.T) {
 			t.Parallel()
 
 			err := c.Course.AddStudents(c.Academic, studentIDsToAdd...)
-			if err != nil {
+			if c.IsErr != nil {
+				require.Error(t, err)
 				require.True(t, c.IsErr(err))
 				return
 			}
+			require.NoError(t, err)
 			totalStudents := append(studentIDsToAdd, studentID)
 			require.Len(t, crs.Students(), len(totalStudents))
 			require.ElementsMatch(t, totalStudents, crs.Students())
@@ -124,10 +126,12 @@ func TestCourse_RemoveStudents(t *testing.T) {
 			t.Parallel()
 
 			err := c.Course.RemoveStudents(c.Academic, studentIDsToRemove...)
-			if err != nil {
+			if c.IsErr != nil {
+				require.Error(t, err)
 				require.True(t, c.IsErr(err))
 				return
 			}
+			require.NoError(t, err)
 			totalStudents := []string{studentID}
 			require.Len(t, crs.Students(), len(totalStudents))
 			require.ElementsMatch(t, totalStudents, c.Course.Students())
