@@ -60,10 +60,12 @@ func TestCourse_AddCollaborators(t *testing.T) {
 			t.Parallel()
 
 			err := c.Course.AddCollaborators(c.Academic, collaboratorIDsToAdd...)
-			if err != nil {
+			if c.IsErr != nil {
+				require.Error(t, err)
 				require.True(t, c.IsErr(err))
 				return
 			}
+			require.NoError(t, err)
 			totalCollaborators := append(collaboratorIDsToAdd, collaboratorID)
 			require.Len(t, crs.Collaborators(), len(totalCollaborators))
 			require.ElementsMatch(t, totalCollaborators, crs.Collaborators())
@@ -124,10 +126,12 @@ func TestCourse_RemoveCollaborators(t *testing.T) {
 			t.Parallel()
 
 			err := c.Course.RemoveCollaborators(c.Academic, collaboratorIDsToRemove...)
-			if err != nil {
+			if c.IsErr != nil {
+				require.Error(t, err)
 				require.True(t, c.IsErr(err))
 				return
 			}
+			require.NoError(t, err)
 			totalCollaborators := []string{collaboratorID}
 			require.Len(t, crs.Collaborators(), len(totalCollaborators))
 			require.ElementsMatch(t, totalCollaborators, crs.Collaborators())
