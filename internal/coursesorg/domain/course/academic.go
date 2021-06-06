@@ -38,7 +38,7 @@ func (at AcademicType) IsValid() bool {
 }
 
 var (
-	ErrEmptyAcademicID            = errors.New("empty course id")
+	ErrEmptyAcademicID            = errors.New("empty academic id")
 	ErrInvalidAcademicType        = errors.New("invalid academic type")
 	ErrNotTeacherCantCreateCourse = errors.New("not teacher can't create course")
 )
