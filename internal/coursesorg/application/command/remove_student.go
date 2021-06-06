@@ -14,20 +14,13 @@ type RemoveStudentCommand struct {
 
 type RemoveStudentHandler struct {
 	coursesRepository coursesRepository
-	academicsService  academicsService
 }
 
-func NewRemoveStudentHandler(repository coursesRepository, service academicsService) RemoveStudentHandler {
+func NewRemoveStudentHandler(repository coursesRepository) RemoveStudentHandler {
 	if repository == nil {
 		panic("coursesRepository is nil")
 	}
-	if service == nil {
-		panic("academicsService is nil")
-	}
-	return RemoveStudentHandler{
-		coursesRepository: repository,
-		academicsService:  service,
-	}
+	return RemoveStudentHandler{coursesRepository: repository}
 }
 
 // Handle is RemoveStudentCommand handler.
