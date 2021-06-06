@@ -1,5 +1,7 @@
 package course
 
+import "github.com/pkg/errors"
+
 func (c *Course) Students() []string {
 	students := make([]string, 0, len(c.students))
 	for s := range c.students {
@@ -18,12 +20,15 @@ func (c *Course) AddStudents(academic Academic, studentIDs ...string) error {
 	return nil
 }
 
-func (c *Course) RemoveStudents(academic Academic, studentIDs ...string) error {
+var ErrCourseHasNoSuchStudent = errors.New("course has no such student")
+
+func (c *Course) RemoveStudent(academic Academic, studentID string) error {
 	if err := c.CanAcademicEditWithAccess(academic, TeacherAccess); err != nil {
 		return err
 	}
-	for _, sid := range studentIDs {
-		delete(c.students, sid)
+	if !c.hasStudent(studentID) {
+		return ErrCourseHasNoSuchStudent
 	}
+	delete(c.students, studentID)
 	return nil
 }
