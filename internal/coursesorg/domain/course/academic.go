@@ -118,15 +118,15 @@ func (a Access) String() string {
 }
 
 type academicCantEditCourseError struct {
-	requestingAcademicID     string
-	requestingAcademicAccess Access
-	courseID                 string
+	requestingAcademicID string
+	access               Access
+	courseID             string
 }
 
 func (e academicCantEditCourseError) Error() string {
 	return fmt.Sprintf(
-		"academic $%s with %s can't edit course #%s",
-		e.requestingAcademicID, e.requestingAcademicAccess, e.courseID,
+		"academic #%s can't edit course #%s with %s",
+		e.requestingAcademicID, e.courseID, e.access,
 	)
 }
 
@@ -145,9 +145,9 @@ func (c *Course) CanAcademicEditWithAccess(academic Academic, access Access) err
 		}
 	}
 	return academicCantEditCourseError{
-		requestingAcademicID:     academic.ID(),
-		requestingAcademicAccess: access,
-		courseID:                 c.ID(),
+		requestingAcademicID: academic.ID(),
+		access:               access,
+		courseID:             c.ID(),
 	}
 }
 
