@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+
 	"github.com/authena-ru/courses-organization/internal/coursesorg/domain/course"
 )
 
