@@ -3,18 +3,23 @@ syntax = "proto3";
 package academics;
 
 service AcademicsService {
-    rpc AcademicExists(AcademicExistsRequest) returns (AcademicExistsResponse) {}
+    rpc TeacherExists(TeacherExistsRequest) returns (ExistenceResponse) {}
+    rpc StudentExists(StudentExistsRequest) returns (ExistenceResponse) {}
+    rpc GroupExists(GroupExistsRequest) returns (ExistenceResponse) {}
 }
 
-message AcademicExistsRequest {
-    string id = 1;
-    enum AcademicType {
-        TEACHER = 0;
-        STUDENT = 1;
-    }
-    AcademicType type = 2;
+message TeacherExistsRequest {
+    string student_id = 1;
 }
 
-message AcademicExistsResponse {
+message StudentExistsRequest {
+    string teacher_id = 1;
+}
+
+message GroupExistsRequest {
+    string group_id = 1;
+}
+
+message ExistenceResponse {
     bool exists = 1;
 }

@@ -33,21 +33,17 @@ func NewAddStudentHandler(repository coursesRepository, service academicsService
 // Handle is AddStudentCommand handler.
 // Adds one student to course, returns error.
 func (h AddStudentHandler) Handle(ctx context.Context, cmd AddStudentCommand) error {
-	studentToAdd, err := course.NewAcademic(cmd.StudentID, course.Student)
-	if err != nil {
+	if err := h.academicsService.StudentExists(cmd.StudentID); err != nil {
 		return err
 	}
-	if err := h.academicsService.AcademicExists(studentToAdd); err != nil {
-		return err
+	return h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, cmd.Teacher, addStudent(cmd))
+}
+
+func addStudent(cmd AddStudentCommand) UpdateFunction {
+	return func(_ context.Context, crs *course.Course) (*course.Course, error) {
+		if err := crs.AddStudents(cmd.Teacher, cmd.StudentID); err != nil {
+			return nil, err
+		}
+		return crs, nil
 	}
-	return h.coursesRepository.UpdateCourse(
-		ctx,
-		cmd.CourseID,
-		cmd.Teacher,
-		func(_ context.Context, crs *course.Course) (*course.Course, error) {
-			if err := crs.AddStudents(cmd.Teacher, studentToAdd.ID()); err != nil {
-				return nil, err
-			}
-			return crs, nil
-		})
 }

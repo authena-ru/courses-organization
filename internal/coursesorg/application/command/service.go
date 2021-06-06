@@ -1,7 +1,7 @@
 package command
 
-import "github.com/authena-ru/courses-organization/internal/coursesorg/domain/course"
-
 type academicsService interface {
-	AcademicExists(academic course.Academic) error
+	TeacherExists(teacherID string) error
+	StudentExists(studentID string) error
+	GroupExists(groupID string) error
 }

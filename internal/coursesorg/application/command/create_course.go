@@ -17,19 +17,29 @@ type CreateCourseCommand struct {
 
 type CreateCourseHandler struct {
 	coursesRepository coursesRepository
+	academicsService  academicsService
 }
 
-func NewCreateCourseHandler(repository coursesRepository) CreateCourseHandler {
+func NewCreateCourseHandler(repository coursesRepository, service academicsService) CreateCourseHandler {
 	if repository == nil {
 		panic("coursesRepository is nil")
 	}
-	return CreateCourseHandler{coursesRepository: repository}
+	if service == nil {
+		panic("academicsService is nil")
+	}
+	return CreateCourseHandler{
+		coursesRepository: repository,
+		academicsService:  service,
+	}
 }
 
 // Handle is CreateCourseCommand handler.
 // Creates course, returns id of new brand course and error.
 func (h CreateCourseHandler) Handle(ctx context.Context, cmd CreateCourseCommand) (string, error) {
 	courseID := uuid.NewString()
+	if err := h.academicsService.TeacherExists(cmd.Creator.ID()); err != nil {
+		return "", err
+	}
 	crs, err := course.NewCourse(course.CreationParams{
 		ID:      courseID,
 		Creator: cmd.Creator,

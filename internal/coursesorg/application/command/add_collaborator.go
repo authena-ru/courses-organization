@@ -33,20 +33,17 @@ func NewAddCollaboratorHandler(repository coursesRepository, service academicsSe
 // Handle is AddCollaboratorCommand handler.
 // Adds one collaborator to course, returns error.
 func (h AddCollaboratorHandler) Handle(ctx context.Context, cmd AddCollaboratorCommand) error {
-	collaboratorToAdd, err := course.NewAcademic(cmd.CollaboratorID, course.Teacher)
-	if err != nil {
+	if err := h.academicsService.TeacherExists(cmd.CollaboratorID); err != nil {
 		return err
 	}
-	if err := h.academicsService.AcademicExists(collaboratorToAdd); err != nil {
-		return err
+	return h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, cmd.Teacher, addCollaborator(cmd))
+}
+
+func addCollaborator(cmd AddCollaboratorCommand) UpdateFunction {
+	return func(_ context.Context, crs *course.Course) (*course.Course, error) {
+		if err := crs.AddCollaborators(cmd.Teacher, cmd.CollaboratorID); err != nil {
+			return nil, err
+		}
+		return crs, nil
 	}
-	return h.coursesRepository.UpdateCourse(
-		ctx, cmd.CourseID,
-		cmd.Teacher,
-		func(_ context.Context, crs *course.Course) (*course.Course, error) {
-			if err := crs.AddCollaborators(cmd.Teacher, cmd.CollaboratorID); err != nil {
-				return nil, err
-			}
-			return crs, nil
-		})
 }
