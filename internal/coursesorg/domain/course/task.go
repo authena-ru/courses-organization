@@ -63,11 +63,11 @@ const (
 
 var (
 	ErrTaskHasNoDeadline      = errors.New("task has no deadline")
-	ErrTaskHasNoTestPoints    = errors.New("task has no Task points")
+	ErrTaskHasNoTestPoints    = errors.New("task has no test points")
 	ErrTaskHasNoTestData      = errors.New("task has no test data")
 	ErrTaskTitleTooLong       = errors.New("task title too long")
 	ErrTaskDescriptionTooLong = errors.New("task description too long")
-	ErrNoTaskWithNumber       = errors.New("task number out of bounds")
+	ErrNoTaskWithNumber       = errors.New("no task with number")
 )
 
 func (t *Task) rename(title string) error {
