@@ -118,6 +118,14 @@ func (c *Course) Task(taskNumber int) (Task, error) {
 	return *task, nil
 }
 
+func (c *Course) Tasks() []Task {
+	tasks := make([]Task, 0, len(c.tasks))
+	for _, t := range c.tasks {
+		tasks = append(tasks, *t)
+	}
+	return tasks
+}
+
 type ManualCheckingTaskCreationParams struct {
 	Title       string
 	Description string
