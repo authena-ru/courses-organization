@@ -19,7 +19,7 @@ type AddStudentHandler struct {
 
 func NewAddStudentHandler(repository coursesRepository, service academicsService) AddStudentHandler {
 	if repository == nil {
-		panic("CoursesRepository is nil")
+		panic("coursesRepository is nil")
 	}
 	if service == nil {
 		panic("academicsService is nil")
