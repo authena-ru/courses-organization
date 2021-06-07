@@ -67,7 +67,7 @@ var (
 	ErrTaskHasNoTestData      = errors.New("task has no test data")
 	ErrTaskTitleTooLong       = errors.New("task title too long")
 	ErrTaskDescriptionTooLong = errors.New("task description too long")
-	ErrNoTaskWithNumber       = errors.New("no task with number")
+	ErrCourseHasNoSuchTask    = errors.New("course has no such task")
 )
 
 func (t *Task) rename(title string) error {
@@ -264,7 +264,7 @@ func (c *Course) newTask(title string, description string, taskType TaskType, op
 func (c *Course) obtainTask(taskNumber int) (*Task, error) {
 	task, ok := c.tasks[taskNumber]
 	if !ok {
-		return nil, ErrNoTaskWithNumber
+		return nil, ErrCourseHasNoSuchTask
 	}
 	return task, nil
 }

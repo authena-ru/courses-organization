@@ -324,7 +324,7 @@ func TestCourse_RenameTask(t *testing.T) {
 			Academic:   creator,
 			NewTitle:   "Classes",
 			IsErr: func(err error) bool {
-				return errors.Is(err, course.ErrNoTaskWithNumber)
+				return errors.Is(err, course.ErrCourseHasNoSuchTask)
 			},
 		},
 	}
@@ -402,7 +402,7 @@ func TestCourse_ReplaceTaskDescription(t *testing.T) {
 			Academic:       creator,
 			NewDescription: "Write search algorithm",
 			IsErr: func(err error) bool {
-				return errors.Is(err, course.ErrNoTaskWithNumber)
+				return errors.Is(err, course.ErrCourseHasNoSuchTask)
 			},
 		},
 	}
@@ -489,7 +489,7 @@ func TestCourse_ReplaceTaskDeadline(t *testing.T) {
 			Academic:    creator,
 			NewDeadline: newDeadline,
 			IsErr: func(err error) bool {
-				return errors.Is(err, course.ErrNoTaskWithNumber)
+				return errors.Is(err, course.ErrCourseHasNoSuchTask)
 			},
 		},
 	}
@@ -578,7 +578,7 @@ func TestCourse_ReplaceTaskTestData(t *testing.T) {
 			Academic:    creator,
 			NewTestData: newTestData,
 			IsErr: func(err error) bool {
-				return errors.Is(err, course.ErrNoTaskWithNumber)
+				return errors.Is(err, course.ErrCourseHasNoSuchTask)
 			},
 		},
 	}
@@ -663,7 +663,7 @@ func TestCourse_ReplaceTaskTestPoints(t *testing.T) {
 			Academic:      creator,
 			NewTestPoints: newTestPoints,
 			IsErr: func(err error) bool {
-				return errors.Is(err, course.ErrNoTaskWithNumber)
+				return errors.Is(err, course.ErrCourseHasNoSuchTask)
 			},
 		},
 	}
