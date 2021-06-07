@@ -73,33 +73,6 @@ func (a Academic) IsZero() bool {
 	return a == Academic{}
 }
 
-type academicCantSeeCourseError struct {
-	requestingAcademicID string
-	courseID             string
-}
-
-func (e academicCantSeeCourseError) Error() string {
-	return fmt.Sprintf("academic #%s can't see course #%s", e.requestingAcademicID, e.courseID)
-}
-
-func IsAcademicCantSeeCourseError(err error) bool {
-	var e academicCantSeeCourseError
-	return errors.As(err, &e)
-}
-
-func (c *Course) CanAcademicSee(academic Academic) error {
-	if academic.Type() == Teacher && c.hasTeacher(academic.ID()) {
-		return nil
-	}
-	if academic.Type() == Student && c.hasStudent(academic.ID()) {
-		return nil
-	}
-	return academicCantSeeCourseError{
-		requestingAcademicID: academic.ID(),
-		courseID:             c.ID(),
-	}
-}
-
 type Access uint8
 
 const (
@@ -118,16 +91,11 @@ func (a Access) String() string {
 }
 
 type academicCantEditCourseError struct {
-	requestingAcademicID string
-	access               Access
-	courseID             string
+	access Access
 }
 
 func (e academicCantEditCourseError) Error() string {
-	return fmt.Sprintf(
-		"academic #%s can't edit course #%s with %s",
-		e.requestingAcademicID, e.courseID, e.access,
-	)
+	return fmt.Sprintf("academic can't edit course with %s", e.access)
 }
 
 func IsAcademicCantEditCourseError(err error) bool {
@@ -144,11 +112,7 @@ func (c *Course) CanAcademicEditWithAccess(academic Academic, access Access) err
 			return nil
 		}
 	}
-	return academicCantEditCourseError{
-		requestingAcademicID: academic.ID(),
-		access:               access,
-		courseID:             c.ID(),
-	}
+	return academicCantEditCourseError{access: access}
 }
 
 func (a Academic) CanCreateCourse() error {

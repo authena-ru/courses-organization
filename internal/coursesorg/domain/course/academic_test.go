@@ -83,67 +83,6 @@ func TestAcademic_IsZero(t *testing.T) {
 	}
 }
 
-func TestCourse_CanAcademicSee(t *testing.T) {
-	t.Parallel()
-	var (
-		creatorID      = "creator-id"
-		collaboratorID = "collaborator-id"
-		studentID      = "student-id"
-	)
-	crs := course.MustNewCourse(course.CreationParams{
-		ID:            "course-id",
-		Creator:       course.MustNewAcademic(creatorID, course.Teacher),
-		Title:         "Nice Python",
-		Period:        course.MustNewPeriod(2020, 2021, course.SecondSemester),
-		Collaborators: []string{collaboratorID},
-		Students:      []string{studentID},
-	})
-	testCases := []struct {
-		Name     string
-		Course   course.Course
-		Academic course.Academic
-		IsErr    func(err error) bool
-	}{
-		{
-			Name:     "creator_can_see_course",
-			Course:   *crs,
-			Academic: course.MustNewAcademic(creatorID, course.Teacher),
-		},
-		{
-			Name:     "collaborator_can_see_course",
-			Course:   *crs,
-			Academic: course.MustNewAcademic(collaboratorID, course.Teacher),
-		},
-		{
-			Name:     "student_can_see_course",
-			Course:   *crs,
-			Academic: course.MustNewAcademic(studentID, course.Student),
-		},
-		{
-			Name:     "not_participant_cant_see_course",
-			Course:   *crs,
-			Academic: course.MustNewAcademic("not-participant-id", course.Teacher),
-			IsErr:    course.IsAcademicCantSeeCourseError,
-		},
-	}
-
-	for i := range testCases {
-		c := testCases[i]
-		t.Run(c.Name, func(t *testing.T) {
-			t.Parallel()
-
-			err := c.Course.CanAcademicSee(c.Academic)
-
-			if c.IsErr != nil {
-				require.Error(t, err)
-				require.True(t, c.IsErr(err))
-				return
-			}
-			require.NoError(t, err)
-		})
-	}
-}
-
 func TestCourse_CanAcademicEditWithAccess(t *testing.T) {
 	t.Parallel()
 	var (
