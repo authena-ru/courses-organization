@@ -14,18 +14,28 @@ type RemoveCollaboratorCommand struct {
 
 type RemoveCollaboratorHandler struct {
 	coursesRepository coursesRepository
+	academicsService  academicsService
 }
 
-func NewRemoveCollaboratorHandler(repository coursesRepository) RemoveCollaboratorHandler {
+func NewRemoveCollaboratorHandler(repository coursesRepository, service academicsService) RemoveCollaboratorHandler {
 	if repository == nil {
 		panic("coursesRepository is nil")
 	}
-	return RemoveCollaboratorHandler{coursesRepository: repository}
+	if service == nil {
+		panic("academicsService is nil")
+	}
+	return RemoveCollaboratorHandler{
+		coursesRepository: repository,
+		academicsService:  service,
+	}
 }
 
 // Handle is RemoveCollaboratorCommand handler.
 // Removes one collaborator from course, returns error.
 func (h RemoveCollaboratorHandler) Handle(ctx context.Context, cmd RemoveCollaboratorCommand) error {
+	if err := h.academicsService.TeacherExists(cmd.Teacher.ID()); err != nil {
+		return err
+	}
 	return h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, cmd.Teacher, removeCollaborator(cmd))
 }
 

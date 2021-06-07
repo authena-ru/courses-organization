@@ -33,6 +33,9 @@ func NewAddStudentHandler(repository coursesRepository, service academicsService
 // Handle is AddStudentCommand handler.
 // Adds one student to course, returns error.
 func (h AddStudentHandler) Handle(ctx context.Context, cmd AddStudentCommand) error {
+	if err := h.academicsService.TeacherExists(cmd.Teacher.ID()); err != nil {
+		return err
+	}
 	if err := h.academicsService.StudentExists(cmd.StudentID); err != nil {
 		return err
 	}
