@@ -110,9 +110,9 @@ const (
 func (a Access) String() string {
 	switch a {
 	case TeacherAccess:
-		return "Teacher access"
+		return "teacher access"
 	case CreatorAccess:
-		return "Creator access"
+		return "creator access"
 	}
 	return "%!Access(" + strconv.Itoa(int(a)) + ")"
 }
