@@ -20,13 +20,11 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 		courseID       = "course-id"
 		collaboratorID = "collaborator-id"
 	)
-	courseFactory := func() *course.Course {
-		return course.MustNewCourse(course.CreationParams{
-			ID:      courseID,
-			Creator: course.MustNewAcademic(creatorID, course.Teacher),
-			Title:   "Docker and Kubernetes",
-			Period:  course.MustNewPeriod(2023, 2024, course.FirstSemester),
-		})
+	addCourse := func(crs *course.Course, crm *mock.CoursesRepository) {
+		crm.Courses = map[string]course.Course{crs.ID(): *crs}
+	}
+	addCollaborator := func(asm *mock.AcademicsService) {
+		asm.Teachers = map[string]bool{collaboratorID: true}
 	}
 	testCases := []struct {
 		Name                     string
@@ -42,12 +40,8 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 				CourseID:       courseID,
 				CollaboratorID: collaboratorID,
 			},
-			PrepareCoursesRepository: func(crs *course.Course, crm *mock.CoursesRepository) {
-				crm.Courses = map[string]course.Course{crs.ID(): *crs}
-			},
-			PrepareAcademicsService: func(asm *mock.AcademicsService) {
-				asm.Teachers = map[string]bool{collaboratorID: true}
-			},
+			PrepareCoursesRepository: addCourse,
+			PrepareAcademicsService:  addCollaborator,
 		},
 		{
 			Name: "dont_add_when_teacher_cant_edit_course",
@@ -56,13 +50,9 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 				CourseID:       courseID,
 				CollaboratorID: collaboratorID,
 			},
-			PrepareCoursesRepository: func(crs *course.Course, crm *mock.CoursesRepository) {
-				crm.Courses = map[string]course.Course{crs.ID(): *crs}
-			},
-			PrepareAcademicsService: func(asm *mock.AcademicsService) {
-				asm.Teachers = map[string]bool{collaboratorID: true}
-			},
-			IsErr: course.IsAcademicCantEditCourseError,
+			PrepareCoursesRepository: addCourse,
+			PrepareAcademicsService:  addCollaborator,
+			IsErr:                    course.IsAcademicCantEditCourseError,
 		},
 		{
 			Name: "dont_add_when_collaborator_doesnt_exist_as_teacher",
@@ -71,9 +61,7 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 				CourseID:       courseID,
 				CollaboratorID: collaboratorID,
 			},
-			PrepareCoursesRepository: func(crs *course.Course, crm *mock.CoursesRepository) {
-				crm.Courses = map[string]course.Course{crs.ID(): *crs}
-			},
+			PrepareCoursesRepository: addCourse,
 			PrepareAcademicsService: func(asm *mock.AcademicsService) {
 				asm.Teachers = make(map[string]bool)
 			},
@@ -91,9 +79,7 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 			PrepareCoursesRepository: func(_ *course.Course, crm *mock.CoursesRepository) {
 				crm.Courses = make(map[string]course.Course)
 			},
-			PrepareAcademicsService: func(asm *mock.AcademicsService) {
-				asm.Teachers = map[string]bool{collaboratorID: true}
-			},
+			PrepareAcademicsService: addCollaborator,
 			IsErr: func(err error) bool {
 				return errors.Is(err, apperr.ErrCourseNotFound)
 			},
@@ -105,7 +91,12 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			crs := courseFactory()
+			crs := course.MustNewCourse(course.CreationParams{
+				ID:      courseID,
+				Creator: course.MustNewAcademic(creatorID, course.Teacher),
+				Title:   "Docker and Kubernetes",
+				Period:  course.MustNewPeriod(2023, 2024, course.FirstSemester),
+			})
 			coursesRepository := &mock.CoursesRepository{}
 			c.PrepareCoursesRepository(crs, coursesRepository)
 			academicsService := &mock.AcademicsService{}
