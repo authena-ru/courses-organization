@@ -31,7 +31,9 @@ func NewAddCollaboratorHandler(repository coursesRepository, service academicsSe
 }
 
 // Handle is AddCollaboratorCommand handler.
-// Adds one collaborator to course, returns error.
+// Adds one collaborator to course, returns one of possible errors:
+// apperr.ErrTeacherDoesntExist, apperr.ErrCourseNotFound, error with method
+// course.IsAcademicCantEditCourseError and others without definition.
 func (h AddCollaboratorHandler) Handle(ctx context.Context, cmd AddCollaboratorCommand) error {
 	if err := h.academicsService.TeacherExists(cmd.CollaboratorID); err != nil {
 		return err
