@@ -11,7 +11,7 @@ func (c *Course) Collaborators() []string {
 }
 
 func (c *Course) AddCollaborators(academic Academic, teacherIDs ...string) error {
-	if err := c.CanAcademicEditWithAccess(academic, TeacherAccess); err != nil {
+	if err := c.canAcademicEditWithAccess(academic, TeacherAccess); err != nil {
 		return err
 	}
 	for _, tid := range teacherIDs {
@@ -23,7 +23,7 @@ func (c *Course) AddCollaborators(academic Academic, teacherIDs ...string) error
 var ErrCourseHasNoSuchCollaborator = errors.New("course has no such collaborator")
 
 func (c *Course) RemoveCollaborator(academic Academic, teacherID string) error {
-	if err := c.CanAcademicEditWithAccess(academic, CreatorAccess); err != nil {
+	if err := c.canAcademicEditWithAccess(academic, CreatorAccess); err != nil {
 		return err
 	}
 	if !c.hasTeacher(teacherID) {

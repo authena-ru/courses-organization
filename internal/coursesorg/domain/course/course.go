@@ -40,7 +40,7 @@ func NewCourse(params CreationParams) (*Course, error) {
 	if params.Creator.IsZero() {
 		return nil, ErrZeroCreator
 	}
-	if err := params.Creator.CanCreateCourse(); err != nil {
+	if err := params.Creator.canCreateCourse(); err != nil {
 		return nil, err
 	}
 	if params.Title == "" {

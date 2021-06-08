@@ -133,7 +133,7 @@ type ManualCheckingTaskCreationParams struct {
 }
 
 func (c *Course) AddManualCheckingTask(academic Academic, params ManualCheckingTaskCreationParams) (int, error) {
-	if err := c.CanAcademicEditWithAccess(academic, TeacherAccess); err != nil {
+	if err := c.canAcademicEditWithAccess(academic, TeacherAccess); err != nil {
 		return 0, err
 	}
 	task, err := c.newTask(params.Title, params.Description, ManualChecking, taskOptional{deadline: params.Deadline})
@@ -151,7 +151,7 @@ type AutoCodeCheckingTaskCreationParams struct {
 }
 
 func (c *Course) AddAutoCodeCheckingTask(academic Academic, params AutoCodeCheckingTaskCreationParams) (int, error) {
-	if err := c.CanAcademicEditWithAccess(academic, TeacherAccess); err != nil {
+	if err := c.canAcademicEditWithAccess(academic, TeacherAccess); err != nil {
 		return 0, err
 	}
 	testDataCopy := make([]TestData, len(params.TestData))
@@ -173,7 +173,7 @@ type TestingTaskCreationParams struct {
 }
 
 func (c *Course) AddTestingTask(academic Academic, params TestingTaskCreationParams) (int, error) {
-	if err := c.CanAcademicEditWithAccess(academic, TeacherAccess); err != nil {
+	if err := c.canAcademicEditWithAccess(academic, TeacherAccess); err != nil {
 		return 0, err
 	}
 	testPointsCopy := make([]TestPoint, len(params.TestPoints))
@@ -186,7 +186,7 @@ func (c *Course) AddTestingTask(academic Academic, params TestingTaskCreationPar
 }
 
 func (c *Course) RenameTask(academic Academic, taskNumber int, title string) error {
-	if err := c.CanAcademicEditWithAccess(academic, TeacherAccess); err != nil {
+	if err := c.canAcademicEditWithAccess(academic, TeacherAccess); err != nil {
 		return err
 	}
 	task, err := c.obtainTask(taskNumber)
@@ -197,7 +197,7 @@ func (c *Course) RenameTask(academic Academic, taskNumber int, title string) err
 }
 
 func (c *Course) ReplaceTaskDescription(academic Academic, taskNumber int, description string) error {
-	if err := c.CanAcademicEditWithAccess(academic, TeacherAccess); err != nil {
+	if err := c.canAcademicEditWithAccess(academic, TeacherAccess); err != nil {
 		return err
 	}
 	task, err := c.obtainTask(taskNumber)
@@ -208,7 +208,7 @@ func (c *Course) ReplaceTaskDescription(academic Academic, taskNumber int, descr
 }
 
 func (c *Course) ReplaceTaskDeadline(academic Academic, taskNumber int, deadline Deadline) error {
-	if err := c.CanAcademicEditWithAccess(academic, TeacherAccess); err != nil {
+	if err := c.canAcademicEditWithAccess(academic, TeacherAccess); err != nil {
 		return err
 	}
 	task, err := c.obtainTask(taskNumber)
@@ -219,7 +219,7 @@ func (c *Course) ReplaceTaskDeadline(academic Academic, taskNumber int, deadline
 }
 
 func (c *Course) ReplaceTaskTestPoints(academic Academic, taskNumber int, testPoints []TestPoint) error {
-	if err := c.CanAcademicEditWithAccess(academic, TeacherAccess); err != nil {
+	if err := c.canAcademicEditWithAccess(academic, TeacherAccess); err != nil {
 		return err
 	}
 	task, err := c.obtainTask(taskNumber)
@@ -230,7 +230,7 @@ func (c *Course) ReplaceTaskTestPoints(academic Academic, taskNumber int, testPo
 }
 
 func (c *Course) ReplaceTaskTestData(academic Academic, taskNumber int, testData []TestData) error {
-	if err := c.CanAcademicEditWithAccess(academic, TeacherAccess); err != nil {
+	if err := c.canAcademicEditWithAccess(academic, TeacherAccess); err != nil {
 		return err
 	}
 	task, err := c.obtainTask(taskNumber)

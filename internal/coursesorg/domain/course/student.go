@@ -11,7 +11,7 @@ func (c *Course) Students() []string {
 }
 
 func (c *Course) AddStudents(academic Academic, studentIDs ...string) error {
-	if err := c.CanAcademicEditWithAccess(academic, TeacherAccess); err != nil {
+	if err := c.canAcademicEditWithAccess(academic, TeacherAccess); err != nil {
 		return err
 	}
 	for _, sid := range studentIDs {
@@ -23,7 +23,7 @@ func (c *Course) AddStudents(academic Academic, studentIDs ...string) error {
 var ErrCourseHasNoSuchStudent = errors.New("course has no such student")
 
 func (c *Course) RemoveStudent(academic Academic, studentID string) error {
-	if err := c.CanAcademicEditWithAccess(academic, TeacherAccess); err != nil {
+	if err := c.canAcademicEditWithAccess(academic, TeacherAccess); err != nil {
 		return err
 	}
 	if !c.hasStudent(studentID) {
