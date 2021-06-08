@@ -26,7 +26,7 @@ func NewRemoveCollaboratorHandler(repository coursesRepository) RemoveCollaborat
 // Handle is RemoveCollaboratorCommand handler.
 // Removes one collaborator from course, returns error.
 func (h RemoveCollaboratorHandler) Handle(ctx context.Context, cmd RemoveCollaboratorCommand) error {
-	return h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, cmd.Teacher, removeCollaborator(cmd))
+	return h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, removeCollaborator(cmd))
 }
 
 func removeCollaborator(cmd RemoveCollaboratorCommand) UpdateFunction {

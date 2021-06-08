@@ -26,7 +26,7 @@ func NewRemoveStudentHandler(repository coursesRepository) RemoveStudentHandler 
 // Handle is RemoveStudentCommand handler.
 // Removes one student from course, returns error.
 func (h RemoveStudentHandler) Handle(ctx context.Context, cmd RemoveStudentCommand) error {
-	return h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, cmd.Teacher, removeStudent(cmd))
+	return h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, removeStudent(cmd))
 }
 
 func removeStudent(cmd RemoveStudentCommand) UpdateFunction {

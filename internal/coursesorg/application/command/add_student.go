@@ -36,7 +36,7 @@ func (h AddStudentHandler) Handle(ctx context.Context, cmd AddStudentCommand) er
 	if err := h.academicsService.StudentExists(cmd.StudentID); err != nil {
 		return err
 	}
-	return h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, cmd.Teacher, addStudent(cmd))
+	return h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, addStudent(cmd))
 }
 
 func addStudent(cmd AddStudentCommand) UpdateFunction {

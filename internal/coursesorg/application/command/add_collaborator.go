@@ -36,7 +36,7 @@ func (h AddCollaboratorHandler) Handle(ctx context.Context, cmd AddCollaboratorC
 	if err := h.academicsService.TeacherExists(cmd.CollaboratorID); err != nil {
 		return err
 	}
-	return h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, cmd.Teacher, addCollaborator(cmd))
+	return h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, addCollaborator(cmd))
 }
 
 func addCollaborator(cmd AddCollaboratorCommand) UpdateFunction {
