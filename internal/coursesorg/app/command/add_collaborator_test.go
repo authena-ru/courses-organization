@@ -2,12 +2,12 @@ package command_test
 
 import (
 	"context"
-	"github.com/authena-ru/courses-organization/internal/coursesorg/app"
 	"testing"
 
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 
+	"github.com/authena-ru/courses-organization/internal/coursesorg/app"
 	"github.com/authena-ru/courses-organization/internal/coursesorg/app/command"
 	"github.com/authena-ru/courses-organization/internal/coursesorg/app/command/mock"
 	"github.com/authena-ru/courses-organization/internal/coursesorg/domain/course"
