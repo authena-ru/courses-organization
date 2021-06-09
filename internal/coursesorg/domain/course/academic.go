@@ -91,11 +91,15 @@ func (a Access) String() string {
 }
 
 type academicCantEditCourseError struct {
-	message string
+	academicType AcademicType
+	access       Access
 }
 
 func (e academicCantEditCourseError) Error() string {
-	return e.message
+	if e.academicType == Student {
+		return "student can't edit course"
+	}
+	return fmt.Sprintf("teacher can't edit course with %s", e.access)
 }
 
 func IsAcademicCantEditCourseError(err error) bool {
@@ -111,9 +115,9 @@ func (c *Course) canAcademicEditWithAccess(academic Academic, access Access) err
 		if access == CreatorAccess && c.hasCreator(academic.ID()) {
 			return nil
 		}
-		return academicCantEditCourseError{message: fmt.Sprintf("teacher can't edit course with %s", access)}
+		return academicCantEditCourseError{academicType: Student}
 	}
-	return academicCantEditCourseError{message: "student can't edit course"}
+	return academicCantEditCourseError{academicType: Teacher, access: access}
 }
 
 func (a Academic) canCreateCourse() error {
