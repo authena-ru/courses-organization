@@ -8,9 +8,11 @@ type Application struct {
 }
 
 type Commands struct {
-	CreateCourse    command.CreateCourseHandler
-	AddCollaborator command.AddCollaboratorHandler
-	AddStudent      command.AddStudentHandler
+	CreateCourse       command.CreateCourseHandler
+	AddCollaborator    command.AddCollaboratorHandler
+	RemoveCollaborator command.RemoveCollaboratorHandler
+	AddStudent         command.AddStudentHandler
+	RemoveStudent      command.RemoveStudentHandler
 }
 
 type Queries struct {
