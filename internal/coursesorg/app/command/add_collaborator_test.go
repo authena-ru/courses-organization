@@ -2,14 +2,14 @@ package command_test
 
 import (
 	"context"
+	"github.com/authena-ru/courses-organization/internal/coursesorg/app"
 	"testing"
 
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 
-	"github.com/authena-ru/courses-organization/internal/coursesorg/application/apperr"
-	"github.com/authena-ru/courses-organization/internal/coursesorg/application/command"
-	"github.com/authena-ru/courses-organization/internal/coursesorg/application/command/mock"
+	"github.com/authena-ru/courses-organization/internal/coursesorg/app/command"
+	"github.com/authena-ru/courses-organization/internal/coursesorg/app/command/mock"
 	"github.com/authena-ru/courses-organization/internal/coursesorg/domain/course"
 )
 
@@ -66,7 +66,7 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 				asm.Teachers = make(map[string]bool)
 			},
 			IsErr: func(err error) bool {
-				return errors.Is(err, apperr.ErrTeacherDoesntExist)
+				return errors.Is(err, app.ErrTeacherDoesntExist)
 			},
 		},
 		{
@@ -81,7 +81,7 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 			},
 			PrepareAcademicsService: addCollaborator,
 			IsErr: func(err error) bool {
-				return errors.Is(err, apperr.ErrCourseNotFound)
+				return errors.Is(err, app.ErrCourseDoesntExist)
 			},
 		},
 	}

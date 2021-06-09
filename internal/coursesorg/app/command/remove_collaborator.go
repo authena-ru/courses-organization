@@ -25,7 +25,7 @@ func NewRemoveCollaboratorHandler(repository coursesRepository) RemoveCollaborat
 
 // Handle is RemoveCollaboratorCommand handler.
 // Removes one collaborator from course, returns one of possible errors:
-// apperr.ErrCourseNotFound, error that can be detected using method
+// app.ErrCourseDoesntExist, error that can be detected using method
 // course.IsAcademicCantEditCourseError and others without definition.
 func (h RemoveCollaboratorHandler) Handle(ctx context.Context, cmd RemoveCollaboratorCommand) error {
 	return h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, removeCollaborator(cmd))

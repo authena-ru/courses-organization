@@ -1,6 +1,6 @@
-package application
+package app
 
-import "github.com/authena-ru/courses-organization/internal/coursesorg/application/command"
+import "github.com/authena-ru/courses-organization/internal/coursesorg/app/command"
 
 type Application struct {
 	Commands Commands

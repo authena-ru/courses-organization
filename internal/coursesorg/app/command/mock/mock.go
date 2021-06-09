@@ -2,9 +2,9 @@ package mock
 
 import (
 	"context"
+	"github.com/authena-ru/courses-organization/internal/coursesorg/app"
 
-	"github.com/authena-ru/courses-organization/internal/coursesorg/application/apperr"
-	"github.com/authena-ru/courses-organization/internal/coursesorg/application/command"
+	"github.com/authena-ru/courses-organization/internal/coursesorg/app/command"
 	"github.com/authena-ru/courses-organization/internal/coursesorg/domain/course"
 )
 
@@ -20,7 +20,7 @@ func (m *CoursesRepository) AddCourse(_ context.Context, crs *course.Course) err
 func (m *CoursesRepository) GetCourse(_ context.Context, courseID string) (*course.Course, error) {
 	crs, ok := m.Courses[courseID]
 	if !ok {
-		return nil, apperr.ErrCourseNotFound
+		return nil, app.ErrCourseDoesntExist
 	}
 	return &crs, nil
 }
@@ -32,7 +32,7 @@ func (m *CoursesRepository) UpdateCourse(
 ) error {
 	crs, ok := m.Courses[courseID]
 	if !ok {
-		return apperr.ErrCourseNotFound
+		return app.ErrCourseDoesntExist
 	}
 	updatedCrs, err := updateFn(ctx, &crs)
 	if err != nil {
@@ -52,19 +52,19 @@ func (m *AcademicsService) TeacherExists(teacherID string) error {
 	if m.Teachers[teacherID] {
 		return nil
 	}
-	return apperr.ErrTeacherDoesntExist
+	return app.ErrTeacherDoesntExist
 }
 
 func (m *AcademicsService) StudentExists(studentID string) error {
 	if m.Students[studentID] {
 		return nil
 	}
-	return apperr.ErrStudentDoesntExist
+	return app.ErrStudentDoesntExist
 }
 
 func (m *AcademicsService) GroupExists(groupID string) error {
 	if m.Groups[groupID] {
 		return nil
 	}
-	return apperr.ErrGroupDoesntExist
+	return app.ErrGroupDoesntExist
 }
