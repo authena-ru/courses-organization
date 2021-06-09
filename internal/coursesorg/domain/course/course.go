@@ -69,6 +69,47 @@ func NewCourse(params CreationParams) (*Course, error) {
 	return crs, nil
 }
 
+func (c *Course) Extend(params CreationParams) (*Course, error) {
+	if params.ID == "" {
+		return nil, ErrEmptyCourseID
+	}
+	if params.Creator.IsZero() {
+		return nil, ErrZeroCreator
+	}
+	if err := params.Creator.canCreateCourse(); err != nil {
+		return nil, err
+	}
+	extendedCourseTitle := c.Title()
+	if params.Title != "" {
+		extendedCourseTitle = params.Title
+	}
+	extendedCoursePeriod := c.period.next()
+	if !params.Period.IsZero() {
+		extendedCoursePeriod = params.Period
+	}
+	crs := &Course{
+		id:             params.ID,
+		creatorID:      params.Creator.ID(),
+		title:          extendedCourseTitle,
+		period:         extendedCoursePeriod,
+		started:        params.Started,
+		collaborators:  make(map[string]bool, len(params.Collaborators)),
+		students:       make(map[string]bool, len(params.Students)),
+		tasks:          make(map[int]*Task, len(c.tasks)),
+		nextTaskNumber: c.nextTaskNumber,
+	}
+	for _, c := range append(c.Collaborators(), params.Collaborators...) {
+		crs.collaborators[c] = true
+	}
+	for _, s := range append(c.Students(), params.Students...) {
+		crs.students[s] = true
+	}
+	for _, t := range c.tasksCopy() {
+		crs.tasks[t.Number()] = t
+	}
+	return crs, nil
+}
+
 func MustNewCourse(params CreationParams) *Course {
 	crs, err := NewCourse(params)
 	if err != nil {

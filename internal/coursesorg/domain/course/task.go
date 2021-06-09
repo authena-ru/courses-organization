@@ -41,16 +41,28 @@ func (t *Task) Type() TaskType {
 }
 
 func (t *Task) ManualCheckingOptional() Deadline {
-	return t.optional.deadline
+	return t.deadline()
 }
 
 func (t *Task) AutoCodeCheckingOptional() (Deadline, []TestData) {
-	testDataCopy := make([]TestData, len(t.optional.testData))
-	copy(testDataCopy, t.optional.testData)
-	return t.optional.deadline, testDataCopy
+	return t.deadline(), t.testData()
 }
 
 func (t *Task) TestingOptional() []TestPoint {
+	return t.testPoints()
+}
+
+func (t *Task) deadline() Deadline {
+	return t.optional.deadline
+}
+
+func (t *Task) testData() []TestData {
+	testDataCopy := make([]TestData, len(t.optional.testData))
+	copy(testDataCopy, t.optional.testData)
+	return testDataCopy
+}
+
+func (t *Task) testPoints() []TestPoint {
 	testPointsCopy := make([]TestPoint, len(t.optional.testPoints))
 	copy(testPointsCopy, t.optional.testPoints)
 	return testPointsCopy
@@ -108,6 +120,20 @@ func (t *Task) replaceTestData(testData []TestData) error {
 	}
 	t.optional.testData = testData
 	return nil
+}
+
+func (t *Task) copy() *Task {
+	return &Task{
+		number:      t.Number(),
+		title:       t.Title(),
+		description: t.Description(),
+		taskType:    t.Type(),
+		optional: taskOptional{
+			deadline:   Deadline{},
+			testPoints: t.testPoints(),
+			testData:   t.testData(),
+		},
+	}
 }
 
 func (c *Course) Task(taskNumber int) (Task, error) {
@@ -267,4 +293,12 @@ func (c *Course) obtainTask(taskNumber int) (*Task, error) {
 		return nil, ErrCourseHasNoSuchTask
 	}
 	return task, nil
+}
+
+func (c *Course) tasksCopy() []*Task {
+	tasks := make([]*Task, 0, len(c.tasks))
+	for _, t := range c.tasks {
+		tasks = append(tasks, t.copy())
+	}
+	return tasks
 }
