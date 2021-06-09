@@ -17,20 +17,13 @@ type CreateCourseCommand struct {
 
 type CreateCourseHandler struct {
 	coursesRepository coursesRepository
-	academicsService  academicsService
 }
 
-func NewCreateCourseHandler(repository coursesRepository, service academicsService) CreateCourseHandler {
+func NewCreateCourseHandler(repository coursesRepository) CreateCourseHandler {
 	if repository == nil {
 		panic("coursesRepository is nil")
 	}
-	if service == nil {
-		panic("academicsService is nil")
-	}
-	return CreateCourseHandler{
-		coursesRepository: repository,
-		academicsService:  service,
-	}
+	return CreateCourseHandler{coursesRepository: repository}
 }
 
 // Handle is CreateCourseCommand handler.
