@@ -34,7 +34,9 @@ func NewCreateCourseHandler(repository coursesRepository, service academicsServi
 }
 
 // Handle is CreateCourseCommand handler.
-// Creates course, returns id of new brand course and error.
+// Creates course, returns id of new brand course and one of possible errors:
+// course.ErrEmptyCourseID, course.ErrZeroCreator, course.ErrNotTeacherCantCreateCourse,
+// course.ErrEmptyCourseTitle, course.ErrZeroCoursePeriod and others without definition.
 func (h CreateCourseHandler) Handle(ctx context.Context, cmd CreateCourseCommand) (string, error) {
 	courseID := uuid.NewString()
 	crs, err := course.NewCourse(course.CreationParams{
