@@ -70,7 +70,7 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 			},
 		},
 		{
-			Name: "dont_add_when_update_fails",
+			Name: "dont_add_when_course_doesnt_exist",
 			Command: command.AddCollaboratorCommand{
 				Teacher:        creator,
 				CourseID:       courseID,
