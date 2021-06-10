@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/pkg/errors"
 
 	"github.com/authena-ru/courses-organization/internal/coursesorg/domain/course"
 )
@@ -28,10 +29,14 @@ func NewCreateCourseHandler(repository coursesRepository) CreateCourseHandler {
 
 // Handle is CreateCourseCommand handler.
 // Creates course, returns ID of new brand course and one of possible errors:
-// course.ErrEmptyCourseID, course.ErrZeroCreator, course.ErrNotTeacherCantCreateCourse,
-// course.ErrEmptyCourseTitle, course.ErrZeroCoursePeriod and others without definition.
-func (h CreateCourseHandler) Handle(ctx context.Context, cmd CreateCourseCommand) (string, error) {
-	courseID := uuid.NewString()
+// course.ErrZeroCreator, course.ErrNotTeacherCantCreateCourse, course.ErrEmptyCourseTitle,
+// course.ErrZeroCoursePeriod and others without definition.
+func (h CreateCourseHandler) Handle(ctx context.Context, cmd CreateCourseCommand) (courseID string, err error) {
+	defer func() {
+		err = errors.Wrapf(err, "course creation by teacher #%s", cmd.Creator.ID())
+	}()
+
+	courseID = uuid.NewString()
 	crs, err := course.NewCourse(course.CreationParams{
 		ID:      courseID,
 		Creator: cmd.Creator,
@@ -45,5 +50,5 @@ func (h CreateCourseHandler) Handle(ctx context.Context, cmd CreateCourseCommand
 	if err := h.coursesRepository.AddCourse(ctx, crs); err != nil {
 		return "", err
 	}
-	return courseID, nil
+	return
 }
