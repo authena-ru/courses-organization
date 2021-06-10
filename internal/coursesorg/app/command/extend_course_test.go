@@ -29,7 +29,7 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 		ExpectedErr              error
 	}{
 		{
-			Name: "add_when_origin_course_exists",
+			Name: "extend_existing_origin_course",
 			Command: command.ExtendCourseCommand{
 				Creator:        creator,
 				OriginCourseID: originCourseID,
@@ -40,7 +40,7 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 			PrepareCoursesRepository: addOriginCourse,
 		},
 		{
-			Name: "dont_add_when_origin_course_doesnt_exist",
+			Name: "dont_extend_when_origin_course_doesnt_exist",
 			Command: command.ExtendCourseCommand{
 				Creator:        creator,
 				OriginCourseID: originCourseID,
@@ -52,7 +52,7 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 			ExpectedErr: app.ErrCourseDoesntExist,
 		},
 		{
-			Name: "dont_add_when_zero_creator",
+			Name: "dont_extend_when_zero_creator",
 			Command: command.ExtendCourseCommand{
 				OriginCourseID: originCourseID,
 				CourseStarted:  false,
@@ -61,7 +61,7 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 			ExpectedErr:              course.ErrZeroCreator,
 		},
 		{
-			Name: "dont_add_when_not_teacher_extends_course",
+			Name: "dont_extend_when_not_teacher_extends_course",
 			Command: command.ExtendCourseCommand{
 				OriginCourseID: originCourseID,
 				Creator:        course.MustNewAcademic("student-id", course.Student),
