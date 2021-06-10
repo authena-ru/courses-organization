@@ -16,9 +16,9 @@ import (
 func TestAddCollaboratorHandler_Handle(t *testing.T) {
 	t.Parallel()
 	var (
-		creatorID      = "creator-id"
 		courseID       = "course-id"
 		collaboratorID = "collaborator-id"
+		creator        = course.MustNewAcademic("creator-id", course.Teacher)
 	)
 	addCourse := func(crs *course.Course, crm *mock.CoursesRepository) {
 		crm.Courses = map[string]course.Course{crs.ID(): *crs}
@@ -36,7 +36,7 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 		{
 			Name: "add_when_collaborator_exists_as_teacher",
 			Command: command.AddCollaboratorCommand{
-				Teacher:        course.MustNewAcademic(creatorID, course.Teacher),
+				Teacher:        creator,
 				CourseID:       courseID,
 				CollaboratorID: collaboratorID,
 			},
@@ -57,7 +57,7 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_add_when_collaborator_doesnt_exist_as_teacher",
 			Command: command.AddCollaboratorCommand{
-				Teacher:        course.MustNewAcademic(creatorID, course.Teacher),
+				Teacher:        creator,
 				CourseID:       courseID,
 				CollaboratorID: collaboratorID,
 			},
@@ -72,7 +72,7 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_add_when_update_fails",
 			Command: command.AddCollaboratorCommand{
-				Teacher:        course.MustNewAcademic(creatorID, course.Teacher),
+				Teacher:        creator,
 				CourseID:       courseID,
 				CollaboratorID: collaboratorID,
 			},
@@ -93,7 +93,7 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 
 			crs := course.MustNewCourse(course.CreationParams{
 				ID:      courseID,
-				Creator: course.MustNewAcademic(creatorID, course.Teacher),
+				Creator: creator,
 				Title:   "Docker and Kubernetes",
 				Period:  course.MustNewPeriod(2023, 2024, course.FirstSemester),
 			})
