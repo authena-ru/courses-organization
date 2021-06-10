@@ -3,6 +3,8 @@ package command
 import (
 	"context"
 
+	"github.com/pkg/errors"
+
 	"github.com/authena-ru/courses-organization/internal/coursesorg/domain/course"
 )
 
@@ -35,7 +37,15 @@ func NewAddCollaboratorHandler(repository coursesRepository, service academicsSe
 // app.ErrTeacherDoesntExist, app.ErrCourseDoesntExist, error that
 // can be detected using course.IsAcademicCantEditCourseError and
 // others without definition.
-func (h AddCollaboratorHandler) Handle(ctx context.Context, cmd AddCollaboratorCommand) error {
+func (h AddCollaboratorHandler) Handle(ctx context.Context, cmd AddCollaboratorCommand) (err error) {
+	defer func() {
+		err = errors.Wrapf(
+			err,
+			"adding collaborator #%s to course #%s by teacher #%s",
+			cmd.CollaboratorID, cmd.CourseID, cmd.Teacher.ID(),
+		)
+	}()
+
 	if err := h.academicsService.TeacherExists(cmd.CollaboratorID); err != nil {
 		return err
 	}
