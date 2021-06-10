@@ -3,6 +3,8 @@ package command
 import (
 	"context"
 
+	"github.com/pkg/errors"
+
 	"github.com/authena-ru/courses-organization/internal/coursesorg/domain/course"
 )
 
@@ -28,7 +30,12 @@ func NewRemoveStudentHandler(repository coursesRepository) RemoveStudentHandler 
 // app.ErrCourseDoesntExist, error that can be detected using method
 // course.IsAcademicCantEditCourseError and others without definition.
 func (h RemoveStudentHandler) Handle(ctx context.Context, cmd RemoveStudentCommand) error {
-	return h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, removeStudent(cmd))
+	err := h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, removeStudent(cmd))
+	return errors.Wrapf(
+		err,
+		"removing student #%s from course #%s by teacher #%s",
+		cmd.StudentID, cmd.CourseID, cmd.Teacher.ID(),
+	)
 }
 
 func removeStudent(cmd RemoveStudentCommand) UpdateFunction {
