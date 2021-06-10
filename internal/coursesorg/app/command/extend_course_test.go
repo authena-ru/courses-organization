@@ -19,13 +19,13 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 		originCourseID = "origin-course-id"
 		creator        = course.MustNewAcademic("creator-id", course.Teacher)
 	)
-	addOriginCourse := func(crs *course.Course, crm *mock.CoursesRepository) {
-		crm.Courses = map[string]course.Course{crs.ID(): *crs}
+	addOriginCourse := func(crs *course.Course) *mock.CoursesRepository {
+		return mock.NewCoursesRepository(crs)
 	}
 	testCases := []struct {
 		Name                     string
 		Command                  command.ExtendCourseCommand
-		PrepareCoursesRepository func(crs *course.Course, crm *mock.CoursesRepository)
+		PrepareCoursesRepository func(crs *course.Course) *mock.CoursesRepository
 		ExpectedErr              error
 	}{
 		{
@@ -46,8 +46,8 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 				OriginCourseID: originCourseID,
 				CourseStarted:  true,
 			},
-			PrepareCoursesRepository: func(_ *course.Course, crm *mock.CoursesRepository) {
-				crm.Courses = make(map[string]course.Course)
+			PrepareCoursesRepository: func(_ *course.Course) *mock.CoursesRepository {
+				return mock.NewCoursesRepository()
 			},
 			ExpectedErr: app.ErrCourseDoesntExist,
 		},
@@ -83,8 +83,7 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 				Title:   "Physics",
 				Period:  course.MustNewPeriod(2023, 2024, course.FirstSemester),
 			})
-			coursesRepository := &mock.CoursesRepository{}
-			c.PrepareCoursesRepository(originCourse, coursesRepository)
+			coursesRepository := c.PrepareCoursesRepository(originCourse)
 			handler := command.NewExtendCourseHandler(coursesRepository)
 
 			extendedCourseID, err := handler.Handle(context.Background(), c.Command)
@@ -97,6 +96,7 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 			}
 			require.NoError(t, err)
 			require.NotEmpty(t, extendedCourseID)
+			require.Equal(t, coursesRepository.CoursesNumber(), 2)
 		})
 	}
 }

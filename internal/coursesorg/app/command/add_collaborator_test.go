@@ -20,17 +20,17 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 		collaboratorID = "collaborator-id"
 		creator        = course.MustNewAcademic("creator-id", course.Teacher)
 	)
-	addCourse := func(crs *course.Course, crm *mock.CoursesRepository) {
-		crm.Courses = map[string]course.Course{crs.ID(): *crs}
+	addCourse := func(crs *course.Course) *mock.CoursesRepository {
+		return mock.NewCoursesRepository(crs)
 	}
-	addCollaborator := func(asm *mock.AcademicsService) {
-		asm.Teachers = map[string]bool{collaboratorID: true}
+	addCollaborator := func() *mock.AcademicsService {
+		return mock.NewAcademicsService([]string{collaboratorID}, nil, nil)
 	}
 	testCases := []struct {
 		Name                     string
 		Command                  command.AddCollaboratorCommand
-		PrepareCoursesRepository func(crs *course.Course, crm *mock.CoursesRepository)
-		PrepareAcademicsService  func(asm *mock.AcademicsService)
+		PrepareCoursesRepository func(crs *course.Course) *mock.CoursesRepository
+		PrepareAcademicsService  func() *mock.AcademicsService
 		IsErr                    func(err error) bool
 	}{
 		{
@@ -62,8 +62,8 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 				CollaboratorID: collaboratorID,
 			},
 			PrepareCoursesRepository: addCourse,
-			PrepareAcademicsService: func(asm *mock.AcademicsService) {
-				asm.Teachers = make(map[string]bool)
+			PrepareAcademicsService: func() *mock.AcademicsService {
+				return mock.NewAcademicsService(nil, nil, nil)
 			},
 			IsErr: func(err error) bool {
 				return errors.Is(err, app.ErrTeacherDoesntExist)
@@ -76,8 +76,8 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 				CourseID:       courseID,
 				CollaboratorID: collaboratorID,
 			},
-			PrepareCoursesRepository: func(_ *course.Course, crm *mock.CoursesRepository) {
-				crm.Courses = make(map[string]course.Course)
+			PrepareCoursesRepository: func(_ *course.Course) *mock.CoursesRepository {
+				return mock.NewCoursesRepository()
 			},
 			PrepareAcademicsService: addCollaborator,
 			IsErr: func(err error) bool {
@@ -97,10 +97,8 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 				Title:   "Docker and Kubernetes",
 				Period:  course.MustNewPeriod(2023, 2024, course.FirstSemester),
 			})
-			coursesRepository := &mock.CoursesRepository{}
-			c.PrepareCoursesRepository(crs, coursesRepository)
-			academicsService := &mock.AcademicsService{}
-			c.PrepareAcademicsService(academicsService)
+			coursesRepository := c.PrepareCoursesRepository(crs)
+			academicsService := c.PrepareAcademicsService()
 			handler := command.NewAddCollaboratorHandler(coursesRepository, academicsService)
 
 			err := handler.Handle(context.Background(), c.Command)

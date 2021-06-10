@@ -18,17 +18,17 @@ func TestAddStudentHandler_Handle(t *testing.T) {
 		studentID = "student-id"
 		creator   = course.MustNewAcademic("creator-id", course.Teacher)
 	)
-	addCourse := func(crs *course.Course, crm *mock.CoursesRepository) {
-		crm.Courses = map[string]course.Course{crs.ID(): *crs}
+	addCourse := func(crs *course.Course) *mock.CoursesRepository {
+		return mock.NewCoursesRepository(crs)
 	}
-	addStudent := func(asm *mock.AcademicsService) {
-		asm.Students = map[string]bool{studentID: true}
+	addStudent := func() *mock.AcademicsService {
+		return mock.NewAcademicsService(nil, []string{studentID}, nil)
 	}
 	testCases := []struct {
 		Name                     string
 		Command                  command.AddStudentCommand
-		PrepareCoursesRepository func(crs *course.Course, crm *mock.CoursesRepository)
-		PrepareAcademicsService  func(asm *mock.AcademicsService)
+		PrepareCoursesRepository func(crs *course.Course) *mock.CoursesRepository
+		PrepareAcademicsService  func() *mock.AcademicsService
 		IsErr                    func(err error) bool
 	}{
 		{
@@ -60,8 +60,8 @@ func TestAddStudentHandler_Handle(t *testing.T) {
 				StudentID: studentID,
 			},
 			PrepareCoursesRepository: addCourse,
-			PrepareAcademicsService: func(asm *mock.AcademicsService) {
-				asm.Students = make(map[string]bool)
+			PrepareAcademicsService: func() *mock.AcademicsService {
+				return mock.NewAcademicsService(nil, nil, nil)
 			},
 			IsErr: func(err error) bool {
 				return errors.Is(err, app.ErrStudentDoesntExist)
@@ -74,8 +74,8 @@ func TestAddStudentHandler_Handle(t *testing.T) {
 				CourseID:  courseID,
 				StudentID: studentID,
 			},
-			PrepareCoursesRepository: func(_ *course.Course, crm *mock.CoursesRepository) {
-				crm.Courses = make(map[string]course.Course)
+			PrepareCoursesRepository: func(_ *course.Course) *mock.CoursesRepository {
+				return mock.NewCoursesRepository()
 			},
 			PrepareAcademicsService: addStudent,
 			IsErr: func(err error) bool {
@@ -95,10 +95,8 @@ func TestAddStudentHandler_Handle(t *testing.T) {
 				Title:   "Math",
 				Period:  course.MustNewPeriod(2028, 2029, course.SecondSemester),
 			})
-			coursesRepository := &mock.CoursesRepository{}
-			c.PrepareCoursesRepository(crs, coursesRepository)
-			academicsService := &mock.AcademicsService{}
-			c.PrepareAcademicsService(academicsService)
+			coursesRepository := c.PrepareCoursesRepository(crs)
+			academicsService := c.PrepareAcademicsService()
 			handler := command.NewAddStudentHandler(coursesRepository, academicsService)
 
 			err := handler.Handle(context.Background(), c.Command)
