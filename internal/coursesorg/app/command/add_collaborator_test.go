@@ -34,7 +34,7 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 		IsErr                    func(err error) bool
 	}{
 		{
-			Name: "add_when_collaborator_exists_as_teacher",
+			Name: "add_collaborator",
 			Command: command.AddCollaboratorCommand{
 				Teacher:        creator,
 				CourseID:       courseID,
