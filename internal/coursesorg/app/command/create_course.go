@@ -27,7 +27,7 @@ func NewCreateCourseHandler(repository coursesRepository) CreateCourseHandler {
 }
 
 // Handle is CreateCourseCommand handler.
-// Creates course, returns id of new brand course and one of possible errors:
+// Creates course, returns ID of new brand course and one of possible errors:
 // course.ErrEmptyCourseID, course.ErrZeroCreator, course.ErrNotTeacherCantCreateCourse,
 // course.ErrEmptyCourseTitle, course.ErrZeroCoursePeriod and others without definition.
 func (h CreateCourseHandler) Handle(ctx context.Context, cmd CreateCourseCommand) (string, error) {
