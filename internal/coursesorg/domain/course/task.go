@@ -1,6 +1,10 @@
 package course
 
-import "github.com/pkg/errors"
+import (
+	"strconv"
+
+	"github.com/pkg/errors"
+)
 
 type TaskType uint8
 
@@ -9,6 +13,18 @@ const (
 	AutoCodeChecking
 	Testing
 )
+
+func (t TaskType) String() string {
+	switch t {
+	case ManualChecking:
+		return "manual checking"
+	case AutoCodeChecking:
+		return "auto code checking"
+	case Testing:
+		return "testing"
+	}
+	return "%!TaskType(" + strconv.Itoa(int(t)) + ")"
+}
 
 type taskOptional struct {
 	deadline   Deadline
