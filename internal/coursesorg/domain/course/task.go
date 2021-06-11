@@ -124,7 +124,6 @@ func (t *Task) replaceTestData(testData []TestData) error {
 
 func (t *Task) copy() *Task {
 	return &Task{
-		number:      t.Number(),
 		title:       t.Title(),
 		description: t.Description(),
 		taskType:    t.Type(),

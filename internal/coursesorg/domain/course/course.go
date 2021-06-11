@@ -96,7 +96,7 @@ func (c *Course) Extend(params CreationParams) (*Course, error) {
 		collaborators:  make(map[string]bool, len(params.Collaborators)),
 		students:       make(map[string]bool, len(params.Students)),
 		tasks:          make(map[int]*Task, len(c.tasks)),
-		nextTaskNumber: c.nextTaskNumber,
+		nextTaskNumber: len(c.tasks) + 1,
 	}
 	for _, c := range append(c.Collaborators(), params.Collaborators...) {
 		crs.collaborators[c] = true
@@ -104,8 +104,10 @@ func (c *Course) Extend(params CreationParams) (*Course, error) {
 	for _, s := range append(c.Students(), params.Students...) {
 		crs.students[s] = true
 	}
-	for _, t := range c.tasksCopy() {
-		crs.tasks[t.Number()] = t
+	for i, t := range c.tasksCopy() {
+		number := i + 1
+		crs.tasks[number] = t
+		crs.tasks[number].number = number
 	}
 	return crs, nil
 }
