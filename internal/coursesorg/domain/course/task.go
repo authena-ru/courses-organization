@@ -1,6 +1,7 @@
 package course
 
 import (
+	"sort"
 	"strconv"
 
 	"github.com/pkg/errors"
@@ -140,6 +141,7 @@ func (t *Task) replaceTestData(testData []TestData) error {
 
 func (t *Task) copy() *Task {
 	return &Task{
+		number:      t.Number(),
 		title:       t.Title(),
 		description: t.Description(),
 		taskType:    t.Type(),
@@ -315,5 +317,8 @@ func (c *Course) tasksCopy() []*Task {
 	for _, t := range c.tasks {
 		tasks = append(tasks, t.copy())
 	}
+	sort.SliceStable(tasks, func(i, j int) bool {
+		return tasks[i].Number() < tasks[j].Number()
+	})
 	return tasks
 }
