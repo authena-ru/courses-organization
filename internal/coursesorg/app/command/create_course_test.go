@@ -23,7 +23,7 @@ func TestCreateCourseHandler_Handle(t *testing.T) {
 		{
 			Name: "create_course",
 			Command: command.CreateCourseCommand{
-				Creator:       creator,
+				Academic:      creator,
 				CourseStarted: true,
 				CourseTitle:   "Bla Bla Literature",
 				CoursePeriod:  course.MustNewPeriod(2019, 2020, course.FirstSemester),
@@ -41,7 +41,7 @@ func TestCreateCourseHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_create_when_empty_course_title",
 			Command: command.CreateCourseCommand{
-				Creator:       creator,
+				Academic:      creator,
 				CourseStarted: true,
 				CoursePeriod:  course.MustNewPeriod(2040, 2041, course.FirstSemester),
 			},
@@ -50,7 +50,7 @@ func TestCreateCourseHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_create_when_zero_course_period",
 			Command: command.CreateCourseCommand{
-				Creator:       creator,
+				Academic:      creator,
 				CourseStarted: false,
 				CourseTitle:   "Literature",
 			},
@@ -59,7 +59,7 @@ func TestCreateCourseHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_create_when_not_teacher_creates_course",
 			Command: command.CreateCourseCommand{
-				Creator:       course.MustNewAcademic("student-id", course.Student),
+				Academic:      course.MustNewAcademic("student-id", course.Student),
 				CourseStarted: false,
 				CourseTitle:   "Literature bla",
 				CoursePeriod:  course.MustNewPeriod(2024, 2025, course.SecondSemester),

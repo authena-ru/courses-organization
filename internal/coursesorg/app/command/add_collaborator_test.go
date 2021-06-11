@@ -36,7 +36,7 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 		{
 			Name: "add_collaborator",
 			Command: command.AddCollaboratorCommand{
-				Teacher:        creator,
+				Academic:       creator,
 				CourseID:       courseID,
 				CollaboratorID: collaboratorID,
 			},
@@ -46,7 +46,7 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_add_when_teacher_cant_edit_course",
 			Command: command.AddCollaboratorCommand{
-				Teacher:        course.MustNewAcademic("other-creator-id", course.Teacher),
+				Academic:       course.MustNewAcademic("other-creator-id", course.Teacher),
 				CourseID:       courseID,
 				CollaboratorID: collaboratorID,
 			},
@@ -57,7 +57,7 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_add_when_collaborator_doesnt_exist_as_teacher",
 			Command: command.AddCollaboratorCommand{
-				Teacher:        creator,
+				Academic:       creator,
 				CourseID:       courseID,
 				CollaboratorID: collaboratorID,
 			},
@@ -72,7 +72,7 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_add_when_course_doesnt_exist",
 			Command: command.AddCollaboratorCommand{
-				Teacher:        creator,
+				Academic:       creator,
 				CourseID:       courseID,
 				CollaboratorID: collaboratorID,
 			},

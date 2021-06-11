@@ -17,7 +17,7 @@ const (
 func (at AcademicType) String() string {
 	switch at {
 	case Teacher:
-		return "Teacher"
+		return "Academic"
 	case Student:
 		return "Student"
 	}

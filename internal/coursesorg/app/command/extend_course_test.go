@@ -31,7 +31,7 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 		{
 			Name: "extend_existing_origin_course",
 			Command: command.ExtendCourseCommand{
-				Creator:        creator,
+				Academic:       creator,
 				OriginCourseID: originCourseID,
 				CourseStarted:  false,
 				CourseTitle:    "Phy Physics",
@@ -42,7 +42,7 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_extend_when_origin_course_doesnt_exist",
 			Command: command.ExtendCourseCommand{
-				Creator:        creator,
+				Academic:       creator,
 				OriginCourseID: originCourseID,
 				CourseStarted:  true,
 			},
@@ -64,7 +64,7 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 			Name: "dont_extend_when_not_teacher_extends_course",
 			Command: command.ExtendCourseCommand{
 				OriginCourseID: originCourseID,
-				Creator:        course.MustNewAcademic("student-id", course.Student),
+				Academic:       course.MustNewAcademic("student-id", course.Student),
 				CourseStarted:  true,
 			},
 			PrepareCoursesRepository: addOriginCourse,

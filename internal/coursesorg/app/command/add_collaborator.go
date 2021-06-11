@@ -9,7 +9,7 @@ import (
 )
 
 type AddCollaboratorCommand struct {
-	Teacher        course.Academic
+	Academic       course.Academic
 	CourseID       string
 	CollaboratorID string
 }
@@ -41,8 +41,8 @@ func (h AddCollaboratorHandler) Handle(ctx context.Context, cmd AddCollaboratorC
 	defer func() {
 		err = errors.Wrapf(
 			err,
-			"adding collaborator #%s to course #%s by teacher #%s",
-			cmd.CollaboratorID, cmd.CourseID, cmd.Teacher.ID(),
+			"adding collaborator #%s to course #%s by academic #%s",
+			cmd.CollaboratorID, cmd.CourseID, cmd.Academic.ID(),
 		)
 	}()
 
@@ -54,7 +54,7 @@ func (h AddCollaboratorHandler) Handle(ctx context.Context, cmd AddCollaboratorC
 
 func addCollaborator(cmd AddCollaboratorCommand) UpdateFunction {
 	return func(_ context.Context, crs *course.Course) (*course.Course, error) {
-		if err := crs.AddCollaborators(cmd.Teacher, cmd.CollaboratorID); err != nil {
+		if err := crs.AddCollaborators(cmd.Academic, cmd.CollaboratorID); err != nil {
 			return nil, err
 		}
 		return crs, nil

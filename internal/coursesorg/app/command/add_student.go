@@ -7,7 +7,7 @@ import (
 )
 
 type AddStudentCommand struct {
-	Teacher   course.Academic
+	Academic  course.Academic
 	CourseID  string
 	StudentID string
 }
@@ -44,7 +44,7 @@ func (h AddStudentHandler) Handle(ctx context.Context, cmd AddStudentCommand) er
 
 func addStudent(cmd AddStudentCommand) UpdateFunction {
 	return func(_ context.Context, crs *course.Course) (*course.Course, error) {
-		if err := crs.AddStudents(cmd.Teacher, cmd.StudentID); err != nil {
+		if err := crs.AddStudents(cmd.Academic, cmd.StudentID); err != nil {
 			return nil, err
 		}
 		return crs, nil

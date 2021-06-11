@@ -32,7 +32,7 @@ func TestRemoveStudentHandler_Handle(t *testing.T) {
 		{
 			Name: "remove_student",
 			Command: command.RemoveStudentCommand{
-				Teacher:   creator,
+				Academic:  creator,
 				CourseID:  courseID,
 				StudentID: studentID,
 			},
@@ -41,7 +41,7 @@ func TestRemoveStudentHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_remove_student_when_course_doesnt_exist",
 			Command: command.RemoveStudentCommand{
-				Teacher:   creator,
+				Academic:  creator,
 				CourseID:  courseID,
 				StudentID: studentID,
 			},
@@ -55,7 +55,7 @@ func TestRemoveStudentHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_remove_student_when_academic_cant_edit_course",
 			Command: command.RemoveStudentCommand{
-				Teacher:   course.MustNewAcademic("other-teacher-id", course.Teacher),
+				Academic:  course.MustNewAcademic("other-teacher-id", course.Teacher),
 				CourseID:  courseID,
 				StudentID: studentID,
 			},

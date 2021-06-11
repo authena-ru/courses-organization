@@ -10,7 +10,7 @@ import (
 )
 
 type CreateCourseCommand struct {
-	Creator       course.Academic
+	Academic      course.Academic
 	CourseStarted bool
 	CourseTitle   string
 	CoursePeriod  course.Period
@@ -33,13 +33,13 @@ func NewCreateCourseHandler(repository coursesRepository) CreateCourseHandler {
 // course.ErrZeroCoursePeriod and others without definition.
 func (h CreateCourseHandler) Handle(ctx context.Context, cmd CreateCourseCommand) (courseID string, err error) {
 	defer func() {
-		err = errors.Wrapf(err, "course creation by teacher #%s", cmd.Creator.ID())
+		err = errors.Wrapf(err, "course creation by teacher #%s", cmd.Academic.ID())
 	}()
 
 	courseID = uuid.NewString()
 	crs, err := course.NewCourse(course.CreationParams{
 		ID:      courseID,
-		Creator: cmd.Creator,
+		Creator: cmd.Academic,
 		Title:   cmd.CourseTitle,
 		Period:  cmd.CoursePeriod,
 		Started: cmd.CourseStarted,

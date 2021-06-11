@@ -9,7 +9,7 @@ import (
 )
 
 type RemoveCollaboratorCommand struct {
-	Teacher        course.Academic
+	Academic       course.Academic
 	CourseID       string
 	CollaboratorID string
 }
@@ -34,13 +34,13 @@ func (h RemoveCollaboratorHandler) Handle(ctx context.Context, cmd RemoveCollabo
 	return errors.Wrapf(
 		err,
 		"removing collaborator #%s from course #%s by teacher #%s",
-		cmd.CollaboratorID, cmd.CollaboratorID, cmd.Teacher.ID(),
+		cmd.CollaboratorID, cmd.CollaboratorID, cmd.Academic.ID(),
 	)
 }
 
 func removeCollaborator(cmd RemoveCollaboratorCommand) UpdateFunction {
 	return func(_ context.Context, crs *course.Course) (*course.Course, error) {
-		if err := crs.RemoveCollaborator(cmd.Teacher, cmd.CollaboratorID); err != nil {
+		if err := crs.RemoveCollaborator(cmd.Academic, cmd.CollaboratorID); err != nil {
 			return nil, err
 		}
 		return crs, nil

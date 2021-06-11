@@ -34,7 +34,7 @@ func TestAddStudentHandler_Handle(t *testing.T) {
 		{
 			Name: "add_student",
 			Command: command.AddStudentCommand{
-				Teacher:   creator,
+				Academic:  creator,
 				CourseID:  courseID,
 				StudentID: studentID,
 			},
@@ -44,7 +44,7 @@ func TestAddStudentHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_add_when_teacher_cant_edit_course",
 			Command: command.AddStudentCommand{
-				Teacher:   course.MustNewAcademic("other-teacher-id", course.Teacher),
+				Academic:  course.MustNewAcademic("other-teacher-id", course.Teacher),
 				CourseID:  courseID,
 				StudentID: studentID,
 			},
@@ -55,7 +55,7 @@ func TestAddStudentHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_add_when_student_doesnt_exist",
 			Command: command.AddStudentCommand{
-				Teacher:   creator,
+				Academic:  creator,
 				CourseID:  courseID,
 				StudentID: studentID,
 			},
@@ -70,7 +70,7 @@ func TestAddStudentHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_add_when_course_doesnt_exist",
 			Command: command.AddStudentCommand{
-				Teacher:   creator,
+				Academic:  creator,
 				CourseID:  courseID,
 				StudentID: studentID,
 			},

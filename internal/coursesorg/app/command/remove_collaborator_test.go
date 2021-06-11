@@ -32,7 +32,7 @@ func TestRemoveCollaboratorHandler_Handle(t *testing.T) {
 		{
 			Name: "remove_collaborator",
 			Command: command.RemoveCollaboratorCommand{
-				Teacher:        creator,
+				Academic:       creator,
 				CourseID:       courseID,
 				CollaboratorID: collaboratorID,
 			},
@@ -41,7 +41,7 @@ func TestRemoveCollaboratorHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_remove_collaborator_when_course_doesnt_exist",
 			Command: command.RemoveCollaboratorCommand{
-				Teacher:        creator,
+				Academic:       creator,
 				CourseID:       courseID,
 				CollaboratorID: collaboratorID,
 			},
@@ -55,7 +55,7 @@ func TestRemoveCollaboratorHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_remove_collaborator_when_academic_cant_edit_course",
 			Command: command.RemoveCollaboratorCommand{
-				Teacher:        course.MustNewAcademic("other-teacher-id", course.Teacher),
+				Academic:       course.MustNewAcademic("other-teacher-id", course.Teacher),
 				CourseID:       courseID,
 				CollaboratorID: collaboratorID,
 			},

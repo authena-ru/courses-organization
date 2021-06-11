@@ -10,7 +10,7 @@ import (
 )
 
 type ExtendCourseCommand struct {
-	Creator        course.Academic
+	Academic       course.Academic
 	OriginCourseID string
 	CourseStarted  bool
 	CourseTitle    string
@@ -34,7 +34,7 @@ func NewExtendCourseHandler(repository coursesRepository) ExtendCourseHandler {
 // and others without definition.
 func (h ExtendCourseHandler) Handle(ctx context.Context, cmd ExtendCourseCommand) (extendedCourseID string, err error) {
 	defer func() {
-		err = errors.Wrapf(err, "extension of course #%s by teacher #%s", cmd.OriginCourseID, cmd.Creator.ID())
+		err = errors.Wrapf(err, "extension of course #%s by teacher #%s", cmd.OriginCourseID, cmd.Academic.ID())
 	}()
 
 	extendedCourseID = uuid.NewString()
@@ -52,7 +52,7 @@ func extendCourse(extendedCourseID string, cmd ExtendCourseCommand) UpdateFuncti
 	return func(_ context.Context, crs *course.Course) (*course.Course, error) {
 		return crs.Extend(course.CreationParams{
 			ID:      extendedCourseID,
-			Creator: cmd.Creator,
+			Creator: cmd.Academic,
 			Title:   cmd.CourseTitle,
 			Period:  cmd.CoursePeriod,
 			Started: cmd.CourseStarted,
