@@ -86,7 +86,7 @@ func TestCreateCourseHandler_Handle(t *testing.T) {
 			}
 			require.NoError(t, err)
 			require.NotEmpty(t, courseID)
-			require.Equal(t, coursesRepository.CoursesNumber(), 1)
+			require.Equal(t, 1, coursesRepository.CoursesNumber())
 		})
 	}
 }

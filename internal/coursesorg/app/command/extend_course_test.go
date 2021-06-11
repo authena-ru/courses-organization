@@ -96,7 +96,7 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 			}
 			require.NoError(t, err)
 			require.NotEmpty(t, extendedCourseID)
-			require.Equal(t, coursesRepository.CoursesNumber(), 2)
+			require.Equal(t, 2, coursesRepository.CoursesNumber())
 		})
 	}
 }
