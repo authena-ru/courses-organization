@@ -34,9 +34,7 @@ func (r *CoursesRepository) GetCourse(ctx context.Context, courseID string) (*co
 		return nil, err
 	}
 
-	// TODO: unmarshall course model to domain course
-	var crs *course.Course
-	return crs, nil
+	return newCourse(courseModel)
 }
 
 func (r *CoursesRepository) UpdateCourse(ctx context.Context, courseID string, updateFn command.UpdateFunction) error {
@@ -46,40 +44,29 @@ func (r *CoursesRepository) UpdateCourse(ctx context.Context, courseID string, u
 	}
 	defer session.EndSession(ctx)
 
-	err = mongo.WithSession(ctx, session, func(sessionContext mongo.SessionContext) error {
-		if err := sessionContext.StartTransaction(); err != nil {
-			return err
-		}
-
+	_, err = session.WithTransaction(ctx, func(sessCtx mongo.SessionContext) (interface{}, error) {
 		var courseModel courseModel
 		if err := r.courses.FindOne(ctx, bson.M{"_id": courseID}).Decode(&courseModel); err != nil {
 			if errors.Is(err, mongo.ErrNoDocuments) {
-				return app.Wrap(app.ErrCourseDoesntExist, err)
+				return nil, app.Wrap(app.ErrCourseDoesntExist, err)
 			}
 		}
 
-		//TODO: unmarshall course model to domain course
-		var crs *course.Course
+		crs, err := newCourse(courseModel)
+		if err != nil {
+			return nil, err
+		}
 		updatedCourse, err := updateFn(ctx, crs)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		replaceOpts := options.Replace().SetUpsert(true)
 		filter := bson.M{"_id": courseID}
 		if _, err := r.courses.ReplaceOne(ctx, filter, newCourseModel(updatedCourse), replaceOpts); err != nil {
-			return err
+			return nil, err
 		}
-
-		if err := sessionContext.CommitTransaction(ctx); err != nil {
-			return err
-		}
-		return nil
+		return nil, nil
 	})
-	if err != nil {
-		if abortErr := session.AbortTransaction(ctx); abortErr != nil {
-			return abortErr
-		}
-	}
 	return err
 }

@@ -3,7 +3,7 @@ package mongodb
 import "github.com/authena-ru/courses-organization/internal/coursesorg/domain/course"
 
 type courseModel struct {
-	ID            string      `bson:"_id,omitempty"`
+	id            string      `bson:"_id,omitempty"`
 	title         string      `bson:"title"`
 	period        periodModel `bson:"period"`
 	started       bool        `bson:"started"`
@@ -22,7 +22,7 @@ type periodModel struct {
 
 func newCourseModel(crs *course.Course) courseModel {
 	return courseModel{
-		ID:    crs.ID(),
+		id:    crs.ID(),
 		title: crs.Title(),
 		period: periodModel{
 			academicStartYear: crs.Period().AcademicStartYear(),
@@ -36,4 +36,12 @@ func newCourseModel(crs *course.Course) courseModel {
 		// tasks
 		// nextTaskNumber
 	}
+}
+
+func newCourse(courseModel courseModel) (*course.Course, error) {
+	// TODO: unmarshall other parameters
+	return course.UnmarshallFromDatabase(course.UnmarshallingParams{
+		ID:    courseModel.id,
+		Title: courseModel.title,
+	}), nil
 }

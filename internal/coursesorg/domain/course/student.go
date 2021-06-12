@@ -14,10 +14,14 @@ func (c *Course) AddStudents(academic Academic, studentIDs ...string) error {
 	if err := c.canAcademicEditWithAccess(academic, TeacherAccess); err != nil {
 		return err
 	}
+	c.putStudents(studentIDs)
+	return nil
+}
+
+func (c *Course) putStudents(studentIDs []string) {
 	for _, sid := range studentIDs {
 		c.students[sid] = true
 	}
-	return nil
 }
 
 var ErrCourseHasNoSuchStudent = errors.New("course has no such student")

@@ -14,10 +14,14 @@ func (c *Course) AddCollaborators(academic Academic, teacherIDs ...string) error
 	if err := c.canAcademicEditWithAccess(academic, TeacherAccess); err != nil {
 		return err
 	}
+	c.putCollaborators(teacherIDs)
+	return nil
+}
+
+func (c *Course) putCollaborators(teacherIDs []string) {
 	for _, tid := range teacherIDs {
 		c.collaborators[tid] = true
 	}
-	return nil
 }
 
 var ErrCourseHasNoSuchCollaborator = errors.New("course has no such collaborator")

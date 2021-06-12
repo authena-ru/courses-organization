@@ -118,10 +118,12 @@ func TestCourse_Extend(t *testing.T) {
 		{
 			Name: "extend_task_with_new_parameters",
 			Params: course.CreationParams{
-				ID:      "course-id",
-				Creator: course.MustNewAcademic("creator-id", course.Teacher),
-				Title:   "Clean architecture",
-				Period:  course.MustNewPeriod(2027, 2028, course.FirstSemester),
+				ID:            "course-id",
+				Creator:       course.MustNewAcademic("creator-id", course.Teacher),
+				Title:         "Clean architecture",
+				Period:        course.MustNewPeriod(2027, 2028, course.FirstSemester),
+				Students:      []string{"some-student-id"},
+				Collaborators: []string{"some-collaborator-id"},
 			},
 			NewPeriodWasGiven: true,
 			NewTitleWasGiven:  true,

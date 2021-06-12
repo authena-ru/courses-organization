@@ -93,17 +93,13 @@ func (c *Course) Extend(params CreationParams) (*Course, error) {
 		title:          extendedCourseTitle,
 		period:         extendedCoursePeriod,
 		started:        params.Started,
-		collaborators:  make(map[string]bool, len(params.Collaborators)),
-		students:       make(map[string]bool, len(params.Students)),
+		collaborators:  make(map[string]bool, len(c.collaborators)+len(params.Collaborators)),
+		students:       make(map[string]bool, len(c.students)+len(params.Students)),
 		tasks:          make(map[int]*Task, len(c.tasks)),
 		nextTaskNumber: len(c.tasks) + 1,
 	}
-	for _, c := range append(c.Collaborators(), params.Collaborators...) {
-		crs.collaborators[c] = true
-	}
-	for _, s := range append(c.Students(), params.Students...) {
-		crs.students[s] = true
-	}
+	crs.putCollaborators(append(c.Collaborators(), params.Collaborators...))
+	crs.putStudents(append(c.Students(), params.Students...))
 	for i, t := range c.tasksCopy() {
 		number := i + 1
 		crs.tasks[number] = t
@@ -138,4 +134,30 @@ func (c *Course) Started() bool {
 
 func (c *Course) CreatorID() string {
 	return c.creatorID
+}
+
+type UnmarshallingParams struct {
+	ID            string
+	Title         string
+	Period        Period
+	Started       bool
+	CreatorID     string
+	Collaborators []string
+	Students      []string
+}
+
+// TODO: umarshall tasks, write doc
+func UnmarshallFromDatabase(params UnmarshallingParams) *Course {
+	crs := &Course{
+		id:            params.ID,
+		title:         params.Title,
+		period:        params.Period,
+		started:       params.Started,
+		creatorID:     params.CreatorID,
+		collaborators: make(map[string]bool, len(params.Collaborators)),
+		students:      make(map[string]bool, len(params.Students)),
+	}
+	crs.putCollaborators(params.Collaborators)
+	crs.putStudents(params.Students)
+	return crs
 }
