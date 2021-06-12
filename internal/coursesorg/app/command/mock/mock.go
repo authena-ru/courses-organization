@@ -2,8 +2,8 @@ package mock
 
 import (
 	"context"
-	"github.com/authena-ru/courses-organization/internal/coursesorg/app"
 
+	"github.com/authena-ru/courses-organization/internal/coursesorg/app"
 	"github.com/authena-ru/courses-organization/internal/coursesorg/app/command"
 	"github.com/authena-ru/courses-organization/internal/coursesorg/domain/course"
 )
