@@ -31,6 +31,9 @@ func (r *CoursesRepository) AddCourse(ctx context.Context, crs *course.Course) e
 func (r *CoursesRepository) GetCourse(ctx context.Context, courseID string) (*course.Course, error) {
 	var courseModel courseModel
 	if err := r.courses.FindOne(ctx, bson.M{"_id": courseID}).Decode(&courseModel); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, app.Wrap(app.ErrCourseDoesntExist, err)
+		}
 		return nil, err
 	}
 
@@ -50,6 +53,7 @@ func (r *CoursesRepository) UpdateCourse(ctx context.Context, courseID string, u
 			if errors.Is(err, mongo.ErrNoDocuments) {
 				return nil, app.Wrap(app.ErrCourseDoesntExist, err)
 			}
+			return nil, err
 		}
 
 		crs, err := newCourse(courseModel)
