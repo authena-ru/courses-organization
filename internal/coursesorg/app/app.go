@@ -9,10 +9,12 @@ type Application struct {
 
 type Commands struct {
 	CreateCourse       command.CreateCourseHandler
+	ExtendCourse       command.ExtendCourseHandler
 	AddCollaborator    command.AddCollaboratorHandler
 	RemoveCollaborator command.RemoveCollaboratorHandler
 	AddStudent         command.AddStudentHandler
 	RemoveStudent      command.RemoveStudentHandler
+	AddTask            command.AddTaskHandler
 }
 
 type Queries struct {
