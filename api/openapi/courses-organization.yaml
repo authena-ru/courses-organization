@@ -1,0 +1,1167 @@
+openapi: 3.0.3
+info:
+  title: Authena course-organization service
+  description: service for course managing
+  version: 0.0.1
+servers:
+  - url: 'https://{hostname}/v1'
+    variables:
+      hostname:
+        default: localhost
+security:
+  - bearerAuth: [ ]
+
+paths:
+  /courses:
+    post:
+      tags:
+        - courses
+      operationId: createCourse
+      requestBody:
+        description: course creation request data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCourseRequest'
+      responses:
+        '201':
+          headers:
+            Content-Location:
+              description: created course url
+              schema:
+                type: string
+          description: course created
+        '400':
+          description: invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: only authorized teacher can create course
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      tags:
+        - courses
+      operationId: getAllCourses
+      parameters:
+        - in: query
+          name: title
+          schema:
+            type: string
+          required: false
+          description: course title substring for filtering
+      responses:
+        '200':
+          description: found courses
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllCoursesResponse'
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /courses/{courseId}:
+    get:
+      tags:
+        - courses
+      operationId: getCourse
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: course id
+      responses:
+        '200':
+          description: found course
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCourseResponse'
+        '404':
+          description: course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    patch:
+      tags:
+        - courses
+      operationId: editCourse
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: course id
+      requestBody:
+        description: course editing request data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditCourseRequest'
+      responses:
+        '204':
+          description: course edited
+        '400':
+          description: invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: only authorized teacher can edit course
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /courses/{courseId}/auxiliary-materials:
+    get:
+      tags:
+        - courses
+      operationId: getAllCourseAuxiliaryMaterials
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: course id
+        - in: query
+          name: resourceType
+          schema:
+            $ref: '#/components/schemas/ResourceType'
+          required: false
+          description: resource type for filtering
+      responses:
+        '200':
+          description: found auxiliary materials for corse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllAuxiliaryMaterialsResponse'
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      tags:
+        - courses
+      operationId: attachAuxiliaryMaterialToCourse
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: course id
+      requestBody:
+        description: attaching auxiliary material request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddAuxiliaryMaterialRequest'
+      responses:
+        '201':
+          description: auxiliary material attached
+          headers:
+            Content-Location:
+              description: attached auxiliary material url
+              schema:
+                type: string
+        '400':
+          description: invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: only authorized teacher can attach auxiliary material
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+  /courses/{courseId}/extended:
+    post:
+      tags:
+        - courses
+      operationId: extendCourse
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: course id
+      requestBody:
+        description: course extending request data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtendCourseRequest'
+      responses:
+        '201':
+          description: course extended
+          headers:
+            Content-Location:
+              description: created course url
+              schema:
+                type: string
+        '400':
+          description: invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: only authorized teacher can extend course
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /courses/{courseId}/tasks:
+    get:
+      tags:
+        - tasks
+      operationId: getCourseTasks
+      description: returns list of course tasks
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: course id
+        - in: query
+          name: type
+          schema:
+            $ref: '#/components/schemas/TaskType'
+          required: false
+          description: type of task for filtering
+        - in: query
+          name: title
+          schema:
+            type: string
+          required: false
+          description: task title substring for filtering
+        - in: query
+          name: description
+          schema:
+            type: string
+          required: false
+          description: task description substring for filtering
+      responses:
+        '200':
+          description: found tasks of course
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskResponse'
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - tasks
+      operationId: createTaskInCourse
+      description: creates task
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: course id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+                - $ref: '#/components/schemas/CreateAutoCodeCheckingTaskRequest'
+                - $ref: '#/components/schemas/CreateTestingTaskRequest'
+                - $ref: '#/components/schemas/CreateManualCheckingTaskRequest'
+              discriminator:
+                propertyName: type
+      responses:
+        '201':
+          description: manual checking task created
+          headers:
+            Content-Location:
+              description: created task url
+              schema:
+                type: string
+        '400':
+          description: invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: only authorized teacher can create task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /courses/{courseId}/tasks/{taskNumber}:
+    get:
+      tags:
+        - tasks
+      operationId: getCourseTask
+      description: returns task of course
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: course id
+        - in: path
+          name: taskNumber
+          schema:
+            type: integer
+            minimum: 1
+          required: true
+          description: task number
+      responses:
+        '200':
+          description: found task in course
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/ManualCheckingTaskResponse'
+                  - $ref: '#/components/schemas/AutoCodeCheckingTaskResponse'
+                  - $ref: '#/components/schemas/TestingTaskResponse'
+                discriminator:
+                  propertyName: type
+        '404':
+          description: course or task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /courses/{courseId}/collaborators:
+    get:
+      tags:
+        - course-collaborators
+      operationId: getAllCourseCollaborators
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: course id
+      responses:
+        '200':
+          description: found course collaborators
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllCourseCollaboratorsResponse'
+        '404':
+          description: course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags:
+        - course-collaborators
+      operationId: addCollaboratorToCourse
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: course id
+      requestBody:
+        description: adding collaborator to course request data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCollaboratorToCourseRequest'
+      responses:
+        '204':
+          description: collaborator added to course
+        '400':
+          description: invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: non-existing collaborator
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: only authorized teacher can add collaborator
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /courses/{courseId}/collaborators/{teacherId}:
+    delete:
+      tags:
+        - course-collaborators
+      operationId: removeCollaboratorFromCourse
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: course id
+        - in: path
+          name: teacherId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: teacher id
+      responses:
+        '204':
+          description: collaborator removed from course
+        '400':
+          description: invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: course or collaborator not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: only authorized teacher can remove collaborator
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /courses/{courseId}/students:
+    get:
+      tags:
+        - course-students
+      operationId: getAllCourseStudents
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: course id
+        - in: query
+          name: fullName
+          schema:
+            type: string
+          required: false
+          description: student full name substring for filtering
+      responses:
+        '200':
+          description: found course students
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllCourseStudentsResponse'
+        '404':
+          description: course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags:
+        - course-students
+      operationId: addStudentToCourse
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: course id
+      requestBody:
+        description: adding student to course request data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddStudentToCourseRequest'
+      responses:
+        '204':
+          description: student added to course
+        '400':
+          description: invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: non-existing student
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: only authorized teacher can add student
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /courses/{courseId}/students/{studentId}:
+    delete:
+      tags:
+        - course-students
+      operationId: removeStudentFromCourse
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: course id
+        - in: path
+          name: studentId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: student id
+      responses:
+        '204':
+          description: student removed from course
+        '400':
+          description: invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: course or student not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: only authorized teacher can remove student
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /courses/{courseId}/groups:
+    put:
+      tags:
+        - course-students
+      operationId: addGroupToCourse
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: course id
+      requestBody:
+        description: adding group to course request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddGroupToCourseRequest'
+      responses:
+        '204':
+          description: students of group added to course
+        '400':
+          description: invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: group not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: non-existing group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: only authorized teacher can add group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    CreateCourseRequest:
+      type: object
+      required: [ started, title, period ]
+      properties:
+        started:
+          type: boolean
+        title:
+          type: string
+        period:
+          $ref: '#/components/schemas/CoursePeriod'
+
+    GetAllCoursesResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/Course'
+
+    GetCourseResponse:
+      $ref: '#/components/schemas/Course'
+
+    ExtendCourseRequest:
+      type: object
+      required: [ started, title ]
+      properties:
+        started:
+          type: boolean
+        title:
+          type: string
+
+    EditCourseRequest:
+      type: object
+      properties:
+        started:
+          type: boolean
+        title:
+          type: string
+        period:
+          $ref: '#/components/schemas/CoursePeriod'
+
+    Task:
+      type: object
+      required:
+        - title
+        - description
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        type:
+          $ref: '#/components/schemas/TaskType'
+
+    ManualCheckingTaskPart:
+      type: object
+      properties:
+        deadline:
+          $ref: '#/components/schemas/Deadline'
+
+    AutoCodeCheckingTaskPart:
+      type: object
+      properties:
+        testData:
+          type: array
+          items:
+            $ref: '#/components/schemas/TestData'
+        deadline:
+          $ref: '#/components/schemas/Deadline'
+
+    TestingTaskPart:
+      type: object
+      properties:
+        points:
+          type: array
+          items:
+            $ref: '#/components/schemas/TestPoint'
+
+    CreateTaskRequest:
+      $ref: '#/components/schemas/Task'
+
+    TaskResponse:
+      allOf:
+        - $ref: '#/components/schemas/Task'
+        - type: object
+          properties:
+            number:
+              type: integer
+              minimum: 1
+
+    CreateManualCheckingTaskRequest:
+      allOf:
+        - $ref: '#/components/schemas/CreateTaskRequest'
+        - $ref: '#/components/schemas/ManualCheckingTaskResponse'
+
+    CreateAutoCodeCheckingTaskRequest:
+      allOf:
+        - $ref: '#/components/schemas/CreateTaskRequest'
+        - $ref: '#/components/schemas/AutoCodeCheckingTaskResponse'
+
+    CreateTestingTaskRequest:
+      allOf:
+        - $ref: '#/components/schemas/CreateTaskRequest'
+        - $ref: '#/components/schemas/TestingTaskPart'
+
+    ManualCheckingTaskResponse:
+      allOf:
+        - $ref: '#/components/schemas/TaskResponse'
+        - $ref: '#/components/schemas/ManualCheckingTaskPart'
+
+    AutoCodeCheckingTaskResponse:
+      allOf:
+        - $ref: '#/components/schemas/TaskResponse'
+        - $ref: '#/components/schemas/AutoCodeCheckingTaskPart'
+
+    TestingTaskResponse:
+      allOf:
+        - $ref: '#/components/schemas/TaskResponse'
+        - $ref: '#/components/schemas/TestingTaskPart'
+
+    AddCollaboratorToCourseRequest:
+      type: object
+      required: [ id ]
+      properties:
+        id:
+          type: string
+          format: uuid
+
+    AddStudentToCourseRequest:
+      type: object
+      required: [ id ]
+      properties:
+        id:
+          type: string
+          format: uuid
+
+    AddGroupToCourseRequest:
+      type: object
+      required: [ id ]
+      properties:
+        id:
+          type: string
+          format: uuid
+
+    GetAllAuxiliaryMaterialsResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/AuxiliaryMaterial'
+
+    AddAuxiliaryMaterialRequest:
+      $ref: '#/components/schemas/AuxiliaryMaterial'
+
+    GetAllCourseCollaboratorsResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/Teacher'
+
+    GetAllCourseStudentsResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/Student'
+
+    Teacher:
+      type: object
+      required: [ id, fullName ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+
+    Student:
+      type: object
+      required: [ id, fullName ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+
+    Course:
+      type: object
+      required: [ id, title, period, creatorId, started, tasksNumber ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        period:
+          $ref: '#/components/schemas/CoursePeriod'
+        creatorId:
+          type: string
+          format: uuid
+        started:
+          type: boolean
+        tasksNumber:
+          type: integer
+          minimum: 0
+
+    CoursePeriod:
+      type: object
+      required: [ academicStartYear, academicEndYear, semester ]
+      properties:
+        academicStartYear:
+          type: integer
+        academicEndYear:
+          type: integer
+        semester:
+          $ref: '#/components/schemas/Semester'
+
+    Semester:
+      type: string
+      enum:
+        - FIRST
+        - SECOND
+
+    TestPoint:
+      type: object
+      required: [ description, variants, correctVariantNumbers ]
+      properties:
+        description:
+          type: string
+        variants:
+          type: array
+          items:
+            type: string
+        correctVariantNumbers:
+          type: array
+          items:
+            type: integer
+            minimum: 0
+
+    TestData:
+      type: object
+      required: [ inputData, outputData ]
+      properties:
+        inputData:
+          type: string
+        outputData:
+          type: string
+
+    Deadline:
+      type: object
+      required: [ goodGradeTime, excellentGradeTime ]
+      properties:
+        goodGradeTime:
+          type: string
+          format: date
+        excellentGradeTime:
+          type: string
+          format: date
+
+    AuxiliaryMaterial:
+      type: object
+      required: [ resource, resourceType ]
+      properties:
+        resource:
+          type: string
+        resourceType:
+          $ref: '#/components/schemas/ResourceType'
+
+    TaskType:
+      type: string
+      enum:
+        - MANUAL_CHECKING
+        - AUTO_CODE_CHECKING
+        - TESTING
+
+    ResourceType:
+      type: string
+      enum:
+        - TRAINING_MANUAL
+        - VIDEO
+        - PRESENTATION
+        - OTHER
+
+    Error:
+      type: object
+      required: [ slug, details ]
+      properties:
+        slug:
+          type: string
+        details:
+          type: string
