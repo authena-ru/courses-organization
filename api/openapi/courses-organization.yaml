@@ -182,7 +182,7 @@ paths:
   /courses/{courseId}/auxiliary-materials:
     get:
       tags:
-        - courses
+        - auxiliary-materials
       operationId: getAllCourseAuxiliaryMaterials
       parameters:
         - in: path
@@ -220,7 +220,7 @@ paths:
 
     post:
       tags:
-        - courses
+        - auxiliary-materials
       operationId: attachAuxiliaryMaterialToCourse
       parameters:
         - in: path
@@ -506,7 +506,7 @@ paths:
   /courses/{courseId}/collaborators:
     get:
       tags:
-        - course-collaborators
+        - collaborators
       operationId: getAllCourseCollaborators
       parameters:
         - in: path
@@ -544,7 +544,7 @@ paths:
 
     put:
       tags:
-        - course-collaborators
+        - collaborators
       operationId: addCollaboratorToCourse
       parameters:
         - in: path
@@ -604,7 +604,7 @@ paths:
   /courses/{courseId}/collaborators/{teacherId}:
     delete:
       tags:
-        - course-collaborators
+        - collaborators
       operationId: removeCollaboratorFromCourse
       parameters:
         - in: path
@@ -658,7 +658,7 @@ paths:
   /courses/{courseId}/students:
     get:
       tags:
-        - course-students
+        - students
       operationId: getAllCourseStudents
       parameters:
         - in: path
@@ -702,7 +702,7 @@ paths:
 
     put:
       tags:
-        - course-students
+        - students
       operationId: addStudentToCourse
       parameters:
         - in: path
@@ -762,7 +762,7 @@ paths:
   /courses/{courseId}/students/{studentId}:
     delete:
       tags:
-        - course-students
+        - students
       operationId: removeStudentFromCourse
       parameters:
         - in: path
@@ -816,7 +816,7 @@ paths:
   /courses/{courseId}/groups:
     put:
       tags:
-        - course-students
+        - students
       operationId: addGroupToCourse
       parameters:
         - in: path
