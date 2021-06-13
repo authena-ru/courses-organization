@@ -11,6 +11,7 @@ var (
 	ErrTeacherDoesntExist = errors.New("teacher doesn't exist")
 	ErrStudentDoesntExist = errors.New("student doesn't exist")
 	ErrGroupDoesntExist   = errors.New("group doesn't exist")
+	ErrDatabaseProblems   = errors.New("database problems")
 )
 
 type errorWrapper struct {

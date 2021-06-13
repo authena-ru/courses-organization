@@ -25,7 +25,7 @@ func NewCoursesRepository(db *mongo.Database) *CoursesRepository {
 
 func (r *CoursesRepository) AddCourse(ctx context.Context, crs *course.Course) error {
 	_, err := r.courses.InsertOne(ctx, newCourseModel(crs))
-	return err
+	return app.Wrap(app.ErrDatabaseProblems, err)
 }
 
 func (r *CoursesRepository) GetCourse(ctx context.Context, courseID string) (*course.Course, error) {
@@ -34,7 +34,7 @@ func (r *CoursesRepository) GetCourse(ctx context.Context, courseID string) (*co
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, app.Wrap(app.ErrCourseDoesntExist, err)
 		}
-		return nil, err
+		return nil, app.Wrap(app.ErrDatabaseProblems, err)
 	}
 
 	return newCourse(courseModel)
@@ -53,7 +53,7 @@ func (r *CoursesRepository) UpdateCourse(ctx context.Context, courseID string, u
 			if errors.Is(err, mongo.ErrNoDocuments) {
 				return nil, app.Wrap(app.ErrCourseDoesntExist, err)
 			}
-			return nil, err
+			return nil, app.Wrap(app.ErrDatabaseProblems, err)
 		}
 
 		crs, err := newCourse(courseModel)
@@ -68,7 +68,7 @@ func (r *CoursesRepository) UpdateCourse(ctx context.Context, courseID string, u
 		replaceOpts := options.Replace().SetUpsert(true)
 		filter := bson.M{"_id": courseID}
 		if _, err := r.courses.ReplaceOne(ctx, filter, newCourseModel(updatedCourse), replaceOpts); err != nil {
-			return nil, err
+			return nil, app.Wrap(app.ErrDatabaseProblems, err)
 		}
 		return nil, nil
 	})
