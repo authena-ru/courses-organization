@@ -30,8 +30,8 @@ func NewExtendCourseHandler(repository coursesRepository) ExtendCourseHandler {
 
 // Handle is ExtendCourseCommand handler.
 // Extends origin course, returns extended course ID and one of possible errors:
-// app.ErrCourseDoesntExist,  course.ErrZeroCreator, course.ErrNotTeacherCantCreateCourse
-// and others without definition.
+// app.ErrCourseDoesntExist, app.ErrDatabaseProblems, course.ErrZeroCreator,
+// course.ErrNotTeacherCantCreateCourse and others without definition.
 func (h ExtendCourseHandler) Handle(ctx context.Context, cmd ExtendCourseCommand) (extendedCourseID string, err error) {
 	defer func() {
 		err = errors.Wrapf(err, "extension of course #%s by teacher #%s", cmd.OriginCourseID, cmd.Academic.ID())

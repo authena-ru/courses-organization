@@ -33,8 +33,8 @@ func NewAddTaskHandler(repository coursesRepository) AddTaskHandler {
 // Handle is AddTaskCommand handler.
 // Adds task with manual checking, auto code checking or testing type,
 // returns one of possible errors: app.ErrCourseDoesntExist, course.ErrTaskTitleTooLong,
-// course.ErrTaskDescriptionTooLong, error that can be detected using method
-// course.IsAcademicCantEditCourseError and others without definition.
+// app.ErrDatabaseProblems, course.ErrTaskDescriptionTooLong, error that can be detected
+// using method course.IsAcademicCantEditCourseError and others without definition.
 func (h AddTaskHandler) Handle(ctx context.Context, cmd AddTaskCommand) (taskNumber int, err error) {
 	defer func() {
 		err = errors.Wrapf(

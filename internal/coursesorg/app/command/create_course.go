@@ -30,7 +30,7 @@ func NewCreateCourseHandler(repository coursesRepository) CreateCourseHandler {
 // Handle is CreateCourseCommand handler.
 // Creates course, returns ID of new brand course and one of possible errors:
 // course.ErrZeroCreator, course.ErrNotTeacherCantCreateCourse, course.ErrEmptyCourseTitle,
-// course.ErrZeroCoursePeriod and others without definition.
+// course.ErrZeroCoursePeriod, app.ErrDatabaseProblems and others without definition.
 func (h CreateCourseHandler) Handle(ctx context.Context, cmd CreateCourseCommand) (courseID string, err error) {
 	defer func() {
 		err = errors.Wrapf(err, "course creation by teacher #%s", cmd.Academic.ID())
