@@ -8,6 +8,7 @@ import (
 	"github.com/dgrijalva/jwt-go/request"
 
 	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/httperr"
+	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
 func MockAuthHTTPMiddleware(next http.Handler) http.Handler {
@@ -31,18 +32,21 @@ func MockAuthHTTPMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		id, idIsOk := claims["id"].(string)
-		role, roleIsOk := claims["role"].(string)
+		jwtID, idIsOk := claims["id"].(string)
+		jwtAcademicType, roleIsOk := claims["type"].(string)
 
 		if !idIsOk || !roleIsOk {
 			httperr.Unauthorized("invalid-jwt-claims", nil, w, r)
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), userCtxKey, User{
-			ID:   id,
-			Role: Role(role),
-		})
+		academicType := course.NewAcademicTypeFromString(jwtAcademicType)
+		academic, err := course.NewAcademic(jwtID, academicType)
+		if err != nil {
+			httperr.Unauthorized("invalid-academic-type", nil, w, r)
+		}
+
+		ctx := context.WithValue(r.Context(), academicCtxKey, academic)
 		r = r.WithContext(ctx)
 
 		next.ServeHTTP(w, r)

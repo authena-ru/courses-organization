@@ -17,11 +17,21 @@ const (
 func (at AcademicType) String() string {
 	switch at {
 	case TeacherType:
-		return "Academic"
+		return "teacher"
 	case StudentType:
-		return "StudentType"
+		return "student"
 	}
 	return "%!AcademicType(" + strconv.Itoa(int(at)) + ")"
+}
+
+func NewAcademicTypeFromString(value string) AcademicType {
+	switch value {
+	case "teacher":
+		return TeacherType
+	case "student":
+		return StudentType
+	}
+	return AcademicType(0)
 }
 
 type Academic struct {
