@@ -11,7 +11,6 @@ type courseModel struct {
 	collaborators []string    `bson:"collaborators"`
 	students      []string    `bson:"students"`
 	// tasks
-	nextTaskNumber int `bson:"nextTaskNumber"`
 }
 
 type periodModel struct {
@@ -34,7 +33,6 @@ func newCourseModel(crs *course.Course) courseModel {
 		collaborators: crs.Collaborators(),
 		students:      crs.Students(),
 		// tasks
-		// nextTaskNumber
 	}
 }
 
