@@ -1,8 +1,9 @@
 package server
 
 import (
-	"github.com/authena-ru/courses-organization/internal/config"
 	"net/http"
+
+	"github.com/authena-ru/courses-organization/internal/config"
 )
 
 type Server struct {
