@@ -35,6 +35,8 @@ func addMiddlewares(router *chi.Mux) {
 	router.Use(middleware.NoCache)
 }
 
+const maxAge = 300
+
 func addCORSMiddleware(router *chi.Mux) {
 	allowedOrigins := strings.Split(os.Getenv("CORS_ALLOWED_ORIGINS"), ";")
 	if len(allowedOrigins) == 0 {
@@ -47,7 +49,7 @@ func addCORSMiddleware(router *chi.Mux) {
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: true,
-		MaxAge:           300,
+		MaxAge:           maxAge,
 	})
 	router.Use(corsMiddleware.Handler)
 }
