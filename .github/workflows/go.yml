@@ -23,7 +23,6 @@ jobs:
         env:
           GOPROXY: "https://proxy.golang.org"
         run: |
-          cd internal/coursesorg
           go mod tidy
           go build -v ./...
 
@@ -31,5 +30,4 @@ jobs:
         env:
           GOPROXY: "https://proxy.golang.org"
         run: |
-          cd internal/coursesorg
           go test -v ./...
