@@ -34,11 +34,11 @@ func InternalServerError(slug string, err error, w http.ResponseWriter, r *http.
 
 func httpRespondWithError(err error, slug string, w http.ResponseWriter, r *http.Request, logMSg string, status int) {
 	logging.GetLogEntry(r).WithError(err).WithField("error-slug", slug).Warn(logMSg)
-	var message string
+	var details string
 	if err != nil {
-		message = err.Error()
+		details = err.Error()
 	}
-	resp := ErrorResponse{slug, message, status}
+	resp := ErrorResponse{slug, details, status}
 
 	if err := render.Render(w, r, resp); err != nil {
 		panic(err)
