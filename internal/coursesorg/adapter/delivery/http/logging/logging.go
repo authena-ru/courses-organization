@@ -1,0 +1,62 @@
+package logging
+
+import (
+	"fmt"
+	"net/http"
+	"time"
+
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/sirupsen/logrus"
+)
+
+func NewStructuredLogger(logger *logrus.Logger) func(next http.Handler) http.Handler {
+	return middleware.RequestLogger(&StructuredLogger{logger})
+}
+
+type StructuredLogger struct {
+	Logger *logrus.Logger
+}
+
+func (l *StructuredLogger) NewLogEntry(r *http.Request) middleware.LogEntry {
+	entry := &StructuredLoggerEntry{Logger: logrus.NewEntry(l.Logger)}
+	logFields := logrus.Fields{}
+
+	if reqID := middleware.GetReqID(r.Context()); reqID != "" {
+		logFields["req_id"] = reqID
+	}
+
+	logFields["http_method"] = r.Method
+	logFields["remote_address"] = r.RemoteAddr
+	logFields["uri"] = r.RequestURI
+
+	entry.Logger = entry.Logger.WithFields(logFields)
+
+	entry.Logger.Info("Request started")
+
+	return entry
+}
+
+type StructuredLoggerEntry struct {
+	Logger logrus.FieldLogger
+}
+
+func (e *StructuredLoggerEntry) Write(status, bytes int, _ http.Header, elapsed time.Duration, _ interface{}) {
+	e.Logger = e.Logger.WithFields(logrus.Fields{
+		"resp_status":       status,
+		"resp_bytes_length": bytes,
+		"resp_elapsed":      elapsed.Round(time.Millisecond / 100).String(),
+	})
+	e.Logger.Info("Request completed")
+}
+
+func (e *StructuredLoggerEntry) Panic(v interface{}, stack []byte) {
+	e.Logger = e.Logger.WithFields(logrus.Fields{
+		"stack": string(stack),
+		"panic": fmt.Sprintf("%+v", v),
+	})
+}
+
+func GetLogEntry(r *http.Request) logrus.FieldLogger {
+	entry := middleware.GetLogEntry(r).(*StructuredLoggerEntry)
+	return entry.Logger
+}
