@@ -18,7 +18,7 @@ func TestCourse_AddCollaborators(t *testing.T) {
 	)
 	params := course.CreationParams{
 		ID:            "course-id",
-		Creator:       course.MustNewAcademic(creatorID, course.Teacher),
+		Creator:       course.MustNewAcademic(creatorID, course.TeacherType),
 		Title:         "ASP.NET in C#",
 		Period:        course.MustNewPeriod(2021, 2022, course.SecondSemester),
 		Collaborators: []string{collaboratorID},
@@ -31,20 +31,20 @@ func TestCourse_AddCollaborators(t *testing.T) {
 	}{
 		{
 			Name:     "creator_can_add_collaborators",
-			Academic: course.MustNewAcademic(creatorID, course.Teacher),
+			Academic: course.MustNewAcademic(creatorID, course.TeacherType),
 		},
 		{
 			Name:     "collaborator_can_add_collaborators",
-			Academic: course.MustNewAcademic(collaboratorID, course.Teacher),
+			Academic: course.MustNewAcademic(collaboratorID, course.TeacherType),
 		},
 		{
 			Name:     "student_cant_add_collaborators",
-			Academic: course.MustNewAcademic(studentID, course.Student),
+			Academic: course.MustNewAcademic(studentID, course.StudentType),
 			IsErr:    course.IsAcademicCantEditCourseError,
 		},
 		{
 			Name:     "not_course_teacher_cant_add_collaborators",
-			Academic: course.MustNewAcademic("another-teacher-id", course.Teacher),
+			Academic: course.MustNewAcademic("another-teacher-id", course.TeacherType),
 			IsErr:    course.IsAcademicCantEditCourseError,
 		},
 	}
@@ -79,7 +79,7 @@ func TestCourse_RemoveCollaborators(t *testing.T) {
 	)
 	params := course.CreationParams{
 		ID:            "course-id",
-		Creator:       course.MustNewAcademic(creatorID, course.Teacher),
+		Creator:       course.MustNewAcademic(creatorID, course.TeacherType),
 		Title:         "GraphQL",
 		Period:        course.MustNewPeriod(2025, 2026, course.FirstSemester),
 		Collaborators: []string{collaboratorID, collaboratorIDToRemove},
@@ -92,21 +92,21 @@ func TestCourse_RemoveCollaborators(t *testing.T) {
 	}{
 		{
 			Name:     "creator_can_remove_collaborators",
-			Academic: course.MustNewAcademic(creatorID, course.Teacher),
+			Academic: course.MustNewAcademic(creatorID, course.TeacherType),
 		},
 		{
 			Name:     "collaborator_cant_remove_collaborators",
-			Academic: course.MustNewAcademic(collaboratorID, course.Teacher),
+			Academic: course.MustNewAcademic(collaboratorID, course.TeacherType),
 			IsErr:    course.IsAcademicCantEditCourseError,
 		},
 		{
 			Name:     "student_cant_remove_collaborators",
-			Academic: course.MustNewAcademic(studentID, course.Student),
+			Academic: course.MustNewAcademic(studentID, course.StudentType),
 			IsErr:    course.IsAcademicCantEditCourseError,
 		},
 		{
 			Name:     "not_course_teacher_cant_remove_collaborators",
-			Academic: course.MustNewAcademic("another-teacher-id", course.Teacher),
+			Academic: course.MustNewAcademic("another-teacher-id", course.TeacherType),
 			IsErr:    course.IsAcademicCantEditCourseError,
 		},
 	}

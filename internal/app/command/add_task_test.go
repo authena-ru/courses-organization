@@ -19,7 +19,7 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 	t.Parallel()
 	var (
 		courseID = "course-id"
-		creator  = course.MustNewAcademic("creator-id", course.Teacher)
+		creator  = course.MustNewAcademic("creator-id", course.TeacherType)
 	)
 	addCourse := func(crs *course.Course) *mock.CoursesRepository {
 		return mock.NewCoursesRepository(crs)
@@ -114,7 +114,7 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_add_when_academic_cant_edit_course",
 			Command: command.AddTaskCommand{
-				Academic:        course.MustNewAcademic("student-id", course.Student),
+				Academic:        course.MustNewAcademic("student-id", course.StudentType),
 				CourseID:        courseID,
 				TaskTitle:       "Some task title",
 				TaskDescription: "If you want do this task",

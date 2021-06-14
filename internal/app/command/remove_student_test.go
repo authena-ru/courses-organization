@@ -18,7 +18,7 @@ func TestRemoveStudentHandler_Handle(t *testing.T) {
 	var (
 		courseID  = "course-id"
 		studentID = "student-id"
-		creator   = course.MustNewAcademic("creator-id", course.Teacher)
+		creator   = course.MustNewAcademic("creator-id", course.TeacherType)
 	)
 	addCourse := func(crs *course.Course) *mock.CoursesRepository {
 		return mock.NewCoursesRepository(crs)
@@ -55,7 +55,7 @@ func TestRemoveStudentHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_remove_student_when_academic_cant_edit_course",
 			Command: command.RemoveStudentCommand{
-				Academic:  course.MustNewAcademic("other-teacher-id", course.Teacher),
+				Academic:  course.MustNewAcademic("other-teacher-id", course.TeacherType),
 				CourseID:  courseID,
 				StudentID: studentID,
 			},

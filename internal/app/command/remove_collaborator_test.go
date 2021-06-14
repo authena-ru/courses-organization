@@ -18,7 +18,7 @@ func TestRemoveCollaboratorHandler_Handle(t *testing.T) {
 	var (
 		courseID       = "course-id"
 		collaboratorID = "collaborator-id"
-		creator        = course.MustNewAcademic("creator-id", course.Teacher)
+		creator        = course.MustNewAcademic("creator-id", course.TeacherType)
 	)
 	addCourse := func(crs *course.Course) *mock.CoursesRepository {
 		return mock.NewCoursesRepository(crs)
@@ -55,7 +55,7 @@ func TestRemoveCollaboratorHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_remove_collaborator_when_academic_cant_edit_course",
 			Command: command.RemoveCollaboratorCommand{
-				Academic:       course.MustNewAcademic("other-teacher-id", course.Teacher),
+				Academic:       course.MustNewAcademic("other-teacher-id", course.TeacherType),
 				CourseID:       courseID,
 				CollaboratorID: collaboratorID,
 			},

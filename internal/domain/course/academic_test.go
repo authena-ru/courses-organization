@@ -20,11 +20,11 @@ func TestNewAcademic(t *testing.T) {
 		{
 			Name:         "valid_academic_creation_params",
 			AcademicID:   "teacher-id",
-			AcademicType: course.Teacher,
+			AcademicType: course.TeacherType,
 		},
 		{
 			Name:         "empty_academic_id",
-			AcademicType: course.Student,
+			AcademicType: course.StudentType,
 			ExpectedErr:  course.ErrEmptyAcademicID,
 		},
 		{
@@ -63,7 +63,7 @@ func TestAcademic_IsZero(t *testing.T) {
 	}{
 		{
 			Name:         "should_not_be_zero",
-			Academic:     course.MustNewAcademic("academic-id", course.Teacher),
+			Academic:     course.MustNewAcademic("academic-id", course.TeacherType),
 			ShouldBeZero: false,
 		},
 		{

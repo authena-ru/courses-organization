@@ -21,7 +21,7 @@ func TestNewCourse(t *testing.T) {
 			Name: "valid_course_creation_params",
 			Params: course.CreationParams{
 				ID:            "course-id",
-				Creator:       course.MustNewAcademic("creator-id", course.Teacher),
+				Creator:       course.MustNewAcademic("creator-id", course.TeacherType),
 				Title:         "Awesome Go in backend",
 				Period:        course.MustNewPeriod(2022, 2023, course.SecondSemester),
 				Started:       true,
@@ -32,7 +32,7 @@ func TestNewCourse(t *testing.T) {
 		{
 			Name: "empty_course_id",
 			Params: course.CreationParams{
-				Creator: course.MustNewAcademic("creator-id", course.Teacher),
+				Creator: course.MustNewAcademic("creator-id", course.TeacherType),
 				Title:   "Programming architecture",
 				Period:  course.MustNewPeriod(2021, 2022, course.FirstSemester),
 				Started: false,
@@ -53,7 +53,7 @@ func TestNewCourse(t *testing.T) {
 			Name: "student_cant_create_course",
 			Params: course.CreationParams{
 				ID:      "course-id",
-				Creator: course.MustNewAcademic("student-id", course.Student),
+				Creator: course.MustNewAcademic("student-id", course.StudentType),
 				Title:   "Assembly",
 				Period:  course.MustNewPeriod(2020, 2021, course.FirstSemester),
 				Started: false,
@@ -64,7 +64,7 @@ func TestNewCourse(t *testing.T) {
 			Name: "empty_course_title",
 			Params: course.CreationParams{
 				ID:      "course-id",
-				Creator: course.MustNewAcademic("creator-id", course.Teacher),
+				Creator: course.MustNewAcademic("creator-id", course.TeacherType),
 				Period:  course.MustNewPeriod(2024, 2025, course.FirstSemester),
 				Started: false,
 			},
@@ -74,7 +74,7 @@ func TestNewCourse(t *testing.T) {
 			Name: "zero_course_period",
 			Params: course.CreationParams{
 				ID:      "course-id",
-				Creator: course.MustNewAcademic("creator-id", course.Teacher),
+				Creator: course.MustNewAcademic("creator-id", course.TeacherType),
 				Title:   "Nice React, Awesome Angular",
 				Started: true,
 			},
@@ -119,7 +119,7 @@ func TestCourse_Extend(t *testing.T) {
 			Name: "extend_task_with_new_parameters",
 			Params: course.CreationParams{
 				ID:            "course-id",
-				Creator:       course.MustNewAcademic("creator-id", course.Teacher),
+				Creator:       course.MustNewAcademic("creator-id", course.TeacherType),
 				Title:         "Clean architecture",
 				Period:        course.MustNewPeriod(2027, 2028, course.FirstSemester),
 				Students:      []string{"some-student-id"},
@@ -132,7 +132,7 @@ func TestCourse_Extend(t *testing.T) {
 			Name: "extend_task_without_new_period_gives_new_task_with_next_period",
 			Params: course.CreationParams{
 				ID:      "course-id",
-				Creator: course.MustNewAcademic("creator-id", course.Teacher),
+				Creator: course.MustNewAcademic("creator-id", course.TeacherType),
 				Title:   "Clean Clean Clean",
 			},
 			NewTitleWasGiven: true,
@@ -141,7 +141,7 @@ func TestCourse_Extend(t *testing.T) {
 			Name: "extend_task_without_new_title_gives_new_task_with_origin_title",
 			Params: course.CreationParams{
 				ID:      "course-id",
-				Creator: course.MustNewAcademic("creator-id", course.Teacher),
+				Creator: course.MustNewAcademic("creator-id", course.TeacherType),
 				Period:  course.MustNewPeriod(2030, 2031, course.FirstSemester),
 			},
 			NewPeriodWasGiven: true,
@@ -149,7 +149,7 @@ func TestCourse_Extend(t *testing.T) {
 		{
 			Name: "empty_course_id",
 			Params: course.CreationParams{
-				Creator: course.MustNewAcademic("teacher-id", course.Teacher),
+				Creator: course.MustNewAcademic("teacher-id", course.TeacherType),
 			},
 			ExpectedErr: course.ErrEmptyCourseID,
 		},
@@ -164,7 +164,7 @@ func TestCourse_Extend(t *testing.T) {
 			Name: "not_teacher_cant_extend_course",
 			Params: course.CreationParams{
 				ID:      "course-id",
-				Creator: course.MustNewAcademic("student-id", course.Student),
+				Creator: course.MustNewAcademic("student-id", course.StudentType),
 			},
 			ExpectedErr: course.ErrNotTeacherCantCreateCourse,
 		},
@@ -175,7 +175,7 @@ func TestCourse_Extend(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			creator := course.MustNewAcademic("origin-course-creator-id", course.Teacher)
+			creator := course.MustNewAcademic("origin-course-creator-id", course.TeacherType)
 			originCourse := course.MustNewCourse(course.CreationParams{
 				ID:            "origin-course-id",
 				Creator:       creator,

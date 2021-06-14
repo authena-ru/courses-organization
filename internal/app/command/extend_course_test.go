@@ -17,7 +17,7 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 	t.Parallel()
 	var (
 		originCourseID = "origin-course-id"
-		creator        = course.MustNewAcademic("creator-id", course.Teacher)
+		creator        = course.MustNewAcademic("creator-id", course.TeacherType)
 	)
 	addOriginCourse := func(crs *course.Course) *mock.CoursesRepository {
 		return mock.NewCoursesRepository(crs)
@@ -64,7 +64,7 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 			Name: "dont_extend_when_not_teacher_extends_course",
 			Command: command.ExtendCourseCommand{
 				OriginCourseID: originCourseID,
-				Academic:       course.MustNewAcademic("student-id", course.Student),
+				Academic:       course.MustNewAcademic("student-id", course.StudentType),
 				CourseStarted:  true,
 			},
 			PrepareCoursesRepository: addOriginCourse,

@@ -10,16 +10,16 @@ import (
 type AcademicType uint8
 
 const (
-	Teacher AcademicType = iota + 1
-	Student
+	TeacherType AcademicType = iota + 1
+	StudentType
 )
 
 func (at AcademicType) String() string {
 	switch at {
-	case Teacher:
+	case TeacherType:
 		return "Academic"
-	case Student:
-		return "Student"
+	case StudentType:
+		return "StudentType"
 	}
 	return "%!AcademicType(" + strconv.Itoa(int(at)) + ")"
 }
@@ -31,7 +31,7 @@ type Academic struct {
 
 func (at AcademicType) IsValid() bool {
 	switch at {
-	case Teacher, Student:
+	case TeacherType, StudentType:
 		return true
 	}
 	return false
@@ -96,7 +96,7 @@ type academicCantEditCourseError struct {
 }
 
 func (e academicCantEditCourseError) Error() string {
-	if e.academicType == Student {
+	if e.academicType == StudentType {
 		return "student can't edit course"
 	}
 	return fmt.Sprintf("teacher can't edit course with %s", e.access)
@@ -108,20 +108,20 @@ func IsAcademicCantEditCourseError(err error) bool {
 }
 
 func (c *Course) canAcademicEditWithAccess(academic Academic, access Access) error {
-	if academic.Type() == Teacher {
+	if academic.Type() == TeacherType {
 		if access == TeacherAccess && c.hasTeacher(academic.ID()) {
 			return nil
 		}
 		if access == CreatorAccess && c.hasCreator(academic.ID()) {
 			return nil
 		}
-		return academicCantEditCourseError{academicType: Student}
+		return academicCantEditCourseError{academicType: StudentType}
 	}
-	return academicCantEditCourseError{academicType: Teacher, access: access}
+	return academicCantEditCourseError{academicType: TeacherType, access: access}
 }
 
 func (a Academic) canCreateCourse() error {
-	if a.Type() == Teacher {
+	if a.Type() == TeacherType {
 		return nil
 	}
 	return ErrNotTeacherCantCreateCourse
