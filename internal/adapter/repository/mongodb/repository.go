@@ -64,10 +64,11 @@ func (r *CoursesRepository) UpdateCourse(ctx context.Context, courseID string, u
 		if err != nil {
 			return nil, err
 		}
+		updatedCourseDocument := newCourseDocument(updatedCourse)
 
 		replaceOpts := options.Replace().SetUpsert(true)
-		filter := bson.M{"_id": courseID}
-		if _, err := r.courses.ReplaceOne(ctx, filter, newCourseDocument(updatedCourse), replaceOpts); err != nil {
+		filter := bson.M{"_id": updatedCourseDocument.ID}
+		if _, err := r.courses.ReplaceOne(ctx, filter, updatedCourseDocument, replaceOpts); err != nil {
 			return nil, app.Wrap(app.ErrDatabaseProblems, err)
 		}
 		return nil, nil
