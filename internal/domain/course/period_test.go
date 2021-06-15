@@ -45,6 +45,13 @@ func TestNewPeriod(t *testing.T) {
 			Semester:          course.FirstSemester,
 			ExpectedErr:       course.ErrStartYearEqualsEndYear,
 		},
+		{
+			Name:              "invalid_semester",
+			AcademicStartYear: 2045,
+			AcademicEndYear:   2046,
+			Semester:          course.Semester(0),
+			ExpectedErr:       course.ErrInvalidSemester,
+		},
 	}
 
 	for i := range testCases {

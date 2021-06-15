@@ -24,6 +24,14 @@ func (s Semester) String() string {
 	return "%!Semester(" + strconv.Itoa(int(s)) + ")"
 }
 
+func (s Semester) IsValid() bool {
+	switch s {
+	case FirstSemester, SecondSemester:
+		return true
+	}
+	return false
+}
+
 type Period struct {
 	academicStartYear int
 	academicEndYear   int
@@ -34,6 +42,7 @@ var (
 	ErrStartYearAfterEnd      = errors.New("academic start year after end")
 	ErrYearDurationOverYear   = errors.New("academic year duration over year")
 	ErrStartYearEqualsEndYear = errors.New("academic start year equals end year")
+	ErrInvalidSemester        = errors.New("invalid academic semester")
 )
 
 func NewPeriod(academicStartYear, academicEndYear int, semester Semester) (Period, error) {
@@ -45,6 +54,9 @@ func NewPeriod(academicStartYear, academicEndYear int, semester Semester) (Perio
 	}
 	if academicStartYear == academicEndYear {
 		return Period{}, ErrStartYearEqualsEndYear
+	}
+	if !semester.IsValid() {
+		return Period{}, ErrInvalidSemester
 	}
 	return Period{
 		academicStartYear: academicStartYear,
