@@ -17,7 +17,10 @@ func decode(w http.ResponseWriter, r *http.Request, v interface{}) bool {
 	return true
 }
 
-func unmarshallPeriod(w http.ResponseWriter, r *http.Request, apiPeriod CoursePeriod) (course.Period, bool) {
+func unmarshallPeriod(w http.ResponseWriter, r *http.Request, apiPeriod *CoursePeriod) (course.Period, bool) {
+	if apiPeriod == nil {
+		return course.Period{}, true
+	}
 	var semester course.Semester
 	switch apiPeriod.Semester {
 	case SemesterFIRST:
