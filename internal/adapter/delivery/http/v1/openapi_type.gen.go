@@ -298,8 +298,8 @@ type GetCourseTasksParams struct {
 	Description *string `json:"description,omitempty"`
 }
 
-// CreateTaskInCourseJSONBody defines parameters for CreateTaskInCourse.
-type CreateTaskInCourseJSONBody interface{}
+// AddTaskToCourseJSONBody defines parameters for AddTaskToCourse.
+type AddTaskToCourseJSONBody interface{}
 
 // CreateCourseJSONRequestBody defines body for CreateCourse for application/json ContentType.
 type CreateCourseJSONRequestBody CreateCourseJSONBody
@@ -322,5 +322,5 @@ type AddGroupToCourseJSONRequestBody AddGroupToCourseJSONBody
 // AddStudentToCourseJSONRequestBody defines body for AddStudentToCourse for application/json ContentType.
 type AddStudentToCourseJSONRequestBody AddStudentToCourseJSONBody
 
-// CreateTaskInCourseJSONRequestBody defines body for CreateTaskInCourse for application/json ContentType.
-type CreateTaskInCourseJSONRequestBody CreateTaskInCourseJSONBody
+// AddTaskToCourseJSONRequestBody defines body for AddTaskToCourse for application/json ContentType.
+type AddTaskToCourseJSONRequestBody AddTaskToCourseJSONBody

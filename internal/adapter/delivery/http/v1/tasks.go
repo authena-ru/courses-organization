@@ -6,7 +6,7 @@ func (h handler) GetCourseTasks(w http.ResponseWriter, r *http.Request, courseId
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-func (h handler) CreateTaskInCourse(w http.ResponseWriter, r *http.Request, courseId string) {
+func (h handler) AddTaskToCourse(w http.ResponseWriter, r *http.Request, courseId string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 

@@ -61,7 +61,7 @@ type ServerInterface interface {
 	GetCourseTasks(w http.ResponseWriter, r *http.Request, courseId string, params GetCourseTasksParams)
 
 	// (POST /courses/{courseId}/tasks)
-	CreateTaskInCourse(w http.ResponseWriter, r *http.Request, courseId string)
+	AddTaskToCourse(w http.ResponseWriter, r *http.Request, courseId string)
 
 	// (GET /courses/{courseId}/tasks/{taskNumber})
 	GetCourseTask(w http.ResponseWriter, r *http.Request, courseId string, taskNumber int)
@@ -571,8 +571,8 @@ func (siw *ServerInterfaceWrapper) GetCourseTasks(w http.ResponseWriter, r *http
 	handler(w, r.WithContext(ctx))
 }
 
-// CreateTaskInCourse operation middleware
-func (siw *ServerInterfaceWrapper) CreateTaskInCourse(w http.ResponseWriter, r *http.Request) {
+// AddTaskToCourse operation middleware
+func (siw *ServerInterfaceWrapper) AddTaskToCourse(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var err error
@@ -589,7 +589,7 @@ func (siw *ServerInterfaceWrapper) CreateTaskInCourse(w http.ResponseWriter, r *
 	ctx = context.WithValue(ctx, BearerAuthScopes, []string{""})
 
 	var handler = func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateTaskInCourse(w, r, courseId)
+		siw.Handler.AddTaskToCourse(w, r, courseId)
 	}
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -719,7 +719,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/courses/{courseId}/tasks", wrapper.GetCourseTasks)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/courses/{courseId}/tasks", wrapper.CreateTaskInCourse)
+		r.Post(options.BaseURL+"/courses/{courseId}/tasks", wrapper.AddTaskToCourse)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/courses/{courseId}/tasks/{taskNumber}", wrapper.GetCourseTask)
