@@ -8,12 +8,12 @@ import (
 	"github.com/authena-ru/courses-organization/internal/app"
 )
 
-type coursesOrganizationHandler struct {
+type handler struct {
 	app app.Application
 }
 
 func NewHandler(app app.Application, r chi.Router) http.Handler {
-	return HandlerFromMux(coursesOrganizationHandler{
+	return HandlerFromMux(handler{
 		app: app,
 	}, r)
 }

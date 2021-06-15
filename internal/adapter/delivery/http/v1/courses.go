@@ -13,15 +13,15 @@ import (
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
-func (h coursesOrganizationHandler) GetAllCourses(w http.ResponseWriter, r *http.Request, params GetAllCoursesParams) {
+func (h handler) GetAllCourses(w http.ResponseWriter, r *http.Request, params GetAllCoursesParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-func (h coursesOrganizationHandler) GetCourse(w http.ResponseWriter, r *http.Request, courseId string) {
+func (h handler) GetCourse(w http.ResponseWriter, r *http.Request, courseId string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-func (h coursesOrganizationHandler) CreateCourse(w http.ResponseWriter, r *http.Request) {
+func (h handler) CreateCourse(w http.ResponseWriter, r *http.Request) {
 	academic, err := auth.AcademicFromCtx(r.Context())
 	if err != nil {
 		httperr.Unauthorized("no-user-in-context", err, w, r)
@@ -81,10 +81,10 @@ func (h coursesOrganizationHandler) CreateCourse(w http.ResponseWriter, r *http.
 	httperr.InternalServerError("unexpected-error", err, w, r)
 }
 
-func (h coursesOrganizationHandler) EditCourse(w http.ResponseWriter, r *http.Request, courseId string) {
+func (h handler) EditCourse(w http.ResponseWriter, r *http.Request, courseId string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-func (h coursesOrganizationHandler) ExtendCourse(w http.ResponseWriter, r *http.Request, courseId string) {
+func (h handler) ExtendCourse(w http.ResponseWriter, r *http.Request, courseId string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
