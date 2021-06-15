@@ -1,45 +1,74 @@
 package mongodb
 
-import "github.com/authena-ru/courses-organization/internal/domain/course"
+import (
+	"github.com/authena-ru/courses-organization/internal/domain/course"
+	"time"
+)
 
-type courseModel struct {
-	id            string      `bson:"_id,omitempty"`
-	title         string      `bson:"title"`
-	period        periodModel `bson:"period"`
-	started       bool        `bson:"started"`
-	creatorID     string      `bson:"creatorId"`
-	collaborators []string    `bson:"collaborators"`
-	students      []string    `bson:"students"`
-	// tasks
+type courseDocument struct {
+	ID            string         `bson:"_id,omitempty"`
+	Title         string         `bson:"title"`
+	Period        periodDocument `bson:"period"`
+	Started       bool           `bson:"started"`
+	CreatorID     string         `bson:"creatorId"`
+	Collaborators []string       `bson:"collaborators,omitempty"`
+	Students      []string       `bson:"students,omitempty"`
+	Tasks         []taskDocument `bson:"tasks,omitempty"`
 }
 
-type periodModel struct {
-	academicStartYear int             `bson:"academicStartYear"`
-	academicEndYear   int             `bson:"academicEndYear"`
-	semester          course.Semester `bson:"semester"`
+type periodDocument struct {
+	AcademicStartYear int             `bson:"academicStartYear"`
+	AcademicEndYear   int             `bson:"academicEndYear"`
+	Semester          course.Semester `bson:"semester"`
 }
 
-func newCourseModel(crs *course.Course) courseModel {
-	return courseModel{
-		id:    crs.ID(),
-		title: crs.Title(),
-		period: periodModel{
-			academicStartYear: crs.Period().AcademicStartYear(),
-			academicEndYear:   crs.Period().AcademicEndYear(),
-			semester:          crs.Period().Semester(),
+type taskDocument struct {
+	Number      int                 `bson:"number"`
+	Title       string              `bson:"title"`
+	Description string              `bson:"description"`
+	TaskType    course.TaskType     `bson:"taskType"`
+	Deadline    deadlineDocument    `bson:"deadline"`
+	TestPoints  []testPointDocument `bson:"testPoints"`
+	TestData    []testDataDocument  `bson:"testData"`
+}
+
+type deadlineDocument struct {
+	GoodGradeTime      time.Time `bson:"goodGradeTime"`
+	ExcellentGradeTime time.Time `bson:"ExcellentGradeTime"`
+}
+
+type testPointDocument struct {
+	Description           string   `bson:"description"`
+	Variants              []string `bson:"variants"`
+	CorrectVariantNumbers []int    `bson:"correctVariantNumbers"`
+}
+
+type testDataDocument struct {
+	InputData  string `bson:"inputData"`
+	OutputData string `bson:"outputData"`
+}
+
+func newCourseDocument(crs *course.Course) courseDocument {
+	return courseDocument{
+		ID:    crs.ID(),
+		Title: crs.Title(),
+		Period: periodDocument{
+			AcademicStartYear: crs.Period().AcademicStartYear(),
+			AcademicEndYear:   crs.Period().AcademicEndYear(),
+			Semester:          crs.Period().Semester(),
 		},
-		started:       crs.Started(),
-		creatorID:     crs.CreatorID(),
-		collaborators: crs.Collaborators(),
-		students:      crs.Students(),
+		Started:       crs.Started(),
+		CreatorID:     crs.CreatorID(),
+		Collaborators: crs.Collaborators(),
+		Students:      crs.Students(),
 		// tasks
 	}
 }
 
-func newCourse(courseModel courseModel) (*course.Course, error) {
+func newCourse(document courseDocument) (*course.Course, error) {
 	// TODO: unmarshall other parameters
 	return course.UnmarshallFromDatabase(course.UnmarshallingParams{
-		ID:    courseModel.id,
-		Title: courseModel.title,
+		ID:    document.ID,
+		Title: document.Title,
 	}), nil
 }

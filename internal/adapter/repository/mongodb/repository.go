@@ -24,20 +24,20 @@ func NewCoursesRepository(db *mongo.Database) *CoursesRepository {
 }
 
 func (r *CoursesRepository) AddCourse(ctx context.Context, crs *course.Course) error {
-	_, err := r.courses.InsertOne(ctx, newCourseModel(crs))
+	_, err := r.courses.InsertOne(ctx, newCourseDocument(crs))
 	return app.Wrap(app.ErrDatabaseProblems, err)
 }
 
 func (r *CoursesRepository) GetCourse(ctx context.Context, courseID string) (*course.Course, error) {
-	var courseModel courseModel
-	if err := r.courses.FindOne(ctx, bson.M{"_id": courseID}).Decode(&courseModel); err != nil {
+	var document courseDocument
+	if err := r.courses.FindOne(ctx, bson.M{"_id": courseID}).Decode(&document); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, app.Wrap(app.ErrCourseDoesntExist, err)
 		}
 		return nil, app.Wrap(app.ErrDatabaseProblems, err)
 	}
 
-	return newCourse(courseModel)
+	return newCourse(document)
 }
 
 func (r *CoursesRepository) UpdateCourse(ctx context.Context, courseID string, updateFn command.UpdateFunction) error {
@@ -48,15 +48,15 @@ func (r *CoursesRepository) UpdateCourse(ctx context.Context, courseID string, u
 	defer session.EndSession(ctx)
 
 	_, err = session.WithTransaction(ctx, func(sessCtx mongo.SessionContext) (interface{}, error) {
-		var courseModel courseModel
-		if err := r.courses.FindOne(ctx, bson.M{"_id": courseID}).Decode(&courseModel); err != nil {
+		var document courseDocument
+		if err := r.courses.FindOne(ctx, bson.M{"_id": courseID}).Decode(&document); err != nil {
 			if errors.Is(err, mongo.ErrNoDocuments) {
 				return nil, app.Wrap(app.ErrCourseDoesntExist, err)
 			}
 			return nil, app.Wrap(app.ErrDatabaseProblems, err)
 		}
 
-		crs, err := newCourse(courseModel)
+		crs, err := newCourse(document)
 		if err != nil {
 			return nil, err
 		}
@@ -67,7 +67,7 @@ func (r *CoursesRepository) UpdateCourse(ctx context.Context, courseID string, u
 
 		replaceOpts := options.Replace().SetUpsert(true)
 		filter := bson.M{"_id": courseID}
-		if _, err := r.courses.ReplaceOne(ctx, filter, newCourseModel(updatedCourse), replaceOpts); err != nil {
+		if _, err := r.courses.ReplaceOne(ctx, filter, newCourseDocument(updatedCourse), replaceOpts); err != nil {
 			return nil, app.Wrap(app.ErrDatabaseProblems, err)
 		}
 		return nil, nil
