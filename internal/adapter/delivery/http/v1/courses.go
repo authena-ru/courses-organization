@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/httperr"
+	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/app/command"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
@@ -28,7 +29,7 @@ func (h handler) CreateCourse(w http.ResponseWriter, r *http.Request) {
 	if ok := decode(w, r, rb); !ok {
 		return
 	}
-	period, ok := unmarshallPeriod(w, r, rb.Period)
+	period, ok := unmarshallPeriod(w, r, &rb.Period)
 	if !ok {
 		return
 	}
@@ -69,5 +70,43 @@ func (h handler) EditCourse(w http.ResponseWriter, r *http.Request, courseId str
 }
 
 func (h handler) ExtendCourse(w http.ResponseWriter, r *http.Request, courseId string) {
-	w.WriteHeader(http.StatusNotImplemented)
+	academic, ok := unmarshallAcademic(w, r)
+	if !ok {
+		return
+	}
+	rb := &ExtendCourseRequest{}
+	if ok := decode(w, r, rb); !ok {
+		return
+	}
+	period, ok := unmarshallPeriod(w, r, rb.Period)
+	if !ok {
+		return
+	}
+	cmd := command.ExtendCourseCommand{
+		Academic:       academic,
+		OriginCourseID: courseId,
+		CourseStarted:  rb.Started,
+		CourseTitle:    rb.Title,
+		CoursePeriod:   period,
+	}
+
+	extendedCourseID, err := h.app.Commands.ExtendCourse.Handle(r.Context(), cmd)
+	if err == nil {
+		w.Header().Set("Content-Location", fmt.Sprintf("/courses/%s", extendedCourseID))
+		w.WriteHeader(http.StatusCreated)
+		return
+	}
+	if errors.Is(err, app.ErrCourseDoesntExist) {
+		httperr.NotFound("course-not-found", err, w, r)
+		return
+	}
+	if errors.Is(err, course.ErrZeroCreator) {
+		httperr.BadRequest("zero-creator", err, w, r)
+		return
+	}
+	if errors.Is(err, course.ErrNotTeacherCantCreateCourse) {
+		httperr.Forbidden("not-teacher-cant-create-course", err, w, r)
+		return
+	}
+	httperr.InternalServerError("unexpected-error", err, w, r)
 }
