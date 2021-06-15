@@ -57,16 +57,26 @@ func (t *Task) Type() TaskType {
 	return t.taskType
 }
 
-func (t *Task) ManualCheckingOptional() Deadline {
-	return t.deadline()
+func (t *Task) Deadline() (Deadline, bool) {
+	if t.taskType == ManualCheckingType ||
+		t.taskType == AutoCodeCheckingType {
+		return t.deadline(), true
+	}
+	return Deadline{}, false
 }
 
-func (t *Task) AutoCodeCheckingOptional() (Deadline, []TestData) {
-	return t.deadline(), t.testData()
+func (t *Task) TestData() ([]TestData, bool) {
+	if t.taskType == AutoCodeCheckingType {
+		return t.testData(), true
+	}
+	return nil, false
 }
 
-func (t *Task) TestingOptional() []TestPoint {
-	return t.testPoints()
+func (t *Task) TestPoints() ([]TestPoint, bool) {
+	if t.taskType == TestingType {
+		return t.testPoints(), true
+	}
+	return nil, false
 }
 
 func (t *Task) deadline() Deadline {
