@@ -37,7 +37,7 @@ func (r *CoursesRepository) GetCourse(ctx context.Context, courseID string) (*co
 		return nil, app.Wrap(app.ErrDatabaseProblems, err)
 	}
 
-	return newCourse(document)
+	return unmarshallCourse(document)
 }
 
 func (r *CoursesRepository) UpdateCourse(ctx context.Context, courseID string, updateFn command.UpdateFunction) error {
@@ -56,7 +56,7 @@ func (r *CoursesRepository) UpdateCourse(ctx context.Context, courseID string, u
 			return nil, app.Wrap(app.ErrDatabaseProblems, err)
 		}
 
-		crs, err := newCourse(document)
+		crs, err := unmarshallCourse(document)
 		if err != nil {
 			return nil, err
 		}

@@ -65,7 +65,7 @@ func newCourseDocument(crs *course.Course) courseDocument {
 	}
 }
 
-func newCourse(document courseDocument) (*course.Course, error) {
+func unmarshallCourse(document courseDocument) (*course.Course, error) {
 	// TODO: unmarshall other parameters
 	return course.UnmarshallFromDatabase(course.UnmarshallingParams{
 		ID:    document.ID,
