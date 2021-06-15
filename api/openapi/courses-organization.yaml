@@ -407,9 +407,9 @@ paths:
           application/json:
             schema:
               anyOf:
-                - $ref: '#/components/schemas/CreateAutoCodeCheckingTaskRequest'
-                - $ref: '#/components/schemas/CreateTestingTaskRequest'
-                - $ref: '#/components/schemas/CreateManualCheckingTaskRequest'
+                - $ref: '#/components/schemas/AddAutoCodeCheckingTaskRequest'
+                - $ref: '#/components/schemas/AddTestingTaskRequest'
+                - $ref: '#/components/schemas/AddManualCheckingTaskRequest'
               discriminator:
                 propertyName: type
       responses:
@@ -958,7 +958,7 @@ components:
           items:
             $ref: '#/components/schemas/TestPoint'
 
-    CreateTaskRequest:
+    AddTaskRequest:
       $ref: '#/components/schemas/Task'
 
     TaskResponse:
@@ -970,19 +970,19 @@ components:
               type: integer
               minimum: 1
 
-    CreateManualCheckingTaskRequest:
+    AddManualCheckingTaskRequest:
       allOf:
-        - $ref: '#/components/schemas/CreateTaskRequest'
-        - $ref: '#/components/schemas/ManualCheckingTaskResponse'
+        - $ref: '#/components/schemas/AddTaskRequest'
+        - $ref: '#/components/schemas/ManualCheckingTaskPart'
 
-    CreateAutoCodeCheckingTaskRequest:
+    AddAutoCodeCheckingTaskRequest:
       allOf:
-        - $ref: '#/components/schemas/CreateTaskRequest'
-        - $ref: '#/components/schemas/AutoCodeCheckingTaskResponse'
+        - $ref: '#/components/schemas/AddTaskRequest'
+        - $ref: '#/components/schemas/AutoCodeCheckingTaskPart'
 
-    CreateTestingTaskRequest:
+    AddTestingTaskRequest:
       allOf:
-        - $ref: '#/components/schemas/CreateTaskRequest'
+        - $ref: '#/components/schemas/AddTaskRequest'
         - $ref: '#/components/schemas/TestingTaskPart'
 
     ManualCheckingTaskResponse:

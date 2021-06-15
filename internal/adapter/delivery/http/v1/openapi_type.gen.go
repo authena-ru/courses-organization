@@ -38,6 +38,14 @@ const (
 	TaskTypeTESTING TaskType = "TESTING"
 )
 
+// AddAutoCodeCheckingTaskRequest defines model for AddAutoCodeCheckingTaskRequest.
+type AddAutoCodeCheckingTaskRequest struct {
+	// Embedded struct due to allOf(#/components/schemas/AddTaskRequest)
+	AddTaskRequest `yaml:",inline"`
+	// Embedded struct due to allOf(#/components/schemas/AutoCodeCheckingTaskPart)
+	AutoCodeCheckingTaskPart `yaml:",inline"`
+}
+
 // AddAuxiliaryMaterialRequest defines model for AddAuxiliaryMaterialRequest.
 type AddAuxiliaryMaterialRequest AuxiliaryMaterial
 
@@ -51,9 +59,28 @@ type AddGroupToCourseRequest struct {
 	Id string `json:"id"`
 }
 
+// AddManualCheckingTaskRequest defines model for AddManualCheckingTaskRequest.
+type AddManualCheckingTaskRequest struct {
+	// Embedded struct due to allOf(#/components/schemas/AddTaskRequest)
+	AddTaskRequest `yaml:",inline"`
+	// Embedded struct due to allOf(#/components/schemas/ManualCheckingTaskPart)
+	ManualCheckingTaskPart `yaml:",inline"`
+}
+
 // AddStudentToCourseRequest defines model for AddStudentToCourseRequest.
 type AddStudentToCourseRequest struct {
 	Id string `json:"id"`
+}
+
+// AddTaskRequest defines model for AddTaskRequest.
+type AddTaskRequest Task
+
+// AddTestingTaskRequest defines model for AddTestingTaskRequest.
+type AddTestingTaskRequest struct {
+	// Embedded struct due to allOf(#/components/schemas/AddTaskRequest)
+	AddTaskRequest `yaml:",inline"`
+	// Embedded struct due to allOf(#/components/schemas/TestingTaskPart)
+	TestingTaskPart `yaml:",inline"`
 }
 
 // AutoCodeCheckingTaskPart defines model for AutoCodeCheckingTaskPart.
@@ -93,38 +120,11 @@ type CoursePeriod struct {
 	Semester          Semester `json:"semester"`
 }
 
-// CreateAutoCodeCheckingTaskRequest defines model for CreateAutoCodeCheckingTaskRequest.
-type CreateAutoCodeCheckingTaskRequest struct {
-	// Embedded struct due to allOf(#/components/schemas/CreateTaskRequest)
-	CreateTaskRequest `yaml:",inline"`
-	// Embedded struct due to allOf(#/components/schemas/AutoCodeCheckingTaskResponse)
-	AutoCodeCheckingTaskResponse `yaml:",inline"`
-}
-
 // CreateCourseRequest defines model for CreateCourseRequest.
 type CreateCourseRequest struct {
 	Period  CoursePeriod `json:"period"`
 	Started bool         `json:"started"`
 	Title   string       `json:"title"`
-}
-
-// CreateManualCheckingTaskRequest defines model for CreateManualCheckingTaskRequest.
-type CreateManualCheckingTaskRequest struct {
-	// Embedded struct due to allOf(#/components/schemas/CreateTaskRequest)
-	CreateTaskRequest `yaml:",inline"`
-	// Embedded struct due to allOf(#/components/schemas/ManualCheckingTaskResponse)
-	ManualCheckingTaskResponse `yaml:",inline"`
-}
-
-// CreateTaskRequest defines model for CreateTaskRequest.
-type CreateTaskRequest Task
-
-// CreateTestingTaskRequest defines model for CreateTestingTaskRequest.
-type CreateTestingTaskRequest struct {
-	// Embedded struct due to allOf(#/components/schemas/CreateTaskRequest)
-	CreateTaskRequest `yaml:",inline"`
-	// Embedded struct due to allOf(#/components/schemas/TestingTaskPart)
-	TestingTaskPart `yaml:",inline"`
 }
 
 // Deadline defines model for Deadline.
