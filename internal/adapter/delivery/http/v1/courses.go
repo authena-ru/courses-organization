@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/go-chi/render"
 	"github.com/pkg/errors"
 
-	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/auth"
 	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/httperr"
 	"github.com/authena-ru/courses-organization/internal/app/command"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
@@ -22,31 +20,16 @@ func (h handler) GetCourse(w http.ResponseWriter, r *http.Request, courseId stri
 }
 
 func (h handler) CreateCourse(w http.ResponseWriter, r *http.Request) {
-	academic, err := auth.AcademicFromCtx(r.Context())
-	if err != nil {
-		httperr.Unauthorized("no-user-in-context", err, w, r)
+	academic, ok := unmarshallAcademic(w, r)
+	if !ok {
 		return
 	}
-
 	rb := &CreateCourseRequest{}
-	if err := render.Decode(r, rb); err != nil {
-		httperr.BadRequest("invalid-request-body", err, w, r)
+	if ok := decode(w, r, rb); !ok {
 		return
 	}
-
-	var semester course.Semester
-	switch rb.Period.Semester {
-	case SemesterFIRST:
-		semester = course.FirstSemester
-	case SemesterSECOND:
-		semester = course.SecondSemester
-	default:
-		httperr.BadRequest("invalid-course-period-semester", nil, w, r)
-		return
-	}
-	period, err := course.NewPeriod(rb.Period.AcademicStartYear, rb.Period.AcademicEndYear, semester)
-	if err != nil {
-		httperr.BadRequest("invalid-course-period", err, w, r)
+	period, ok := unmarshallPeriod(w, r, rb.Period)
+	if !ok {
 		return
 	}
 	cmd := command.CreateCourseCommand{
@@ -55,8 +38,8 @@ func (h handler) CreateCourse(w http.ResponseWriter, r *http.Request) {
 		CourseTitle:   rb.Title,
 		CoursePeriod:  period,
 	}
-	createdCourseID, err := h.app.Commands.CreateCourse.Handle(r.Context(), cmd)
 
+	createdCourseID, err := h.app.Commands.CreateCourse.Handle(r.Context(), cmd)
 	if err == nil {
 		w.Header().Set("Content-Location", fmt.Sprintf("/courses/%s", createdCourseID))
 		w.WriteHeader(http.StatusCreated)
