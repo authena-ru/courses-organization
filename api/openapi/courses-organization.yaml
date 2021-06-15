@@ -908,6 +908,8 @@ components:
           type: boolean
         title:
           type: string
+        period:
+          $ref: '#/components/schemas/CoursePeriod'
 
     EditCourseRequest:
       type: object

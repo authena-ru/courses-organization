@@ -148,8 +148,9 @@ type Error struct {
 
 // ExtendCourseRequest defines model for ExtendCourseRequest.
 type ExtendCourseRequest struct {
-	Started bool   `json:"started"`
-	Title   string `json:"title"`
+	Period  *CoursePeriod `json:"period,omitempty"`
+	Started bool          `json:"started"`
+	Title   string        `json:"title"`
 }
 
 // GetAllAuxiliaryMaterialsResponse defines model for GetAllAuxiliaryMaterialsResponse.
