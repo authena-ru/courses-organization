@@ -926,6 +926,7 @@ components:
       required:
         - title
         - description
+        - type
       properties:
         title:
           type: string

@@ -195,9 +195,9 @@ type Student struct {
 
 // Task defines model for Task.
 type Task struct {
-	Description string    `json:"description"`
-	Title       string    `json:"title"`
-	Type        *TaskType `json:"type,omitempty"`
+	Description string   `json:"description"`
+	Title       string   `json:"title"`
+	Type        TaskType `json:"type"`
 }
 
 // TaskResponse defines model for TaskResponse.
