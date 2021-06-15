@@ -58,8 +58,8 @@ func (h coursesOrganizationHandler) CreateCourse(w http.ResponseWriter, r *http.
 	createdCourseID, err := h.app.Commands.CreateCourse.Handle(r.Context(), cmd)
 
 	if err == nil {
-		w.WriteHeader(http.StatusCreated)
 		w.Header().Set("Content-Location", fmt.Sprintf("/courses/%s", createdCourseID))
+		w.WriteHeader(http.StatusCreated)
 		return
 	}
 	if errors.Is(err, course.ErrZeroCreator) {
