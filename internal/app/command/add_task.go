@@ -60,20 +60,20 @@ func addTask(cmd AddTaskCommand, givenTaskNumber *int) UpdateFunction {
 			err    error
 		)
 		switch cmd.TaskType {
-		case course.ManualChecking:
+		case course.ManualCheckingType:
 			number, err = crs.AddManualCheckingTask(cmd.Academic, course.ManualCheckingTaskCreationParams{
 				Title:       cmd.TaskTitle,
 				Description: cmd.TaskDescription,
 				Deadline:    cmd.Deadline,
 			})
-		case course.AutoCodeChecking:
+		case course.AutoCodeCheckingType:
 			number, err = crs.AddAutoCodeCheckingTask(cmd.Academic, course.AutoCodeCheckingTaskCreationParams{
 				Title:       cmd.TaskTitle,
 				Description: cmd.TaskDescription,
 				Deadline:    cmd.Deadline,
 				TestData:    cmd.TestData,
 			})
-		case course.Testing:
+		case course.TestingType:
 			number, err = crs.AddTestingTask(cmd.Academic, course.TestingTaskCreationParams{
 				Title:       cmd.TaskTitle,
 				Description: cmd.TaskDescription,

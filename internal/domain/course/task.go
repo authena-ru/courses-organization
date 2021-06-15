@@ -10,18 +10,18 @@ import (
 type TaskType uint8
 
 const (
-	ManualChecking TaskType = iota + 1
-	AutoCodeChecking
-	Testing
+	ManualCheckingType TaskType = iota + 1
+	AutoCodeCheckingType
+	TestingType
 )
 
 func (t TaskType) String() string {
 	switch t {
-	case ManualChecking:
+	case ManualCheckingType:
 		return "manual checking"
-	case AutoCodeChecking:
+	case AutoCodeCheckingType:
 		return "auto code checking"
-	case Testing:
+	case TestingType:
 		return "testing"
 	}
 	return "%!TaskType(" + strconv.Itoa(int(t)) + ")"
@@ -116,7 +116,7 @@ func (t *Task) replaceDescription(description string) error {
 }
 
 func (t *Task) replaceDeadline(deadline Deadline) error {
-	if t.taskType == Testing {
+	if t.taskType == TestingType {
 		return ErrTaskHasNoDeadline
 	}
 	t.optional.deadline = deadline
@@ -124,7 +124,7 @@ func (t *Task) replaceDeadline(deadline Deadline) error {
 }
 
 func (t *Task) replaceTestPoints(testPoints []TestPoint) error {
-	if t.taskType != Testing {
+	if t.taskType != TestingType {
 		return ErrTaskHasNoTestPoints
 	}
 	t.optional.testPoints = testPoints
@@ -132,7 +132,7 @@ func (t *Task) replaceTestPoints(testPoints []TestPoint) error {
 }
 
 func (t *Task) replaceTestData(testData []TestData) error {
-	if t.taskType != AutoCodeChecking {
+	if t.taskType != AutoCodeCheckingType {
 		return ErrTaskHasNoTestData
 	}
 	t.optional.testData = testData
@@ -179,7 +179,7 @@ func (c *Course) AddManualCheckingTask(academic Academic, params ManualCheckingT
 	if err := c.canAcademicEditWithAccess(academic, TeacherAccess); err != nil {
 		return 0, err
 	}
-	task, err := c.newTask(params.Title, params.Description, ManualChecking, taskOptional{deadline: params.Deadline})
+	task, err := c.newTask(params.Title, params.Description, ManualCheckingType, taskOptional{deadline: params.Deadline})
 	if err != nil {
 		return 0, err
 	}
@@ -199,7 +199,7 @@ func (c *Course) AddAutoCodeCheckingTask(academic Academic, params AutoCodeCheck
 	}
 	testDataCopy := make([]TestData, len(params.TestData))
 	copy(testDataCopy, params.TestData)
-	task, err := c.newTask(params.Title, params.Description, AutoCodeChecking, taskOptional{
+	task, err := c.newTask(params.Title, params.Description, AutoCodeCheckingType, taskOptional{
 		deadline: params.Deadline,
 		testData: testDataCopy,
 	})
@@ -221,7 +221,7 @@ func (c *Course) AddTestingTask(academic Academic, params TestingTaskCreationPar
 	}
 	testPointsCopy := make([]TestPoint, len(params.TestPoints))
 	copy(testPointsCopy, params.TestPoints)
-	task, err := c.newTask(params.Title, params.Description, Testing, taskOptional{testPoints: testPointsCopy})
+	task, err := c.newTask(params.Title, params.Description, TestingType, taskOptional{testPoints: testPointsCopy})
 	if err != nil {
 		return 0, err
 	}

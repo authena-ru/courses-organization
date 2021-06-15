@@ -85,7 +85,7 @@ func TestCourse_AddManualCheckingTask(t *testing.T) {
 			task, err := crs.Task(number)
 			require.NoError(t, err)
 			require.Equal(t, number, task.Number())
-			require.Equal(t, course.ManualChecking, task.Type())
+			require.Equal(t, course.ManualCheckingType, task.Type())
 			require.Equal(t, c.Params.Title, task.Title())
 			require.Equal(t, c.Params.Description, task.Description())
 			require.Equal(t, c.Params.Deadline, task.ManualCheckingOptional())
@@ -170,7 +170,7 @@ func TestCourse_AddAutoCodeCheckingTask(t *testing.T) {
 			task, err := crs.Task(number)
 			require.NoError(t, err)
 			require.Equal(t, number, task.Number())
-			require.Equal(t, course.AutoCodeChecking, task.Type())
+			require.Equal(t, course.AutoCodeCheckingType, task.Type())
 			require.Equal(t, c.Params.Title, task.Title())
 			require.Equal(t, c.Params.Description, task.Description())
 			deadline, testData := task.AutoCodeCheckingOptional()
@@ -251,7 +251,7 @@ func TestCourse_AddTestingTask(t *testing.T) {
 			task, err := crs.Task(number)
 			require.NoError(t, err)
 			require.Equal(t, number, task.Number())
-			require.Equal(t, course.Testing, task.Type())
+			require.Equal(t, course.TestingType, task.Type())
 			require.Equal(t, c.Params.Title, task.Title())
 			require.Equal(t, c.Params.Description, task.Description())
 			require.Equal(t, c.Params.TestPoints, task.TestingOptional())
@@ -513,9 +513,9 @@ func TestCourse_ReplaceTaskDeadline(t *testing.T) {
 			task, err := crs.Task(taskNumber)
 			require.NoError(t, err)
 			switch task.Type() {
-			case course.ManualChecking:
+			case course.ManualCheckingType:
 				require.Equal(t, c.NewDeadline, task.ManualCheckingOptional())
-			case course.AutoCodeChecking:
+			case course.AutoCodeCheckingType:
 				deadline, _ := task.AutoCodeCheckingOptional()
 				require.Equal(t, c.NewDeadline, deadline)
 			default:
@@ -612,7 +612,7 @@ func TestCourse_ReplaceTaskTestData(t *testing.T) {
 			require.NoError(t, err)
 			task, err := crs.Task(taskNumber)
 			require.NoError(t, err)
-			if task.Type() != course.AutoCodeChecking {
+			if task.Type() != course.AutoCodeCheckingType {
 				panic("unreachable")
 			}
 			_, testData := task.AutoCodeCheckingOptional()
@@ -708,7 +708,7 @@ func TestCourse_ReplaceTaskTestPoints(t *testing.T) {
 			require.NoError(t, err)
 			task, err := crs.Task(taskNumber)
 			require.NoError(t, err)
-			if task.Type() != course.Testing {
+			if task.Type() != course.TestingType {
 				panic("unreachable")
 			}
 			require.Equal(t, c.NewTestPoints, task.TestingOptional())

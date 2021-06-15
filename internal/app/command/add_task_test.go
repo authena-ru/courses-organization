@@ -37,7 +37,7 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 				CourseID:        courseID,
 				TaskTitle:       "Manual checking task",
 				TaskDescription: "Do this task",
-				TaskType:        course.ManualChecking,
+				TaskType:        course.ManualCheckingType,
 				Deadline: course.MustNewDeadline(
 					time.Date(2043, time.November, 10, 0, 0, 0, 0, time.Local),
 					time.Date(2043, time.November, 23, 0, 0, 0, 0, time.Local),
@@ -52,7 +52,7 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 				CourseID:        courseID,
 				TaskTitle:       "Auto code checking task",
 				TaskDescription: "Do this task",
-				TaskType:        course.AutoCodeChecking,
+				TaskType:        course.AutoCodeCheckingType,
 				TestData:        []course.TestData{course.MustNewTestData("1 + 1", "3")},
 			},
 			PrepareCoursesRepository: addCourse,
@@ -64,7 +64,7 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 				CourseID:        courseID,
 				TaskTitle:       "Testing task",
 				TaskDescription: "Do this task",
-				TaskType:        course.Testing,
+				TaskType:        course.TestingType,
 				TestPoints:      []course.TestPoint{course.MustNewTestPoint("1, 2 or 3?", []string{"1", "2", "3"}, []int{0})},
 			},
 			PrepareCoursesRepository: addCourse,
@@ -90,7 +90,7 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 				CourseID:        courseID,
 				TaskTitle:       strings.Repeat("x", 201),
 				TaskDescription: "Do do do",
-				TaskType:        course.ManualChecking,
+				TaskType:        course.ManualCheckingType,
 			},
 			PrepareCoursesRepository: addCourse,
 			IsErr: func(err error) bool {
@@ -104,7 +104,7 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 				CourseID:        courseID,
 				TaskTitle:       "Some course task",
 				TaskDescription: strings.Repeat("x", 1001),
-				TaskType:        course.Testing,
+				TaskType:        course.TestingType,
 			},
 			PrepareCoursesRepository: addCourse,
 			IsErr: func(err error) bool {
@@ -118,7 +118,7 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 				CourseID:        courseID,
 				TaskTitle:       "Some task title",
 				TaskDescription: "If you want do this task",
-				TaskType:        course.ManualChecking,
+				TaskType:        course.ManualCheckingType,
 			},
 			PrepareCoursesRepository: addCourse,
 			IsErr:                    course.IsAcademicCantEditCourseError,
@@ -130,7 +130,7 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 				CourseID:        courseID,
 				TaskTitle:       "Task of non-existing course",
 				TaskDescription: "Don't do this",
-				TaskType:        course.ManualChecking,
+				TaskType:        course.ManualCheckingType,
 			},
 			PrepareCoursesRepository: func(_ *course.Course) *mock.CoursesRepository {
 				return mock.NewCoursesRepository()
