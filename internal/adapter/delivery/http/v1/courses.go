@@ -16,7 +16,7 @@ func (h handler) GetAllCourses(w http.ResponseWriter, r *http.Request, params Ge
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-func (h handler) GetCourse(w http.ResponseWriter, r *http.Request, courseId string) {
+func (h handler) GetCourse(w http.ResponseWriter, r *http.Request, courseID string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -65,11 +65,11 @@ func (h handler) CreateCourse(w http.ResponseWriter, r *http.Request) {
 	httperr.InternalServerError("unexpected-error", err, w, r)
 }
 
-func (h handler) EditCourse(w http.ResponseWriter, r *http.Request, courseId string) {
+func (h handler) EditCourse(w http.ResponseWriter, r *http.Request, courseID string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-func (h handler) ExtendCourse(w http.ResponseWriter, r *http.Request, courseId string) {
+func (h handler) ExtendCourse(w http.ResponseWriter, r *http.Request, courseID string) {
 	academic, ok := unmarshallAcademic(w, r)
 	if !ok {
 		return
@@ -84,7 +84,7 @@ func (h handler) ExtendCourse(w http.ResponseWriter, r *http.Request, courseId s
 	}
 	cmd := command.ExtendCourseCommand{
 		Academic:       academic,
-		OriginCourseID: courseId,
+		OriginCourseID: courseID,
 		CourseStarted:  rb.Started,
 		CourseTitle:    rb.Title,
 		CoursePeriod:   period,
