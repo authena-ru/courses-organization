@@ -144,18 +144,31 @@ type UnmarshallingParams struct {
 	CreatorID     string
 	Collaborators []string
 	Students      []string
+	Tasks         []UnmarshallingTaskParams
+}
+
+type UnmarshallingTaskParams struct {
+	Number      int
+	Title       string
+	Description string
+	TaskType    TaskType
+	Deadline    Deadline
+	TestPoints  []TestPoint
+	TestData    []TestData
 }
 
 // TODO: umarshall tasks, write doc
 func UnmarshallFromDatabase(params UnmarshallingParams) *Course {
 	crs := &Course{
-		id:            params.ID,
-		title:         params.Title,
-		period:        params.Period,
-		started:       params.Started,
-		creatorID:     params.CreatorID,
-		collaborators: make(map[string]bool, len(params.Collaborators)),
-		students:      make(map[string]bool, len(params.Students)),
+		id:             params.ID,
+		title:          params.Title,
+		period:         params.Period,
+		started:        params.Started,
+		creatorID:      params.CreatorID,
+		collaborators:  make(map[string]bool, len(params.Collaborators)),
+		students:       make(map[string]bool, len(params.Students)),
+		tasks:          make(map[int]*Task, len(params.Tasks)),
+		nextTaskNumber: 1,
 	}
 	crs.putCollaborators(params.Collaborators)
 	crs.putStudents(params.Students)
