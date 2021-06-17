@@ -28,9 +28,9 @@ type taskDocument struct {
 	Title       string              `bson:"title"`
 	Description string              `bson:"description"`
 	TaskType    course.TaskType     `bson:"taskType"`
-	Deadline    deadlineDocument    `bson:"deadline"`
-	TestPoints  []testPointDocument `bson:"testPoints"`
-	TestData    []testDataDocument  `bson:"testData"`
+	Deadline    deadlineDocument    `bson:"deadline,omitempty"`
+	TestPoints  []testPointDocument `bson:"testPoints,omitempty"`
+	TestData    []testDataDocument  `bson:"testData,omitempty"`
 }
 
 type deadlineDocument struct {
@@ -111,87 +111,55 @@ func newTestPointDocuments(testPoints []course.TestPoint) []testPointDocument {
 	return testPointDocuments
 }
 
-func unmarshallCourse(document courseDocument) (*course.Course, error) {
-	period, err := unmarshallPeriod(document.Period)
-	if err != nil {
-		return nil, err
-	}
-	tasks, err := unmarshallTasks(document.Tasks)
-	if err != nil {
-		return nil, err
-	}
+func unmarshallCourse(document courseDocument) *course.Course {
 	return course.UnmarshallFromDatabase(course.UnmarshallingParams{
 		ID:            document.ID,
 		Title:         document.Title,
-		Period:        period,
+		Period:        unmarshallPeriod(document.Period),
 		Started:       document.Started,
 		CreatorID:     document.CreatorID,
 		Collaborators: document.Collaborators,
 		Students:      document.Students,
-		Tasks:         tasks,
-	}), nil
+		Tasks:         unmarshallTasks(document.Tasks),
+	})
 }
 
-func unmarshallPeriod(document periodDocument) (course.Period, error) {
-	return course.NewPeriod(document.AcademicStartYear, document.AcademicEndYear, document.Semester)
+func unmarshallPeriod(document periodDocument) course.Period {
+	return course.MustNewPeriod(document.AcademicStartYear, document.AcademicEndYear, document.Semester)
 }
 
-func unmarshallTasks(taskDocuments []taskDocument) ([]course.UnmarshallingTaskParams, error) {
+func unmarshallTasks(taskDocuments []taskDocument) []course.UnmarshallingTaskParams {
 	taskParams := make([]course.UnmarshallingTaskParams, 0, len(taskDocuments))
 	for _, td := range taskDocuments {
-		deadline, err := unmarshalDeadline(td.Deadline)
-		if err != nil {
-			return nil, err
-		}
-		testData, err := unmarshallTestData(td.TestData)
-		if err != nil {
-			return nil, err
-		}
-		testPoints, err := unmarshallTestPoints(td.TestPoints)
-		if err != nil {
-			return nil, err
-		}
 		taskParams = append(taskParams, course.UnmarshallingTaskParams{
 			Number:      td.Number,
 			Title:       td.Title,
 			Description: td.Description,
 			TaskType:    td.TaskType,
-			Deadline:    deadline,
-			TestData:    testData,
-			TestPoints:  testPoints,
+			Deadline:    unmarshalDeadline(td.Deadline),
+			TestData:    unmarshallTestData(td.TestData),
+			TestPoints:  unmarshallTestPoints(td.TestPoints),
 		})
 	}
-	return taskParams, nil
+	return taskParams
 }
 
-func unmarshalDeadline(document deadlineDocument) (course.Deadline, error) {
-	deadline, err := course.NewDeadline(document.ExcellentGradeTime, document.GoodGradeTime)
-	if err != nil {
-		return course.Deadline{}, err
-	}
-	return deadline, nil
+func unmarshalDeadline(document deadlineDocument) course.Deadline {
+	return course.MustNewDeadline(document.ExcellentGradeTime, document.GoodGradeTime)
 }
 
-func unmarshallTestData(documents []testDataDocument) ([]course.TestData, error) {
+func unmarshallTestData(documents []testDataDocument) []course.TestData {
 	testData := make([]course.TestData, 0, len(documents))
 	for _, d := range documents {
-		td, err := course.NewTestData(d.InputData, d.OutputData)
-		if err != nil {
-			return nil, err
-		}
-		testData = append(testData, td)
+		testData = append(testData, course.MustNewTestData(d.OutputData, d.OutputData))
 	}
-	return testData, nil
+	return testData
 }
 
-func unmarshallTestPoints(documents []testPointDocument) ([]course.TestPoint, error) {
+func unmarshallTestPoints(documents []testPointDocument) []course.TestPoint {
 	testPoints := make([]course.TestPoint, 0, len(documents))
 	for _, d := range documents {
-		tp, err := course.NewTestPoint(d.Description, d.Variants, d.CorrectVariantNumbers)
-		if err != nil {
-			return nil, err
-		}
-		testPoints = append(testPoints, tp)
+		testPoints = append(testPoints, course.MustNewTestPoint(d.Description, d.Variants, d.CorrectVariantNumbers))
 	}
-	return testPoints, nil
+	return testPoints
 }
