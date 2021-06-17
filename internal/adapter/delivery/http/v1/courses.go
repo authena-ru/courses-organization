@@ -8,7 +8,6 @@ import (
 
 	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/httperr"
 	"github.com/authena-ru/courses-organization/internal/app"
-	"github.com/authena-ru/courses-organization/internal/app/command"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
@@ -21,45 +20,22 @@ func (h handler) GetCourse(w http.ResponseWriter, r *http.Request, courseID stri
 }
 
 func (h handler) CreateCourse(w http.ResponseWriter, r *http.Request) {
-	academic, ok := unmarshallAcademic(w, r)
+	cmd, ok := unmarshallCreateCourseCommand(w, r)
 	if !ok {
 		return
 	}
-	rb := &CreateCourseRequest{}
-	if ok := decode(w, r, rb); !ok {
-		return
-	}
-	period, ok := unmarshallPeriod(w, r, &rb.Period)
-	if !ok {
-		return
-	}
-	cmd := command.CreateCourseCommand{
-		Academic:      academic,
-		CourseStarted: rb.Started,
-		CourseTitle:   rb.Title,
-		CoursePeriod:  period,
-	}
-
 	createdCourseID, err := h.app.Commands.CreateCourse.Handle(r.Context(), cmd)
 	if err == nil {
 		w.Header().Set("Content-Location", fmt.Sprintf("/courses/%s", createdCourseID))
 		w.WriteHeader(http.StatusCreated)
 		return
 	}
-	if errors.Is(err, course.ErrZeroCreator) {
-		httperr.BadRequest("zero-creator", err, w, r)
+	if course.IsInvalidCourseParametersError(err) {
+		httperr.BadRequest("invalid-course-parameters", err, w, r)
 		return
 	}
 	if errors.Is(err, course.ErrNotTeacherCantCreateCourse) {
 		httperr.Forbidden("not-teacher-cant-create-course", err, w, r)
-		return
-	}
-	if errors.Is(err, course.ErrEmptyCourseTitle) {
-		httperr.BadRequest("empty-course-title", err, w, r)
-		return
-	}
-	if errors.Is(err, course.ErrZeroCoursePeriod) {
-		httperr.BadRequest("zero-course-period", err, w, r)
 		return
 	}
 	httperr.InternalServerError("unexpected-error", err, w, r)
@@ -70,26 +46,10 @@ func (h handler) EditCourse(w http.ResponseWriter, r *http.Request, courseID str
 }
 
 func (h handler) ExtendCourse(w http.ResponseWriter, r *http.Request, courseID string) {
-	academic, ok := unmarshallAcademic(w, r)
+	cmd, ok := unmarshallExtendCourseCommand(w, r, courseID)
 	if !ok {
 		return
 	}
-	rb := &ExtendCourseRequest{}
-	if ok := decode(w, r, rb); !ok {
-		return
-	}
-	period, ok := unmarshallPeriod(w, r, rb.Period)
-	if !ok {
-		return
-	}
-	cmd := command.ExtendCourseCommand{
-		Academic:       academic,
-		OriginCourseID: courseID,
-		CourseStarted:  rb.Started,
-		CourseTitle:    rb.Title,
-		CoursePeriod:   period,
-	}
-
 	extendedCourseID, err := h.app.Commands.ExtendCourse.Handle(r.Context(), cmd)
 	if err == nil {
 		w.Header().Set("Content-Location", fmt.Sprintf("/courses/%s", extendedCourseID))
@@ -100,8 +60,12 @@ func (h handler) ExtendCourse(w http.ResponseWriter, r *http.Request, courseID s
 		httperr.NotFound("course-not-found", err, w, r)
 		return
 	}
-	if errors.Is(err, course.ErrZeroCreator) {
-		httperr.BadRequest("zero-creator", err, w, r)
+	if course.IsInvalidCourseParametersError(err) {
+		httperr.BadRequest("invalid-course-parameters", err, w, r)
+		return
+	}
+	if errors.Is(err, course.ErrAcademicCantSeeCourse) {
+		httperr.BadRequest("academic-cant-see-course", err, w, r)
 		return
 	}
 	if errors.Is(err, course.ErrNotTeacherCantCreateCourse) {
