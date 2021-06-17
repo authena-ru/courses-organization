@@ -40,7 +40,7 @@ func newMongoDatabase(cfg *config.Config) *mongo.Database {
 func newApplication(db *mongo.Database) app.Application {
 	coursesRepository := mongorepo.NewCoursesRepository(db)
 	academicsService := mock.NewAcademicsService(
-		[]string{"d3e2490f-5944-4a87-b29a-94177d1caaed"},
+		[]string{"d3e2490f-5944-4a87-b29a-94177d1caaed", "4edefb83-4b6b-479d-9ce2-60cd465630b6"},
 		[]string{"798155cb-91b7-41d4-9f91-a1970339707e"},
 		[]string{"95dca190-f307-4954-8700-f992f8c12a86"},
 	)
