@@ -1102,7 +1102,7 @@ components:
 
     TestPoint:
       type: object
-      required: [ description, variants, correctVariantNumbers ]
+      required: [ description, variants ]
       properties:
         description:
           type: string
@@ -1115,15 +1115,20 @@ components:
           items:
             type: integer
             minimum: 0
+          description: property not required in response for student, but required for creation
+        singleCorrectVariant:
+          type: boolean
+          description: property indicates that point has single correct variant in response for student
 
     TestData:
       type: object
-      required: [ inputData, outputData ]
       properties:
         inputData:
           type: string
+          description: property not required in response for student, but required for creation
         outputData:
           type: string
+          description: property not required in response for student, but required for creation
 
     Deadline:
       type: object

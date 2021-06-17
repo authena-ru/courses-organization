@@ -238,7 +238,14 @@ func unmarshallTestData(w http.ResponseWriter, r *http.Request, apiTestData *[]T
 	dereferencedApiTestData := *apiTestData
 	testData := make([]course.TestData, 0, len(dereferencedApiTestData))
 	for _, atd := range dereferencedApiTestData {
-		td, err := course.NewTestData(atd.InputData, atd.OutputData)
+		var inputData, outputData string
+		if atd.InputData != nil {
+			inputData = *atd.InputData
+		}
+		if atd.OutputData != nil {
+			outputData = *atd.OutputData
+		}
+		td, err := course.NewTestData(inputData, outputData)
 		if err != nil {
 			httperr.BadRequest("invalid-task", err, w, r)
 			return nil, false
@@ -255,7 +262,11 @@ func unmarshallTestPoints(w http.ResponseWriter, r *http.Request, apiTestPoints 
 	dereferencedApiTestPoints := *apiTestPoints
 	testPoints := make([]course.TestPoint, 0, len(dereferencedApiTestPoints))
 	for _, atp := range dereferencedApiTestPoints {
-		tp, err := course.NewTestPoint(atp.Description, atp.Variants, atp.CorrectVariantNumbers)
+		var correctVariantNumbers []int
+		if atp.CorrectVariantNumbers != nil {
+			correctVariantNumbers = *atp.CorrectVariantNumbers
+		}
+		tp, err := course.NewTestPoint(atp.Description, atp.Variants, correctVariantNumbers)
 		if err != nil {
 			httperr.BadRequest("invalid-task", err, w, r)
 			return nil, false

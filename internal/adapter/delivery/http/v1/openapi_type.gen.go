@@ -219,15 +219,24 @@ type Teacher struct {
 
 // TestData defines model for TestData.
 type TestData struct {
-	InputData  string `json:"inputData"`
-	OutputData string `json:"outputData"`
+
+	// property not required in response for student, but required for creation
+	InputData *string `json:"inputData,omitempty"`
+
+	// property not required in response for student, but required for creation
+	OutputData *string `json:"outputData,omitempty"`
 }
 
 // TestPoint defines model for TestPoint.
 type TestPoint struct {
-	CorrectVariantNumbers []int    `json:"correctVariantNumbers"`
-	Description           string   `json:"description"`
-	Variants              []string `json:"variants"`
+
+	// property not required in response for student, but required for creation
+	CorrectVariantNumbers *[]int `json:"correctVariantNumbers,omitempty"`
+	Description           string `json:"description"`
+
+	// property indicates that point has single correct variant in response for student
+	SingleCorrectVariant *bool    `json:"singleCorrectVariant,omitempty"`
+	Variants             []string `json:"variants"`
 }
 
 // TestingTaskPart defines model for TestingTaskPart.
