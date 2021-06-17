@@ -14,6 +14,11 @@ var (
 	ErrTestOutputDataTooLong = errors.New("test output data too long")
 )
 
+func IsInvalidTestDataError(err error) bool {
+	return errors.Is(err, ErrTestInputDataTooLong) ||
+		errors.Is(err, ErrTestOutputDataTooLong)
+}
+
 func NewTestData(inputData, outputData string) (TestData, error) {
 	if len(inputData) > testDataMaxLen {
 		return TestData{}, ErrTestInputDataTooLong

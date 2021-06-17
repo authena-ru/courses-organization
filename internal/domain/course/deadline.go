@@ -18,6 +18,12 @@ var (
 	ErrExcellentGradeTimeAfterGood = errors.New("excellent grade time after good")
 )
 
+func IsInvalidDeadlineError(err error) bool {
+	return errors.Is(err, ErrZeroExcellentGradeTime) ||
+		errors.Is(err, ErrZeroGoodGradeTime) ||
+		errors.Is(err, ErrExcellentGradeTimeAfterGood)
+}
+
 func NewDeadline(excellentGradeTime time.Time, goodGradeTime time.Time) (Deadline, error) {
 	if excellentGradeTime.IsZero() {
 		return Deadline{}, ErrZeroExcellentGradeTime

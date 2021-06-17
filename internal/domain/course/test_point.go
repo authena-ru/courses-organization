@@ -18,6 +18,14 @@ var (
 	ErrInvalidTestPointVariantNumber   = errors.New("invalid test point variant number")
 )
 
+func IsInvalidTestPointError(err error) bool {
+	return errors.Is(err, ErrTestPointDescriptionTooLong) ||
+		errors.Is(err, ErrEmptyTestPointVariants) ||
+		errors.Is(err, ErrEmptyTestPointCorrectVariants) ||
+		errors.Is(err, ErrTooMuchTestPointCorrectVariants) ||
+		errors.Is(err, ErrInvalidTestPointVariantNumber)
+}
+
 func NewTestPoint(description string, variants []string, correctVariantNumbers []int) (TestPoint, error) {
 	if len(description) > testPointDescriptionMaxLen {
 		return TestPoint{}, ErrTestPointDescriptionTooLong

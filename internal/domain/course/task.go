@@ -109,6 +109,11 @@ var (
 	ErrCourseHasNoSuchTask    = errors.New("course has no such task")
 )
 
+func IsInvalidTaskParametersError(err error) bool {
+	return errors.Is(err, ErrTaskTitleTooLong) ||
+		errors.Is(err, ErrTaskDescriptionTooLong)
+}
+
 func (t *Task) rename(title string) error {
 	if len(title) > taskTitleMaxLen {
 		return ErrTaskTitleTooLong
