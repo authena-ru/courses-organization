@@ -17,7 +17,7 @@ type CoursesRepository struct {
 	courses *mongo.Collection
 }
 
-var coursesCollection = "courses"
+const coursesCollection = "courses"
 
 func NewCoursesRepository(db *mongo.Database) *CoursesRepository {
 	return &CoursesRepository{courses: db.Collection(coursesCollection)}
