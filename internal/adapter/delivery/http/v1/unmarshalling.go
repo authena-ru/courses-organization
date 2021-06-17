@@ -31,12 +31,26 @@ func unmarshallAddCollaboratorCommand(
 	if ok = decode(w, r, &rb); !ok {
 		return
 	}
-	cmd, ok = command.AddCollaboratorCommand{
+	return command.AddCollaboratorCommand{
 		Academic:       academic,
 		CourseID:       courseID,
 		CollaboratorID: rb.Id,
 	}, true
-	return
+}
+
+func unmarshallRemoveCollaboratorCommand(
+	w http.ResponseWriter, r *http.Request,
+	courseID, collaboratorID string,
+) (cmd command.RemoveCollaboratorCommand, ok bool) {
+	academic, ok := unmarshallAcademic(w, r)
+	if !ok {
+		return
+	}
+	return command.RemoveCollaboratorCommand{
+		Academic:       academic,
+		CourseID:       courseID,
+		CollaboratorID: collaboratorID,
+	}, true
 }
 
 func unmarshallCreateCourseCommand(w http.ResponseWriter, r *http.Request) (cmd command.CreateCourseCommand, ok bool) {
@@ -52,13 +66,12 @@ func unmarshallCreateCourseCommand(w http.ResponseWriter, r *http.Request) (cmd 
 	if !ok {
 		return
 	}
-	cmd, ok = command.CreateCourseCommand{
+	return command.CreateCourseCommand{
 		Academic:      academic,
 		CourseStarted: rb.Started,
 		CourseTitle:   rb.Title,
 		CoursePeriod:  period,
 	}, true
-	return
 }
 
 func unmarshallExtendCourseCommand(
@@ -77,14 +90,13 @@ func unmarshallExtendCourseCommand(
 	if !ok {
 		return
 	}
-	cmd, ok = command.ExtendCourseCommand{
+	return command.ExtendCourseCommand{
 		Academic:       academic,
 		OriginCourseID: courseID,
 		CourseStarted:  rb.Started,
 		CourseTitle:    rb.Title,
 		CoursePeriod:   period,
 	}, true
-	return
 }
 
 func unmarshallAddTaskCommand(
@@ -120,7 +132,7 @@ func unmarshallAddTaskCommand(
 	if !ok {
 		return
 	}
-	cmd, ok = command.AddTaskCommand{
+	return command.AddTaskCommand{
 		Academic:        academic,
 		CourseID:        courseID,
 		TaskTitle:       rb.Title,
@@ -130,7 +142,6 @@ func unmarshallAddTaskCommand(
 		TestPoints:      testPoints,
 		TestData:        testData,
 	}, true
-	return
 }
 
 func unmarshallTaskType(w http.ResponseWriter, r *http.Request, apiTaskType TaskType) (course.TaskType, bool) {

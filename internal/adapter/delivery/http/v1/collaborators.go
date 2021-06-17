@@ -39,6 +39,30 @@ func (h handler) AddCollaboratorToCourse(w http.ResponseWriter, r *http.Request,
 	httperr.InternalServerError("unexpected-error", err, w, r)
 }
 
-func (h handler) RemoveCollaboratorFromCourse(w http.ResponseWriter, r *http.Request, courseId string, teacherId string) {
-	w.WriteHeader(http.StatusNotImplemented)
+func (h handler) RemoveCollaboratorFromCourse(
+	w http.ResponseWriter, r *http.Request,
+	courseID, teacherID string,
+) {
+	cmd, ok := unmarshallRemoveCollaboratorCommand(w, r, courseID, teacherID)
+	if !ok {
+		return
+	}
+	err := h.app.Commands.RemoveCollaborator.Handle(r.Context(), cmd)
+	if err == nil {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+	if errors.Is(err, app.ErrCourseDoesntExist) {
+		httperr.NotFound("course-not-found", err, w, r)
+		return
+	}
+	if errors.Is(err, course.ErrCourseHasNoSuchCollaborator) {
+		httperr.NotFound("course-collaborator-not-found", err, w, r)
+		return
+	}
+	if course.IsAcademicCantEditCourseError(err) {
+		httperr.Forbidden("academic-cant-edit-course", err, w, r)
+		return
+	}
+	httperr.InternalServerError("unexpected-error", err, w, r)
 }
