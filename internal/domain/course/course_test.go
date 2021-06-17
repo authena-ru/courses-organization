@@ -168,6 +168,14 @@ func TestCourse_Extend(t *testing.T) {
 			},
 			ExpectedErr: course.ErrNotTeacherCantCreateCourse,
 		},
+		{
+			Name: "academic_cant_see_course",
+			Params: course.CreationParams{
+				ID:      "course-id",
+				Creator: course.MustNewAcademic("not-course-teacher-id", course.TeacherType),
+			},
+			ExpectedErr: course.ErrAcademicCantSeeCourse,
+		},
 	}
 
 	for i := range testCases {
@@ -175,7 +183,7 @@ func TestCourse_Extend(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			creator := course.MustNewAcademic("origin-course-creator-id", course.TeacherType)
+			creator := course.MustNewAcademic("creator-id", course.TeacherType)
 			originCourse := course.MustNewCourse(course.CreationParams{
 				ID:            "origin-course-id",
 				Creator:       creator,

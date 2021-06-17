@@ -33,6 +33,13 @@ var (
 	ErrZeroCoursePeriod = errors.New("zero course period")
 )
 
+func IsInvalidCourseParametersError(err error) bool {
+	return errors.Is(err, ErrEmptyCourseID) ||
+		errors.Is(err, ErrZeroCreator) ||
+		errors.Is(err, ErrEmptyCourseTitle) ||
+		errors.Is(err, ErrZeroCoursePeriod)
+}
+
 func NewCourse(params CreationParams) (*Course, error) {
 	if params.ID == "" {
 		return nil, ErrEmptyCourseID
@@ -77,6 +84,9 @@ func (c *Course) Extend(params CreationParams) (*Course, error) {
 		return nil, ErrZeroCreator
 	}
 	if err := params.Creator.canCreateCourse(); err != nil {
+		return nil, err
+	}
+	if err := c.canAcademicSee(params.Creator); err != nil {
 		return nil, err
 	}
 	extendedCourseTitle := c.Title()
