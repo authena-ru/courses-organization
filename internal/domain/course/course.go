@@ -103,13 +103,11 @@ func (c *Course) Extend(params CreationParams) (*Course, error) {
 		title:          extendedCourseTitle,
 		period:         extendedCoursePeriod,
 		started:        params.Started,
-		collaborators:  make(map[string]bool, len(c.collaborators)+len(params.Collaborators)),
-		students:       make(map[string]bool, len(c.students)+len(params.Students)),
+		collaborators:  unmarshallIDs(append(c.Collaborators(), params.Collaborators...)),
+		students:       unmarshallIDs(append(c.Students(), params.Students...)),
 		tasks:          make(map[int]*Task, len(c.tasks)),
 		nextTaskNumber: len(c.tasks) + 1,
 	}
-	crs.putCollaborators(append(c.Collaborators(), params.Collaborators...))
-	crs.putStudents(append(c.Students(), params.Students...))
 	for i, t := range c.tasksCopy() {
 		number := i + 1
 		crs.tasks[number] = t
@@ -167,20 +165,51 @@ type UnmarshallingTaskParams struct {
 	TestData    []TestData
 }
 
-// TODO: umarshall tasks, write doc
+// UnmarshallFromDatabase unmarshalls Course from the database.
+// It should be used only for unmarshalling from the database!
+// Using UnmarshallFromDatabase may put domain into the invalid state!
 func UnmarshallFromDatabase(params UnmarshallingParams) *Course {
+	tasks, lastNumber := unmarshallTasks(params.Tasks)
 	crs := &Course{
 		id:             params.ID,
 		title:          params.Title,
 		period:         params.Period,
 		started:        params.Started,
 		creatorID:      params.CreatorID,
-		collaborators:  make(map[string]bool, len(params.Collaborators)),
-		students:       make(map[string]bool, len(params.Students)),
-		tasks:          make(map[int]*Task, len(params.Tasks)),
-		nextTaskNumber: 1,
+		collaborators:  unmarshallIDs(params.Collaborators),
+		students:       unmarshallIDs(params.Students),
+		tasks:          tasks,
+		nextTaskNumber: lastNumber + 1,
 	}
-	crs.putCollaborators(params.Collaborators)
-	crs.putStudents(params.Students)
 	return crs
+}
+
+func unmarshallIDs(ids []string) map[string]bool {
+	unmarshalled := make(map[string]bool, len(ids))
+	for _, id := range ids {
+		unmarshalled[id] = true
+	}
+	return unmarshalled
+}
+
+func unmarshallTasks(taskParams []UnmarshallingTaskParams) (map[int]*Task, int) {
+	tasks := make(map[int]*Task, len(taskParams))
+	lastNumber := 0
+	for _, tp := range taskParams {
+		tasks[tp.Number] = &Task{
+			number:      tp.Number,
+			title:       tp.Title,
+			description: tp.Description,
+			taskType:    tp.TaskType,
+			optional: taskOptional{
+				deadline:   tp.Deadline,
+				testData:   tp.TestData,
+				testPoints: tp.TestPoints,
+			},
+		}
+		if tp.Number > lastNumber {
+			lastNumber = tp.Number
+		}
+	}
+	return tasks, lastNumber
 }
