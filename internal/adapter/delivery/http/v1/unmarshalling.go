@@ -19,6 +19,40 @@ func decode(w http.ResponseWriter, r *http.Request, v interface{}) bool {
 	return true
 }
 
+func unmarshallAddStudentCommand(
+	w http.ResponseWriter, r *http.Request,
+	courseID string,
+) (cmd command.AddStudentCommand, ok bool) {
+	academic, ok := unmarshallAcademic(w, r)
+	if !ok {
+		return
+	}
+	var rb AddStudentToCourseRequest
+	if ok = decode(w, r, &rb); !ok {
+		return
+	}
+	return command.AddStudentCommand{
+		Academic:  academic,
+		CourseID:  courseID,
+		StudentID: rb.Id,
+	}, false
+}
+
+func unmarshallRemoveStudentCommand(
+	w http.ResponseWriter, r *http.Request,
+	courseID, studentID string,
+) (cmd command.RemoveStudentCommand, ok bool) {
+	academic, ok := unmarshallAcademic(w, r)
+	if !ok {
+		return
+	}
+	return command.RemoveStudentCommand{
+		Academic:  academic,
+		CourseID:  courseID,
+		StudentID: studentID,
+	}, true
+}
+
 func unmarshallAddCollaboratorCommand(
 	w http.ResponseWriter, r *http.Request,
 	courseID string,
