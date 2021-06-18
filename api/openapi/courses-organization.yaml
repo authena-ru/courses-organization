@@ -966,6 +966,8 @@ components:
       allOf:
         - $ref: '#/components/schemas/Task'
         - type: object
+          required:
+            - number
           properties:
             number:
               type: integer

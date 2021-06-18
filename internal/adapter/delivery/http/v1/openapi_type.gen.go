@@ -205,7 +205,7 @@ type TaskResponse struct {
 	// Embedded struct due to allOf(#/components/schemas/Task)
 	Task `yaml:",inline"`
 	// Embedded fields due to inline allOf schema
-	Number *int `json:"number,omitempty"`
+	Number int `json:"number"`
 }
 
 // TaskType defines model for TaskType.
