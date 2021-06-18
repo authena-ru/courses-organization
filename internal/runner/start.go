@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"github.com/authena-ru/courses-organization/internal/app/query"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
 
@@ -53,6 +54,9 @@ func newApplication(db *mongo.Database) app.Application {
 			AddStudent:         command.NewAddStudentHandler(coursesRepository, academicsService),
 			RemoveStudent:      command.NewRemoveStudentHandler(coursesRepository),
 			AddTask:            command.NewAddTaskHandler(coursesRepository),
+		},
+		Queries: app.Queries{
+			SpecificTask: query.NewSpecificTaskHandler(coursesRepository),
 		},
 	}
 }
