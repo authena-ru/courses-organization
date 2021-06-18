@@ -10,6 +10,7 @@ import (
 
 	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/app/command"
+	"github.com/authena-ru/courses-organization/internal/app/query"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
@@ -24,7 +25,7 @@ func NewCoursesRepository(db *mongo.Database) *CoursesRepository {
 }
 
 func (r *CoursesRepository) AddCourse(ctx context.Context, crs *course.Course) error {
-	_, err := r.courses.InsertOne(ctx, newCourseDocument(crs))
+	_, err := r.courses.InsertOne(ctx, marshallCourseDocument(crs))
 	return app.Wrap(app.ErrDatabaseProblems, err)
 }
 
@@ -61,7 +62,7 @@ func (r *CoursesRepository) UpdateCourse(ctx context.Context, courseID string, u
 		if err != nil {
 			return nil, err
 		}
-		updatedCourseDocument := newCourseDocument(updatedCourse)
+		updatedCourseDocument := marshallCourseDocument(updatedCourse)
 
 		replaceOpts := options.Replace().SetUpsert(true)
 		filter := bson.M{"_id": updatedCourseDocument.ID}
@@ -71,4 +72,34 @@ func (r *CoursesRepository) UpdateCourse(ctx context.Context, courseID string, u
 		return nil, nil
 	})
 	return err
+}
+
+func (r *CoursesRepository) FindTask(
+	ctx context.Context,
+	academic course.Academic, courseID string, taskNumber int,
+) (query.SpecificTask, error) {
+	filter := makeFindTaskFilter(academic, courseID, taskNumber)
+	projection := bson.M{"tasks": bson.M{"$elemMatch": bson.M{"number": taskNumber}}}
+	opt := options.FindOne().SetProjection(projection)
+	var document courseDocument
+	if err := r.courses.FindOne(ctx, filter, opt).Decode(&document); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return query.SpecificTask{}, app.Wrap(app.ErrCourseTaskDoesntExist, err)
+		}
+		return query.SpecificTask{}, app.Wrap(app.ErrDatabaseProblems, err)
+	}
+	return unmarshallSpecificTask(academic, document.Tasks[0]), nil
+}
+
+func makeFindTaskFilter(academic course.Academic, courseID string, taskNumber int) bson.M {
+	filter := bson.M{"_id": courseID, "tasks.number": taskNumber}
+	if academic.Type() == course.StudentType {
+		filter["students"] = bson.M{"$elemMatch": bson.M{"$eq": academic.ID()}}
+	} else {
+		filter["$or"] = bson.A{
+			bson.M{"creatorId": academic.ID()},
+			bson.M{"collaborators": bson.M{"$elemMatch": bson.M{"$eq": academic.ID()}}},
+		}
+	}
+	return filter
 }
