@@ -53,6 +53,19 @@ func (h handler) AddTaskToCourse(w http.ResponseWriter, r *http.Request, courseI
 	httperr.InternalServerError("unexpected-error", err, w, r)
 }
 
-func (h handler) GetCourseTask(w http.ResponseWriter, r *http.Request, courseId string, taskNumber int) {
-	w.WriteHeader(http.StatusNotImplemented)
+func (h handler) GetCourseTask(w http.ResponseWriter, r *http.Request, courseID string, taskNumber int) {
+	qry, ok := unmarshallSpecificTaskQuery(w, r, courseID, taskNumber)
+	if !ok {
+		return
+	}
+	task, err := h.app.Queries.SpecificTask.Handle(r.Context(), qry)
+	if err == nil {
+		marshallSpecificTask(w, r, task)
+		return
+	}
+	if errors.Is(err, app.ErrCourseTaskDoesntExist) {
+		httperr.NotFound("course-task-not-found", err, w, r)
+		return
+	}
+	httperr.InternalServerError("unexpected-error", err, w, r)
 }

@@ -1,6 +1,9 @@
 package app
 
-import "github.com/authena-ru/courses-organization/internal/app/command"
+import (
+	"github.com/authena-ru/courses-organization/internal/app/command"
+	"github.com/authena-ru/courses-organization/internal/app/query"
+)
 
 type Application struct {
 	Commands Commands
@@ -18,4 +21,5 @@ type Commands struct {
 }
 
 type Queries struct {
+	SpecificTask query.SpecificTaskHandler
 }

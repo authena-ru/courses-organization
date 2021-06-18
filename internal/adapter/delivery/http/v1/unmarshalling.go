@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"github.com/authena-ru/courses-organization/internal/app/query"
 	"net/http"
 
 	"github.com/go-chi/render"
@@ -17,6 +18,21 @@ func decode(w http.ResponseWriter, r *http.Request, v interface{}) bool {
 		return false
 	}
 	return true
+}
+
+func unmarshallSpecificTaskQuery(
+	w http.ResponseWriter, r *http.Request,
+	courseID string, taskNumber int,
+) (qry query.SpecificTaskQuery, ok bool) {
+	academic, ok := unmarshallAcademic(w, r)
+	if !ok {
+		return
+	}
+	return query.SpecificTaskQuery{
+		Academic:   academic,
+		CourseID:   courseID,
+		TaskNumber: taskNumber,
+	}, true
 }
 
 func unmarshallAddStudentCommand(
