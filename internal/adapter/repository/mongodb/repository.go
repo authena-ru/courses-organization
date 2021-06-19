@@ -79,7 +79,7 @@ func (r *CoursesRepository) FindTask(
 	academic course.Academic, courseID string, taskNumber int,
 ) (query.SpecificTask, error) {
 	filter := makeFindTaskFilter(academic, courseID, taskNumber)
-	projection := bson.M{"tasks": bson.M{"$elemMatch": bson.M{"number": taskNumber}}}
+	projection := bson.M{"tasks.$": 1}
 	opt := options.FindOne().SetProjection(projection)
 
 	var document courseDocument
