@@ -27,6 +27,14 @@ func (t TaskType) String() string {
 	return "%!TaskType(" + strconv.Itoa(int(t)) + ")"
 }
 
+func (t TaskType) IsValid() bool {
+	switch t {
+	case ManualCheckingType, AutoCodeCheckingType, TestingType:
+		return true
+	}
+	return false
+}
+
 type taskOptional struct {
 	deadline   Deadline
 	testPoints []TestPoint
