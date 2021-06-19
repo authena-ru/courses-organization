@@ -11,10 +11,6 @@ import (
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
-func (h handler) GetCourseTasks(w http.ResponseWriter, r *http.Request, courseId string, params GetCourseTasksParams) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
 func (h handler) AddTaskToCourse(w http.ResponseWriter, r *http.Request, courseID string) {
 	cmd, ok := unmarshallAddTaskCommand(w, r, courseID)
 	if !ok {
@@ -48,6 +44,23 @@ func (h handler) AddTaskToCourse(w http.ResponseWriter, r *http.Request, courseI
 	}
 	if course.IsAcademicCantEditCourseError(err) {
 		httperr.Forbidden("academic-cant-edit-course", err, w, r)
+		return
+	}
+	httperr.InternalServerError("unexpected-error", err, w, r)
+}
+
+func (h handler) GetCourseTasks(w http.ResponseWriter, r *http.Request, courseID string, params GetCourseTasksParams) {
+	qry, ok := unmarshallAllTasksQuery(w, r, courseID, params)
+	if !ok {
+		return
+	}
+	tasks, err := h.app.Queries.AllTasks.Handle(r.Context(), qry)
+	if err == nil {
+		marshallGeneralTasks(w, r, tasks)
+		return
+	}
+	if errors.Is(err, app.ErrCourseDoesntExist) {
+		httperr.NotFound("course-not-found", err, w, r)
 		return
 	}
 	httperr.InternalServerError("unexpected-error", err, w, r)

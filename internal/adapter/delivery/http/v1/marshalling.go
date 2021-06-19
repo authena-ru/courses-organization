@@ -33,6 +33,21 @@ func marshallSpecificTask(w http.ResponseWriter, r *http.Request, task query.Spe
 	render.Respond(w, r, response)
 }
 
+func marshallGeneralTasks(w http.ResponseWriter, r *http.Request, tasks []query.GeneralTask) {
+	response := make([]TaskResponse, 0, len(tasks))
+	for _, t := range tasks {
+		response = append(response, TaskResponse{
+			Number: t.Number,
+			Task: Task{
+				Title:       t.Title,
+				Description: t.Description,
+				Type:        marshallTaskType(t.Type),
+			},
+		})
+	}
+	render.Respond(w, r, response)
+}
+
 func marshallTaskType(taskType course.TaskType) TaskType {
 	switch taskType {
 	case course.ManualCheckingType:
@@ -58,9 +73,13 @@ func marshallDeadline(deadline *query.Deadline) *Deadline {
 func marshallTestData(testData []query.TestData) []TestData {
 	marshalled := make([]TestData, 0, len(testData))
 	for _, td := range testData {
+		inputData := new(string)
+		*inputData = td.InputData
+		outputData := new(string)
+		*outputData = td.OutputData
 		marshalled = append(marshalled, TestData{
-			InputData:  &td.InputData,
-			OutputData: &td.OutputData,
+			InputData:  inputData,
+			OutputData: outputData,
 		})
 	}
 	return marshalled
@@ -73,11 +92,13 @@ func marshallTestPoints(testPoints []query.TestPoint) []TestPoint {
 		if tp.CorrectVariantNumbers != nil {
 			correctVariantNumbers = &tp.CorrectVariantNumbers
 		}
+		singleCorrectVariant := new(bool)
+		*singleCorrectVariant = tp.SingleCorrectVariant
 		marshalled = append(marshalled, TestPoint{
 			Description:           tp.Description,
 			Variants:              tp.Variants,
 			CorrectVariantNumbers: correctVariantNumbers,
-			SingleCorrectVariant:  &tp.SingleCorrectVariant,
+			SingleCorrectVariant:  singleCorrectVariant,
 		})
 	}
 	return marshalled

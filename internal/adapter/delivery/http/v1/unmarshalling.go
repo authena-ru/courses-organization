@@ -20,6 +20,43 @@ func decode(w http.ResponseWriter, r *http.Request, v interface{}) bool {
 	return true
 }
 
+func unmarshallAllTasksQuery(
+	w http.ResponseWriter, r *http.Request,
+	courseID string, params GetCourseTasksParams,
+) (qry query.AllTasksQuery, ok bool) {
+	academic, ok := unmarshallAcademic(w, r)
+	if !ok {
+		return
+	}
+
+	var title, description string
+	if params.Title != nil {
+		title = *params.Title
+	}
+	if params.Description != nil {
+		description = *params.Description
+	}
+	var taskType course.TaskType
+	switch *params.Type {
+	case TaskTypeMANUALCHECKING:
+		taskType = course.ManualCheckingType
+	case TaskTypeAUTOCODECHECKING:
+		taskType = course.AutoCodeCheckingType
+	case TaskTypeTESTING:
+		taskType = course.TestingType
+	default:
+		taskType = course.TaskType(0)
+	}
+
+	return query.AllTasksQuery{
+		Academic:    academic,
+		CourseID:    courseID,
+		Type:        taskType,
+		Title:       title,
+		Description: description,
+	}, true
+}
+
 func unmarshallSpecificTaskQuery(
 	w http.ResponseWriter, r *http.Request,
 	courseID string, taskNumber int,
@@ -251,9 +288,9 @@ func unmarshallTestData(w http.ResponseWriter, r *http.Request, apiTestData *[]T
 	if apiTestData == nil {
 		return nil, true
 	}
-	dereferencedApiTestData := *apiTestData
-	testData := make([]course.TestData, 0, len(dereferencedApiTestData))
-	for _, atd := range dereferencedApiTestData {
+	dereferencedAPITestData := *apiTestData
+	testData := make([]course.TestData, 0, len(dereferencedAPITestData))
+	for _, atd := range dereferencedAPITestData {
 		var inputData, outputData string
 		if atd.InputData != nil {
 			inputData = *atd.InputData
@@ -275,9 +312,9 @@ func unmarshallTestPoints(w http.ResponseWriter, r *http.Request, apiTestPoints 
 	if apiTestPoints == nil {
 		return nil, true
 	}
-	dereferencedApiTestPoints := *apiTestPoints
-	testPoints := make([]course.TestPoint, 0, len(dereferencedApiTestPoints))
-	for _, atp := range dereferencedApiTestPoints {
+	dereferencedAPITestPoints := *apiTestPoints
+	testPoints := make([]course.TestPoint, 0, len(dereferencedAPITestPoints))
+	for _, atp := range dereferencedAPITestPoints {
 		var correctVariantNumbers []int
 		if atp.CorrectVariantNumbers != nil {
 			correctVariantNumbers = *atp.CorrectVariantNumbers
