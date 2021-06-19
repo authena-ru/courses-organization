@@ -2,8 +2,10 @@ package query
 
 import (
 	"context"
-	"github.com/authena-ru/courses-organization/internal/domain/course"
+
 	"github.com/pkg/errors"
+
+	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
 type SpecificTaskQuery struct {
@@ -27,6 +29,8 @@ func NewSpecificTaskHandler(readModel specificTaskReadModel) SpecificTaskHandler
 	return SpecificTaskHandler{readModel: readModel}
 }
 
+// Handle is SpecificTaskQuery handler.
+// Returns course task with given number. If task doesn't exist, an error equal app.ErrCourseTaskDoesntExist.
 func (h SpecificTaskHandler) Handle(ctx context.Context, qry SpecificTaskQuery) (SpecificTask, error) {
 	task, err := h.readModel.FindTask(ctx, qry.Academic, qry.CourseID, qry.TaskNumber)
 	return task, errors.Wrapf(err, "getting task %d of course %s", qry.TaskNumber, qry.CourseID)
