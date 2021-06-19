@@ -485,7 +485,7 @@ paths:
                 discriminator:
                   propertyName: type
         '404':
-          description: course or task not found
+          description: course task for teacher or student not found
           content:
             application/json:
               schema:
