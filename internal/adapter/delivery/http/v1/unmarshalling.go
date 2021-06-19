@@ -37,15 +37,17 @@ func unmarshallAllTasksQuery(
 		description = *params.Description
 	}
 	var taskType course.TaskType
-	switch *params.Type {
-	case TaskTypeMANUALCHECKING:
-		taskType = course.ManualCheckingType
-	case TaskTypeAUTOCODECHECKING:
-		taskType = course.AutoCodeCheckingType
-	case TaskTypeTESTING:
-		taskType = course.TestingType
-	default:
-		taskType = course.TaskType(0)
+	if params.Type != nil {
+		switch *params.Type {
+		case TaskTypeMANUALCHECKING:
+			taskType = course.ManualCheckingType
+		case TaskTypeAUTOCODECHECKING:
+			taskType = course.AutoCodeCheckingType
+		case TaskTypeTESTING:
+			taskType = course.TestingType
+		default:
+			taskType = course.TaskType(0)
+		}
 	}
 
 	return query.AllTasksQuery{
