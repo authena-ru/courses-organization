@@ -16,7 +16,7 @@ type AllTasksQuery struct {
 	Description string
 }
 
-type TasksFilter struct {
+type TasksFilterParams struct {
 	Type        course.TaskType
 	Title       string
 	Description string
@@ -26,7 +26,7 @@ type allTasksReadModel interface {
 	FindAllTasks(
 		ctx context.Context,
 		academic course.Academic, courseID string,
-		filter TasksFilter,
+		filterParams TasksFilterParams,
 	) ([]GeneralTask, error)
 }
 
@@ -44,8 +44,9 @@ func NewAllTasksHandler(readModel allTasksReadModel) AllTasksHandler {
 // Handle is AllTasksQuery handler.
 // Returns list of course tasks with general task parameters.
 // Tasks filtered by type, title and description.
+// If course doesn't exist, error equal app.ErrCourseDoesntExist
 func (h AllTasksHandler) Handle(ctx context.Context, qry AllTasksQuery) ([]GeneralTask, error) {
-	tasks, err := h.readModel.FindAllTasks(ctx, qry.Academic, qry.CourseID, TasksFilter{
+	tasks, err := h.readModel.FindAllTasks(ctx, qry.Academic, qry.CourseID, TasksFilterParams{
 		Type:        qry.Type,
 		Title:       qry.Title,
 		Description: qry.Description,
