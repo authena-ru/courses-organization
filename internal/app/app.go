@@ -22,4 +22,5 @@ type Commands struct {
 
 type Queries struct {
 	SpecificTask query.SpecificTaskHandler
+	AllTasks     query.AllTasksHandler
 }

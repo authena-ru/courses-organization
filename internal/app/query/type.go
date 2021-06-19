@@ -32,3 +32,10 @@ type TestPoint struct {
 	CorrectVariantNumbers []int
 	SingleCorrectVariant  bool
 }
+
+type GeneralTask struct {
+	Number      int
+	Title       string
+	Description string
+	Type        course.TaskType
+}
