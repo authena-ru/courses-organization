@@ -81,6 +81,7 @@ func (r *CoursesRepository) FindTask(
 	filter := makeFindTaskFilter(academic, courseID, taskNumber)
 	projection := bson.M{"tasks": bson.M{"$elemMatch": bson.M{"number": taskNumber}}}
 	opt := options.FindOne().SetProjection(projection)
+
 	var document courseDocument
 	if err := r.courses.FindOne(ctx, filter, opt).Decode(&document); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
@@ -88,11 +89,42 @@ func (r *CoursesRepository) FindTask(
 		}
 		return query.SpecificTask{}, app.Wrap(app.ErrDatabaseProblems, err)
 	}
+
 	return unmarshallSpecificTask(academic, document.Tasks[0]), nil
 }
 
 func makeFindTaskFilter(academic course.Academic, courseID string, taskNumber int) bson.M {
-	filter := bson.M{"_id": courseID, "tasks.number": taskNumber}
+	filter := makeCourseForAcademicFilter(academic, courseID)
+	filter["tasks.number"] = taskNumber
+	return filter
+}
+
+func (r *CoursesRepository) FindAllTasks(
+	ctx context.Context,
+	academic course.Academic, courseID string,
+	filterParams query.TasksFilterParams,
+) ([]query.GeneralTask, error) {
+	filter := makeCourseForAcademicFilter(academic, courseID)
+	projection := makeFindAllTasksProjection(filterParams)
+	opt := options.FindOne().SetProjection(projection)
+
+	var document courseDocument
+	if err := r.courses.FindOne(ctx, filter, opt).Decode(&document); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, app.Wrap(app.ErrCourseDoesntExist, err)
+		}
+		return nil, app.Wrap(app.ErrDatabaseProblems, err)
+	}
+
+	return unmarshallGeneralTasks(document.Tasks), nil
+}
+
+func makeFindAllTasksProjection(filterParams query.TasksFilterParams) bson.M {
+	return bson.M{"tasks": true}
+}
+
+func makeCourseForAcademicFilter(academic course.Academic, courseID string) bson.M {
+	filter := bson.M{"_id": courseID}
 	if academic.Type() == course.StudentType {
 		filter["students"] = bson.M{"$elemMatch": bson.M{"$eq": academic.ID()}}
 	} else {

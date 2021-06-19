@@ -114,3 +114,16 @@ func unmarshallQueryTestPoints(forTeacher bool, documents []testPointDocument) [
 	}
 	return queryTestPoints
 }
+
+func unmarshallGeneralTasks(documents []taskDocument) []query.GeneralTask {
+	tasks := make([]query.GeneralTask, 0, len(documents))
+	for _, d := range documents {
+		tasks = append(tasks, query.GeneralTask{
+			Number:      d.Number,
+			Title:       d.Title,
+			Description: d.Description,
+			Type:        d.TaskType,
+		})
+	}
+	return tasks
+}
