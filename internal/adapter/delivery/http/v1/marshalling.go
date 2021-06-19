@@ -73,13 +73,10 @@ func marshallDeadline(deadline *query.Deadline) *Deadline {
 func marshallTestData(testData []query.TestData) []TestData {
 	marshalled := make([]TestData, 0, len(testData))
 	for _, td := range testData {
-		inputData := new(string)
-		*inputData = td.InputData
-		outputData := new(string)
-		*outputData = td.OutputData
+		inputData, outputData := td.InputData, td.OutputData
 		marshalled = append(marshalled, TestData{
-			InputData:  inputData,
-			OutputData: outputData,
+			InputData:  &inputData,
+			OutputData: &outputData,
 		})
 	}
 	return marshalled
@@ -92,13 +89,12 @@ func marshallTestPoints(testPoints []query.TestPoint) []TestPoint {
 		if tp.CorrectVariantNumbers != nil {
 			correctVariantNumbers = &tp.CorrectVariantNumbers
 		}
-		singleCorrectVariant := new(bool)
-		*singleCorrectVariant = tp.SingleCorrectVariant
+		singleCorrectVariant := tp.SingleCorrectVariant
 		marshalled = append(marshalled, TestPoint{
 			Description:           tp.Description,
 			Variants:              tp.Variants,
 			CorrectVariantNumbers: correctVariantNumbers,
-			SingleCorrectVariant:  singleCorrectVariant,
+			SingleCorrectVariant:  &singleCorrectVariant,
 		})
 	}
 	return marshalled
