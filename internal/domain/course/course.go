@@ -86,7 +86,7 @@ func (c *Course) Extend(params CreationParams) (*Course, error) {
 	if err := params.Creator.canCreateCourse(); err != nil {
 		return nil, err
 	}
-	if err := c.canAcademicSee(params.Creator); err != nil {
+	if err := c.canAcademicEditWithAccess(params.Creator, TeacherAccess); err != nil {
 		return nil, err
 	}
 	extendedCourseTitle := c.Title()

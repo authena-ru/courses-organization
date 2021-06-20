@@ -130,18 +130,6 @@ func (c *Course) canAcademicEditWithAccess(academic Academic, access Access) err
 	return academicCantEditCourseError{academicType: TeacherType, access: access}
 }
 
-var ErrAcademicCantSeeCourse = errors.New("academic can't see course")
-
-func (c *Course) canAcademicSee(academic Academic) error {
-	if academic.Type() == StudentType && c.hasStudent(academic.ID()) {
-		return nil
-	}
-	if academic.Type() == TeacherType && c.hasTeacher(academic.ID()) {
-		return nil
-	}
-	return ErrAcademicCantSeeCourse
-}
-
 func (a Academic) canCreateCourse() error {
 	if a.Type() == TeacherType {
 		return nil
