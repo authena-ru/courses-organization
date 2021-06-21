@@ -12,7 +12,7 @@ type ctxKey int
 
 const academicCtxKey ctxKey = iota
 
-var ErrNoAcademicInContext = errors.New("No academic in context")
+var ErrNoAcademicInContext = errors.New("no academic in context")
 
 func AcademicFromCtx(ctx context.Context) (course.Academic, error) {
 	if a, ok := ctx.Value(academicCtxKey).(course.Academic); ok {
