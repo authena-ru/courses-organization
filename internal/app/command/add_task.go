@@ -44,12 +44,8 @@ func (h AddTaskHandler) Handle(ctx context.Context, cmd AddTaskCommand) (taskNum
 			cmd.TaskType, cmd.CourseID, cmd.Academic.ID(),
 		)
 	}()
-
-	givenTaskNumber := new(int)
-	if err := h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, addTask(cmd, givenTaskNumber)); err != nil {
-		return 0, err
-	}
-	return *givenTaskNumber, nil
+	err = h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, addTask(cmd, &taskNumber))
+	return
 }
 
 var errInvalidTaskType = errors.New("invalid task type")
