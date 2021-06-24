@@ -9,17 +9,15 @@ import (
 )
 
 type AllTasksQuery struct {
-	Academic    course.Academic
-	CourseID    string
-	Type        course.TaskType
-	Title       string
-	Description string
+	Academic course.Academic
+	CourseID string
+	Type     course.TaskType
+	Text     string
 }
 
 type TasksFilterParams struct {
-	Type        course.TaskType
-	Title       string
-	Description string
+	Type course.TaskType
+	Text string
 }
 
 type allTasksReadModel interface {
@@ -47,9 +45,8 @@ func NewAllTasksHandler(readModel allTasksReadModel) AllTasksHandler {
 // If course doesn't exist, error equal app.ErrCourseDoesntExist
 func (h AllTasksHandler) Handle(ctx context.Context, qry AllTasksQuery) ([]GeneralTask, error) {
 	tasks, err := h.readModel.FindAllTasks(ctx, qry.Academic, qry.CourseID, TasksFilterParams{
-		Type:        qry.Type,
-		Title:       qry.Title,
-		Description: qry.Description,
+		Type: qry.Type,
+		Text: qry.Text,
 	})
 	return tasks, errors.Wrapf(err, "getting all tasks of course #%s", qry.CourseID)
 }

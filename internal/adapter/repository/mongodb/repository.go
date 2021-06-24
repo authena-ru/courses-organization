@@ -5,6 +5,7 @@ import (
 
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -114,26 +115,87 @@ func (r *CoursesRepository) FindAllTasks(
 	academic course.Academic, courseID string,
 	filterParams query.TasksFilterParams,
 ) ([]query.GeneralTask, error) {
-	filter := makeCourseForAcademicFilter(academic, courseID)
-	projection := bson.D{{"tasks", true}}
-	opt := options.FindOne().SetProjection(projection)
-
-	var document courseDocument
-	if err := r.courses.FindOne(ctx, filter, opt).Decode(&document); err != nil {
-		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, app.Wrap(app.ErrCourseDoesntExist, err)
-		}
+	pipeline := makeFindAllTasksPipeline(academic, courseID, filterParams)
+	cursor, err := r.courses.Aggregate(ctx, pipeline)
+	if err != nil {
 		return nil, app.Wrap(app.ErrDatabaseProblems, err)
 	}
-
+	if !cursor.Next(ctx) {
+		return nil, app.ErrCourseDoesntExist
+	}
+	var document courseDocument
+	if err := cursor.Decode(&document); err != nil {
+		return nil, app.Wrap(app.ErrDatabaseProblems, err)
+	}
 	return unmarshallGeneralTasks(document.Tasks), nil
+}
+
+func makeFindAllTasksPipeline(
+	academic course.Academic,
+	courseID string,
+	filterParams query.TasksFilterParams,
+) mongo.Pipeline {
+	matchState := bson.D{{"$match", makeCourseForAcademicFilter(academic, courseID)}}
+	projectStage := bson.D{{
+		"$project", bson.D{{
+			"tasks", bson.D{{
+				"$filter", bson.D{
+					{"input", "$tasks"},
+					{
+						"cond",
+						bson.D{{
+							"$and", bson.A{
+								makeFindAllTasksTextFilter(filterParams),
+								makeFindAllTasksTypeFilter(filterParams),
+							},
+						}},
+					},
+				},
+			}},
+		}},
+	}}
+	return mongo.Pipeline{matchState, projectStage}
+}
+
+func makeFindAllTasksTextFilter(filterParams query.TasksFilterParams) bson.D {
+	if filterParams.Text == "" {
+		return bson.D{}
+	}
+	regex := primitive.Regex{Pattern: filterParams.Text, Options: "i"}
+	return bson.D{{
+		"$or",
+		bson.A{
+			bson.D{{
+				"$regexMatch", bson.D{
+					{"input", "$$this.title"},
+					{"regex", regex},
+				},
+			}},
+			bson.D{{
+				"$regexMatch", bson.D{
+					{"input", "$$this.description"},
+					{"regex", regex},
+				},
+			}},
+		},
+	}}
+}
+
+func makeFindAllTasksTypeFilter(filterParams query.TasksFilterParams) bson.D {
+	if !filterParams.Type.IsValid() {
+		return bson.D{}
+	}
+	return bson.D{{
+		"$eq", bson.A{"$$this.type", filterParams.Type},
+	}}
 }
 
 func makeCourseForAcademicFilter(academic course.Academic, courseID string) bson.D {
 	var academicSubFilter bson.E
 	if academic.Type() == course.StudentType {
 		academicSubFilter = bson.E{
-			Key: "students", Value: bson.D{{"$elemMatch", bson.D{{"$eq", academic.ID()}}}},
+			Key: "students", Value: bson.D{{
+				"$elemMatch", bson.D{{"$eq", academic.ID()}}}},
 		}
 	} else {
 		academicSubFilter = bson.E{
@@ -142,7 +204,8 @@ func makeCourseForAcademicFilter(academic course.Academic, courseID string) bson
 					"creatorId", academic.ID(),
 				}},
 				bson.D{{
-					"collaborators", bson.D{{"$elemMatch", bson.D{{"$eq", academic.ID()}}}},
+					"collaborators", bson.D{{
+						"$elemMatch", bson.D{{"$eq", academic.ID()}}}},
 				}},
 			},
 		}

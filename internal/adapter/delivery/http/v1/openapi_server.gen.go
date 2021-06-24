@@ -538,25 +538,14 @@ func (siw *ServerInterfaceWrapper) GetCourseTasks(w http.ResponseWriter, r *http
 		return
 	}
 
-	// ------------- Optional query parameter "title" -------------
-	if paramValue := r.URL.Query().Get("title"); paramValue != "" {
+	// ------------- Optional query parameter "text" -------------
+	if paramValue := r.URL.Query().Get("text"); paramValue != "" {
 
 	}
 
-	err = runtime.BindQueryParameter("form", true, false, "title", r.URL.Query(), &params.Title)
+	err = runtime.BindQueryParameter("form", true, false, "text", r.URL.Query(), &params.Text)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Invalid format for parameter title: %s", err), http.StatusBadRequest)
-		return
-	}
-
-	// ------------- Optional query parameter "description" -------------
-	if paramValue := r.URL.Query().Get("description"); paramValue != "" {
-
-	}
-
-	err = runtime.BindQueryParameter("form", true, false, "description", r.URL.Query(), &params.Description)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Invalid format for parameter description: %s", err), http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf("Invalid format for parameter text: %s", err), http.StatusBadRequest)
 		return
 	}
 

@@ -357,17 +357,11 @@ paths:
           required: false
           description: type of task for filtering
         - in: query
-          name: title
+          name: text
           schema:
             type: string
           required: false
-          description: task title substring for filtering
-        - in: query
-          name: description
-          schema:
-            type: string
-          required: false
-          description: task description substring for filtering
+          description: text for search in tasks title and description
       responses:
         '200':
           description: found tasks of course

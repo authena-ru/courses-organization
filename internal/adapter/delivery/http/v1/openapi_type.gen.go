@@ -300,11 +300,8 @@ type GetCourseTasksParams struct {
 	// type of task for filtering
 	Type *TaskType `json:"type,omitempty"`
 
-	// task title substring for filtering
-	Title *string `json:"title,omitempty"`
-
-	// task description substring for filtering
-	Description *string `json:"description,omitempty"`
+	// text for search in tasks title and description
+	Text *string `json:"text,omitempty"`
 }
 
 // AddTaskToCourseJSONBody defines parameters for AddTaskToCourse.

@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"github.com/authena-ru/courses-organization/internal/app/query"
 	"net/http"
 
 	"github.com/go-chi/render"
@@ -9,6 +8,7 @@ import (
 	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/auth"
 	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/httperr"
 	"github.com/authena-ru/courses-organization/internal/app/command"
+	"github.com/authena-ru/courses-organization/internal/app/query"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
@@ -29,12 +29,9 @@ func unmarshallAllTasksQuery(
 		return
 	}
 
-	var title, description string
-	if params.Title != nil {
-		title = *params.Title
-	}
-	if params.Description != nil {
-		description = *params.Description
+	var text string
+	if params.Text != nil {
+		text = *params.Text
 	}
 	var taskType course.TaskType
 	if params.Type != nil {
@@ -51,11 +48,10 @@ func unmarshallAllTasksQuery(
 	}
 
 	return query.AllTasksQuery{
-		Academic:    academic,
-		CourseID:    courseID,
-		Type:        taskType,
-		Title:       title,
-		Description: description,
+		Academic: academic,
+		CourseID: courseID,
+		Type:     taskType,
+		Text:     text,
 	}, true
 }
 

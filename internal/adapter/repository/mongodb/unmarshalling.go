@@ -29,7 +29,7 @@ func unmarshallTasks(taskDocuments []taskDocument) []course.UnmarshallingTaskPar
 			Number:      td.Number,
 			Title:       td.Title,
 			Description: td.Description,
-			TaskType:    td.TaskType,
+			TaskType:    td.Type,
 			Deadline:    unmarshalDeadline(td.Deadline),
 			TestData:    unmarshallTestData(td.TestData),
 			TestPoints:  unmarshallTestPoints(td.TestPoints),
@@ -67,7 +67,7 @@ func unmarshallSpecificTask(academic course.Academic, document taskDocument) que
 		Number:      document.Number,
 		Title:       document.Title,
 		Description: document.Description,
-		Type:        document.TaskType,
+		Type:        document.Type,
 		Deadline:    unmarshallQueryDeadline(document.Deadline),
 		TestData:    unmarshallQueryTestData(forTeacher, document.TestData),
 		Points:      unmarshallQueryTestPoints(forTeacher, document.TestPoints),
@@ -122,7 +122,7 @@ func unmarshallGeneralTasks(documents []taskDocument) []query.GeneralTask {
 			Number:      d.Number,
 			Title:       d.Title,
 			Description: d.Description,
-			Type:        d.TaskType,
+			Type:        d.Type,
 		})
 	}
 	return tasks
