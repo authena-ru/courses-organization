@@ -383,8 +383,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '404':
-          description: course not found
+        '400':
+          description: invalid course id, for example course with such id not found
           content:
             application/json:
               schema:
@@ -490,6 +490,12 @@ paths:
                   - $ref: '#/components/schemas/TestingTaskResponse'
                 discriminator:
                   propertyName: type
+        '400':
+          description: invalid course id, for example course with such id not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '404':
           description: course task for teacher or student not found
           content:

@@ -57,6 +57,7 @@ func newApplication(db *mongo.Database) app.Application {
 		},
 		Queries: app.Queries{
 			SpecificTask: query.NewSpecificTaskHandler(coursesRepository),
+			AllTasks:     query.NewAllTasksHandler(coursesRepository),
 		},
 	}
 }
