@@ -30,7 +30,9 @@ func NewSpecificTaskHandler(readModel specificTaskReadModel) SpecificTaskHandler
 }
 
 // Handle is SpecificTaskQuery handler.
-// Returns course task with given number. If task doesn't exist, an error equal app.ErrCourseTaskDoesntExist.
+// Returns course task with given number.
+// If course doesn't exist, an error equal app.ErrCourseDoesntExist.
+// If task doesn't exist, an error equal app.ErrTaskDoesntExist.
 func (h SpecificTaskHandler) Handle(ctx context.Context, qry SpecificTaskQuery) (SpecificTask, error) {
 	task, err := h.readModel.FindTask(ctx, qry.Academic, qry.CourseID, qry.TaskNumber)
 	return task, errors.Wrapf(err, "getting task No %d of course #%s", qry.TaskNumber, qry.CourseID)
