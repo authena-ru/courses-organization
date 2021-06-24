@@ -60,7 +60,7 @@ func (h handler) GetCourseTasks(w http.ResponseWriter, r *http.Request, courseID
 		return
 	}
 	if errors.Is(err, app.ErrCourseDoesntExist) {
-		httperr.NotFound("course-not-found", err, w, r)
+		httperr.BadRequest("course-not-found", err, w, r)
 		return
 	}
 	httperr.InternalServerError("unexpected-error", err, w, r)
