@@ -37,23 +37,20 @@ func NewAddCollaboratorHandler(repository coursesRepository, service academicsSe
 // app.ErrTeacherDoesntExist, app.ErrCourseDoesntExist, app.ErrDatabaseProblems,
 // error that can be detected using course.IsAcademicCantEditCourseError and
 // others without definition.
-func (h AddCollaboratorHandler) Handle(ctx context.Context, cmd AddCollaboratorCommand) (err error) {
-	defer func() {
-		err = errors.Wrapf(
-			err,
-			"adding collaborator #%s to course #%s by academic #%s",
-			cmd.CollaboratorID, cmd.CourseID, cmd.Academic.ID(),
-		)
-	}()
-
-	if err := h.academicsService.TeacherExists(cmd.CollaboratorID); err != nil {
-		return err
-	}
-	return h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, addCollaborator(cmd))
+func (h AddCollaboratorHandler) Handle(ctx context.Context, cmd AddCollaboratorCommand) error {
+	err := h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, h.addCollaborator(cmd))
+	return errors.Wrapf(
+		err,
+		"adding collaborator #%s to course #%s by academic #%s",
+		cmd.CollaboratorID, cmd.CourseID, cmd.Academic.ID(),
+	)
 }
 
-func addCollaborator(cmd AddCollaboratorCommand) UpdateFunction {
-	return func(_ context.Context, crs *course.Course) (*course.Course, error) {
+func (h AddCollaboratorHandler) addCollaborator(cmd AddCollaboratorCommand) UpdateFunction {
+	return func(ctx context.Context, crs *course.Course) (*course.Course, error) {
+		if err := h.academicsService.TeacherExists(ctx, cmd.CollaboratorID); err != nil {
+			return nil, err
+		}
 		if err := crs.AddCollaborators(cmd.Academic, cmd.CollaboratorID); err != nil {
 			return nil, err
 		}
