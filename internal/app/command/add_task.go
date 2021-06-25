@@ -37,15 +37,12 @@ func NewAddTaskHandler(repository coursesRepository) AddTaskHandler {
 // course.IsInvalidTestDataError, course.IsInvalidTestPointError, course.IsAcademicCantEditCourseError
 // and others without definition.
 func (h AddTaskHandler) Handle(ctx context.Context, cmd AddTaskCommand) (taskNumber int, err error) {
-	defer func() {
-		err = errors.Wrapf(
-			err,
-			"adding %s task to course #%s by academic #%s",
-			cmd.TaskType, cmd.CourseID, cmd.Academic.ID(),
-		)
-	}()
 	err = h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, addTask(cmd, &taskNumber))
-	return
+	return taskNumber, errors.Wrapf(
+		err,
+		"adding %s task to course #%s by academic #%s",
+		cmd.TaskType, cmd.CourseID, cmd.Academic.ID(),
+	)
 }
 
 var errInvalidTaskType = errors.New("invalid task type")
