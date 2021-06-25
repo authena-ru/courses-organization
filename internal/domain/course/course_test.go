@@ -2,7 +2,6 @@ package course_test
 
 import (
 	"testing"
-	"time"
 
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
@@ -190,7 +189,10 @@ func TestCourse_Extend(t *testing.T) {
 			t.Parallel()
 
 			creator := course.MustNewAcademic("creator-id", course.TeacherType)
-			originCourse := newCourse(t, creator)
+			originCourse := NewCourse(t, creator, WithStudents("student-id"), WithCollaborators("collaborator-id"))
+			_ = AddManualCheckingTaskToCourse(t, creator, originCourse)
+			_ = AddAutoCodeCheckingTaskToCourse(t, creator, originCourse)
+			_ = AddTestingTaskToCourse(t, creator, originCourse)
 
 			extendedCourse, err := originCourse.Extend(c.Params)
 
@@ -200,82 +202,7 @@ func TestCourse_Extend(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
-			require.Equal(t, c.Params.ID, extendedCourse.ID())
-			require.Equal(t, c.Params.Creator.ID(), extendedCourse.CreatorID())
-			if c.NewPeriodWasGiven {
-				require.Equal(t, c.Params.Period, extendedCourse.Period())
-			} else {
-				require.Equal(t, course.MustNewPeriod(2025, 2026, course.FirstSemester), extendedCourse.Period())
-			}
-			if c.NewTitleWasGiven {
-				require.Equal(t, c.Params.Title, extendedCourse.Title())
-			} else {
-				require.Equal(t, originCourse.Title(), extendedCourse.Title())
-			}
-			require.ElementsMatch(t, append(originCourse.Students(), c.Params.Students...), extendedCourse.Students())
-			require.ElementsMatch(t, append(originCourse.Collaborators(), c.Params.Collaborators...), extendedCourse.Collaborators())
-			assertCourseTasksEquals(t, originCourse, extendedCourse)
+			requireExtendedCourse(t, originCourse, extendedCourse, c.Params, c.NewTitleWasGiven, c.NewPeriodWasGiven)
 		})
-	}
-}
-
-func newCourse(t *testing.T, creator course.Academic) *course.Course {
-	t.Helper()
-	originCourse := course.MustNewCourse(course.CreationParams{
-		ID:            "origin-course-id",
-		Creator:       creator,
-		Title:         "Architecture",
-		Period:        course.MustNewPeriod(2024, 2025, course.FirstSemester),
-		Students:      []string{"student-id"},
-		Collaborators: []string{"collaborator-id¬"},
-	})
-	_, err := originCourse.AddManualCheckingTask(creator, course.ManualCheckingTaskCreationParams{
-		Title:       "Adapters",
-		Description: "Write your adapters",
-		Deadline: course.MustNewDeadline(
-			time.Date(2025, time.September, 1, 0, 0, 0, 0, time.Local),
-			time.Date(2025, time.September, 15, 0, 0, 0, 0, time.Local),
-		),
-	})
-	require.NoError(t, err)
-	_, err = originCourse.AddAutoCodeCheckingTask(creator, course.AutoCodeCheckingTaskCreationParams{
-		Title:       "Printer class",
-		Description: "Write your Printer",
-		Deadline: course.MustNewDeadline(
-			time.Date(2025, time.October, 1, 0, 0, 0, 0, time.Local),
-			time.Date(2025, time.October, 17, 0, 0, 0, 0, time.Local),
-		),
-		TestData: []course.TestData{course.MustNewTestData("1", "Print: 1")},
-	})
-	require.NoError(t, err)
-	_, err = originCourse.AddTestingTask(creator, course.TestingTaskCreationParams{
-		Title:       "Entities",
-		Description: "Entities test",
-		TestPoints:  []course.TestPoint{course.MustNewTestPoint("Entities are classes", []string{"Yes", "No"}, []int{1})},
-	})
-	require.NoError(t, err)
-	return originCourse
-}
-
-func assertCourseTasksEquals(t *testing.T, originCourse, extendedCourse *course.Course) {
-	t.Helper()
-	require.Equal(t, originCourse.TasksNumber(), extendedCourse.TasksNumber())
-	for i := 1; i <= extendedCourse.TasksNumber(); i++ {
-		taskFromOrigin, err := originCourse.Task(i)
-		require.NoError(t, err)
-		taskFromExtended, err := extendedCourse.Task(i)
-		require.NoError(t, err)
-		require.Equal(t, taskFromOrigin.Number(), taskFromExtended.Number())
-		require.Equal(t, taskFromOrigin.Title(), taskFromExtended.Title())
-		require.Equal(t, taskFromOrigin.Description(), taskFromExtended.Description())
-		require.Equal(t, taskFromOrigin.Type(), taskFromExtended.Type())
-		extendedDeadline, _ := taskFromExtended.Deadline()
-		require.True(t, extendedDeadline.IsZero())
-		originTestData, _ := taskFromOrigin.TestData()
-		extendedTestData, _ := taskFromExtended.TestData()
-		require.Equal(t, originTestData, extendedTestData)
-		originTestPoints, _ := taskFromOrigin.TestPoints()
-		extendedTestPoints, _ := taskFromExtended.TestPoints()
-		require.Equal(t, originTestPoints, extendedTestPoints)
 	}
 }
