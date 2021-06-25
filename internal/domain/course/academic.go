@@ -93,9 +93,9 @@ const (
 func (a Access) String() string {
 	switch a {
 	case TeacherAccess:
-		return "teacher access"
+		return "`teacher` access"
 	case CreatorAccess:
-		return "creator access"
+		return "`creator` access"
 	}
 	return "%!Access(" + strconv.Itoa(int(a)) + ")"
 }
@@ -125,9 +125,9 @@ func (c *Course) canAcademicEditWithAccess(academic Academic, access Access) err
 		if access == CreatorAccess && c.hasCreator(academic.ID()) {
 			return nil
 		}
-		return academicCantEditCourseError{academicType: StudentType}
+		return academicCantEditCourseError{academicType: TeacherType, access: access}
 	}
-	return academicCantEditCourseError{academicType: TeacherType, access: access}
+	return academicCantEditCourseError{academicType: StudentType}
 }
 
 func (a Academic) canCreateCourse() error {
