@@ -60,7 +60,7 @@ func (h handler) GetCourseTasks(w http.ResponseWriter, r *http.Request, courseID
 		return
 	}
 	if errors.Is(err, app.ErrCourseDoesntExist) {
-		httperr.NotFound("course-not-found", err, w, r)
+		httperr.BadRequest("course-not-found", err, w, r)
 		return
 	}
 	httperr.InternalServerError("unexpected-error", err, w, r)
@@ -76,7 +76,11 @@ func (h handler) GetCourseTask(w http.ResponseWriter, r *http.Request, courseID 
 		marshallSpecificTask(w, r, task)
 		return
 	}
-	if errors.Is(err, app.ErrCourseTaskDoesntExist) {
+	if errors.Is(err, app.ErrCourseDoesntExist) {
+		httperr.BadRequest("course-not-found", err, w, r)
+		return
+	}
+	if errors.Is(err, app.ErrTaskDoesntExist) {
 		httperr.NotFound("course-task-not-found", err, w, r)
 		return
 	}

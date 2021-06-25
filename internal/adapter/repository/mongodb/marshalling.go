@@ -27,7 +27,7 @@ type taskDocument struct {
 	Number      int                 `bson:"number"`
 	Title       string              `bson:"title"`
 	Description string              `bson:"description"`
-	TaskType    course.TaskType     `bson:"taskType"`
+	Type        course.TaskType     `bson:"type"`
 	Deadline    *deadlineDocument   `bson:"deadline,omitempty"`
 	TestPoints  []testPointDocument `bson:"testPoints,omitempty"`
 	TestData    []testDataDocument  `bson:"testData,omitempty"`
@@ -83,7 +83,7 @@ func marshallTaskDocuments(tasks []course.Task) []taskDocument {
 			Number:      t.Number(),
 			Title:       t.Title(),
 			Description: t.Description(),
-			TaskType:    t.Type(),
+			Type:        t.Type(),
 			Deadline:    deadlineDoc,
 			TestData:    marshallTestDataDocuments(testData),
 			TestPoints:  marshallTestPointDocuments(testPoints),

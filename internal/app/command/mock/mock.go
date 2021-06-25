@@ -80,21 +80,21 @@ func NewAcademicsService(teachers []string, students []string, groups []string) 
 	return asm
 }
 
-func (m *AcademicsService) TeacherExists(teacherID string) error {
+func (m *AcademicsService) TeacherExists(_ context.Context, teacherID string) error {
 	if m.teachers[teacherID] {
 		return nil
 	}
 	return app.ErrTeacherDoesntExist
 }
 
-func (m *AcademicsService) StudentExists(studentID string) error {
+func (m *AcademicsService) StudentExists(_ context.Context, studentID string) error {
 	if m.students[studentID] {
 		return nil
 	}
 	return app.ErrStudentDoesntExist
 }
 
-func (m *AcademicsService) GroupExists(groupID string) error {
+func (m *AcademicsService) GroupExists(_ context.Context, groupID string) error {
 	if m.groups[groupID] {
 		return nil
 	}

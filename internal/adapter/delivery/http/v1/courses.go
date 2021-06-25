@@ -64,8 +64,8 @@ func (h handler) ExtendCourse(w http.ResponseWriter, r *http.Request, courseID s
 		httperr.BadRequest("invalid-course-parameters", err, w, r)
 		return
 	}
-	if errors.Is(err, course.ErrAcademicCantSeeCourse) {
-		httperr.BadRequest("academic-cant-see-course", err, w, r)
+	if course.IsAcademicCantEditCourseError(err) {
+		httperr.BadRequest("academic-cant-edit-course", err, w, r)
 		return
 	}
 	if errors.Is(err, course.ErrNotTeacherCantCreateCourse) {

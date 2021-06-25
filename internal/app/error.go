@@ -7,12 +7,12 @@ import (
 )
 
 var (
-	ErrCourseDoesntExist     = errors.New("course doesn't exist")
-	ErrTeacherDoesntExist    = errors.New("teacher doesn't exist")
-	ErrStudentDoesntExist    = errors.New("student doesn't exist")
-	ErrGroupDoesntExist      = errors.New("group doesn't exist")
-	ErrCourseTaskDoesntExist = errors.New("course task doesn't exist")
-	ErrDatabaseProblems      = errors.New("database problems")
+	ErrCourseDoesntExist  = errors.New("course doesn't exist")
+	ErrTeacherDoesntExist = errors.New("teacher doesn't exist")
+	ErrStudentDoesntExist = errors.New("student doesn't exist")
+	ErrGroupDoesntExist   = errors.New("group doesn't exist")
+	ErrTaskDoesntExist    = errors.New("course task doesn't exist")
+	ErrDatabaseProblems   = errors.New("database problems")
 )
 
 type errorWrapper struct {
