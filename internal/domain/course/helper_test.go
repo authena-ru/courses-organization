@@ -126,3 +126,14 @@ func requireCourseTasksEquals(t *testing.T, originCourse, extendedCourse *course
 		require.Equal(t, originTestPoints, extendedTestPoints)
 	}
 }
+
+func requireGeneralTaskParamsEquals(
+	t *testing.T,
+	task course.Task,
+	number int, taskType course.TaskType, title, description string,
+) {
+	require.Equal(t, number, task.Number())
+	require.Equal(t, taskType, task.Type())
+	require.Equal(t, title, task.Title())
+	require.Equal(t, description, task.Description())
+}

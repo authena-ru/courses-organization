@@ -13,7 +13,6 @@ import (
 
 func TestCourse_AddManualCheckingTask(t *testing.T) {
 	t.Parallel()
-	creator := course.MustNewAcademic("creator-id", course.TeacherType)
 	correctTaskCreationParams := course.ManualCheckingTaskCreationParams{
 		Title:       "Make container",
 		Description: "Containerization",
@@ -30,7 +29,7 @@ func TestCourse_AddManualCheckingTask(t *testing.T) {
 	}{
 		{
 			Name:     "add_task_to_course_and_obtain_number",
-			Academic: creator,
+			Academic: course.MustNewAcademic("creator-id", course.TeacherType),
 			Params:   correctTaskCreationParams,
 		},
 		{
@@ -41,7 +40,7 @@ func TestCourse_AddManualCheckingTask(t *testing.T) {
 		},
 		{
 			Name:     "task_title_too_long",
-			Academic: creator,
+			Academic: course.MustNewAcademic("creator-id", course.TeacherType),
 			Params: course.ManualCheckingTaskCreationParams{
 				Title: strings.Repeat("x", 201),
 			},
@@ -51,7 +50,7 @@ func TestCourse_AddManualCheckingTask(t *testing.T) {
 		},
 		{
 			Name:     "task_description_too_long",
-			Academic: creator,
+			Academic: course.MustNewAcademic("creator-id", course.TeacherType),
 			Params: course.ManualCheckingTaskCreationParams{
 				Description: strings.Repeat("x", 1001),
 			},
@@ -66,13 +65,8 @@ func TestCourse_AddManualCheckingTask(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			crs := course.MustNewCourse(course.CreationParams{
-				ID:      "course-id",
-				Creator: creator,
-				Title:   "Docker",
-				Period:  course.MustNewPeriod(2021, 2022, course.SecondSemester),
-				Started: true,
-			})
+			creator := course.MustNewAcademic("creator-id", course.TeacherType)
+			crs := NewCourse(t, creator)
 
 			number, err := crs.AddManualCheckingTask(c.Academic, c.Params)
 			if c.IsErr != nil {
@@ -84,10 +78,12 @@ func TestCourse_AddManualCheckingTask(t *testing.T) {
 			require.Equal(t, 1, crs.TasksNumber())
 			task, err := crs.Task(number)
 			require.NoError(t, err)
-			require.Equal(t, number, task.Number())
-			require.Equal(t, course.ManualCheckingType, task.Type())
-			require.Equal(t, c.Params.Title, task.Title())
-			require.Equal(t, c.Params.Description, task.Description())
+			requireGeneralTaskParamsEquals(
+				t,
+				task,
+				number, course.ManualCheckingType,
+				c.Params.Title, c.Params.Description,
+			)
 			deadline, _ := task.Deadline()
 			require.Equal(t, c.Params.Deadline, deadline)
 		})
@@ -96,8 +92,6 @@ func TestCourse_AddManualCheckingTask(t *testing.T) {
 
 func TestCourse_AddAutoCodeCheckingTask(t *testing.T) {
 	t.Parallel()
-	creator := course.MustNewAcademic("creator-id", course.TeacherType)
-	collaborator := course.MustNewAcademic("collaborator-id", course.TeacherType)
 	correctTaskCreationParams := course.AutoCodeCheckingTaskCreationParams{
 		Title:       "Print sum of two integers",
 		Description: "You should read two integers from console and print sum",
@@ -115,7 +109,7 @@ func TestCourse_AddAutoCodeCheckingTask(t *testing.T) {
 	}{
 		{
 			Name:     "add_task_to_course_and_obtain_number",
-			Academic: collaborator,
+			Academic: course.MustNewAcademic("collaborator-id", course.TeacherType),
 			Params:   correctTaskCreationParams,
 		},
 		{
@@ -126,7 +120,7 @@ func TestCourse_AddAutoCodeCheckingTask(t *testing.T) {
 		},
 		{
 			Name:     "task_title_too_long",
-			Academic: creator,
+			Academic: course.MustNewAcademic("creator-id", course.TeacherType),
 			Params: course.AutoCodeCheckingTaskCreationParams{
 				Title: strings.Repeat("x", 201),
 			},
@@ -136,7 +130,7 @@ func TestCourse_AddAutoCodeCheckingTask(t *testing.T) {
 		},
 		{
 			Name:     "task_description_too_long",
-			Academic: collaborator,
+			Academic: course.MustNewAcademic("collaborator-id", course.TeacherType),
 			Params: course.AutoCodeCheckingTaskCreationParams{
 				Description: strings.Repeat("x", 1001),
 			},
@@ -151,14 +145,8 @@ func TestCourse_AddAutoCodeCheckingTask(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			crs := course.MustNewCourse(course.CreationParams{
-				ID:            "course-id",
-				Creator:       creator,
-				Title:         "Python Django",
-				Period:        course.MustNewPeriod(2023, 2024, course.FirstSemester),
-				Started:       true,
-				Collaborators: []string{collaborator.ID()},
-			})
+			creator := course.MustNewAcademic("creator-id", course.TeacherType)
+			crs := NewCourse(t, creator, WithCollaborators("collaborator-id"))
 
 			number, err := crs.AddAutoCodeCheckingTask(c.Academic, c.Params)
 			if c.IsErr != nil {
@@ -170,10 +158,12 @@ func TestCourse_AddAutoCodeCheckingTask(t *testing.T) {
 			require.Equal(t, 1, crs.TasksNumber())
 			task, err := crs.Task(number)
 			require.NoError(t, err)
-			require.Equal(t, number, task.Number())
-			require.Equal(t, course.AutoCodeCheckingType, task.Type())
-			require.Equal(t, c.Params.Title, task.Title())
-			require.Equal(t, c.Params.Description, task.Description())
+			requireGeneralTaskParamsEquals(
+				t,
+				task,
+				number, course.AutoCodeCheckingType,
+				c.Params.Title, c.Params.Description,
+			)
 			deadline, _ := task.Deadline()
 			testData, _ := task.TestData()
 			require.Equal(t, c.Params.Deadline, deadline)
@@ -184,7 +174,6 @@ func TestCourse_AddAutoCodeCheckingTask(t *testing.T) {
 
 func TestCourse_AddTestingTask(t *testing.T) {
 	t.Parallel()
-	creator := course.MustNewAcademic("creator-id", course.TeacherType)
 	correctTaskCreationParams := course.TestingTaskCreationParams{
 		Title:       "Golang syntax",
 		Description: "Choose right syntactic constructions",
@@ -198,7 +187,7 @@ func TestCourse_AddTestingTask(t *testing.T) {
 	}{
 		{
 			Name:     "add_task_to_course_and_obtain_number",
-			Academic: creator,
+			Academic: course.MustNewAcademic("creator-id", course.TeacherType),
 			Params:   correctTaskCreationParams,
 		},
 		{
@@ -209,7 +198,7 @@ func TestCourse_AddTestingTask(t *testing.T) {
 		},
 		{
 			Name:     "task_title_too_long",
-			Academic: creator,
+			Academic: course.MustNewAcademic("creator-id", course.TeacherType),
 			Params: course.TestingTaskCreationParams{
 				Title: strings.Repeat("x", 201),
 			},
@@ -219,7 +208,7 @@ func TestCourse_AddTestingTask(t *testing.T) {
 		},
 		{
 			Name:     "task_description_too_long",
-			Academic: creator,
+			Academic: course.MustNewAcademic("creator-id", course.TeacherType),
 			Params: course.TestingTaskCreationParams{
 				Description: strings.Repeat("x", 1001),
 			},
@@ -234,13 +223,7 @@ func TestCourse_AddTestingTask(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			crs := course.MustNewCourse(course.CreationParams{
-				ID:      "course-id",
-				Creator: creator,
-				Title:   "Golang channels",
-				Period:  course.MustNewPeriod(2021, 2022, course.FirstSemester),
-				Started: true,
-			})
+			crs := NewCourse(t, course.MustNewAcademic("creator-id", course.TeacherType))
 
 			number, err := crs.AddTestingTask(c.Academic, c.Params)
 			if c.IsErr != nil {
@@ -252,10 +235,12 @@ func TestCourse_AddTestingTask(t *testing.T) {
 			require.Equal(t, 1, crs.TasksNumber())
 			task, err := crs.Task(number)
 			require.NoError(t, err)
-			require.Equal(t, number, task.Number())
-			require.Equal(t, course.TestingType, task.Type())
-			require.Equal(t, c.Params.Title, task.Title())
-			require.Equal(t, c.Params.Description, task.Description())
+			requireGeneralTaskParamsEquals(
+				t,
+				task,
+				number, course.TestingType,
+				c.Params.Title, c.Params.Description,
+			)
 			testPoints, _ := task.TestPoints()
 			require.Equal(t, c.Params.TestPoints, testPoints)
 		})
@@ -264,11 +249,13 @@ func TestCourse_AddTestingTask(t *testing.T) {
 
 func TestCourse_RenameTask(t *testing.T) {
 	t.Parallel()
-	creator := course.MustNewAcademic("creator-id", course.TeacherType)
 	addTask := func(crs *course.Course) int {
-		taskNumber, err := crs.AddManualCheckingTask(creator, course.ManualCheckingTaskCreationParams{
-			Title: "Classes in TypeScript",
-		})
+		taskNumber, err := crs.AddManualCheckingTask(
+			course.MustNewAcademic("creator-id", course.TeacherType),
+			course.ManualCheckingTaskCreationParams{
+				Title: "Classes in TypeScript",
+			},
+		)
 		require.NoError(t, err)
 		return taskNumber
 	}
@@ -281,7 +268,7 @@ func TestCourse_RenameTask(t *testing.T) {
 	}{
 		{
 			Name:        "rename_task_to_new_valid_title",
-			Academic:    creator,
+			Academic:    course.MustNewAcademic("creator-id", course.TeacherType),
 			NewTitle:    "Classez in Typescript",
 			PrepareTask: addTask,
 		},
@@ -294,7 +281,7 @@ func TestCourse_RenameTask(t *testing.T) {
 		},
 		{
 			Name:        "task_title_too_loong",
-			Academic:    creator,
+			Academic:    course.MustNewAcademic("creator-id", course.TeacherType),
 			NewTitle:    strings.Repeat("x", 201),
 			PrepareTask: addTask,
 			IsErr: func(err error) bool {
@@ -303,7 +290,7 @@ func TestCourse_RenameTask(t *testing.T) {
 		},
 		{
 			Name:     "no_task_with_number",
-			Academic: creator,
+			Academic: course.MustNewAcademic("creator-id", course.TeacherType),
 			NewTitle: "Classes",
 			PrepareTask: func(crs *course.Course) int {
 				return crs.TasksNumber() + 1
@@ -319,12 +306,7 @@ func TestCourse_RenameTask(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			crs := course.MustNewCourse(course.CreationParams{
-				ID:      "course-id",
-				Creator: creator,
-				Title:   "Learn TypeScript",
-				Period:  course.MustNewPeriod(2021, 2022, course.FirstSemester),
-			})
+			crs := NewCourse(t, course.MustNewAcademic("creator-id", course.TeacherType))
 			taskNumber := c.PrepareTask(crs)
 
 			err := crs.RenameTask(c.Academic, taskNumber, c.NewTitle)
@@ -344,11 +326,13 @@ func TestCourse_RenameTask(t *testing.T) {
 
 func TestCourse_ReplaceTaskDescription(t *testing.T) {
 	t.Parallel()
-	creator := course.MustNewAcademic("creator-id", course.TeacherType)
 	addTask := func(crs *course.Course) int {
-		taskNumber, err := crs.AddManualCheckingTask(creator, course.ManualCheckingTaskCreationParams{
-			Description: "Write your binary search",
-		})
+		taskNumber, err := crs.AddManualCheckingTask(
+			course.MustNewAcademic("creator-id", course.TeacherType),
+			course.ManualCheckingTaskCreationParams{
+				Description: "Write your binary search",
+			},
+		)
 		require.NoError(t, err)
 		return taskNumber
 	}
@@ -361,7 +345,7 @@ func TestCourse_ReplaceTaskDescription(t *testing.T) {
 	}{
 		{
 			Name:           "replace_task_description_with_new_valid_description",
-			Academic:       creator,
+			Academic:       course.MustNewAcademic("creator-id", course.TeacherType),
 			NewDescription: "Write your search",
 			PrepareTask:    addTask,
 		},
@@ -374,7 +358,7 @@ func TestCourse_ReplaceTaskDescription(t *testing.T) {
 		},
 		{
 			Name:           "task_description_too_long",
-			Academic:       creator,
+			Academic:       course.MustNewAcademic("creator-id", course.TeacherType),
 			NewDescription: strings.Repeat("x", 1001),
 			PrepareTask:    addTask,
 			IsErr: func(err error) bool {
@@ -383,7 +367,7 @@ func TestCourse_ReplaceTaskDescription(t *testing.T) {
 		},
 		{
 			Name:           "no_task_with_number",
-			Academic:       creator,
+			Academic:       course.MustNewAcademic("creator-id", course.TeacherType),
 			NewDescription: "Write search algorithm",
 			PrepareTask: func(crs *course.Course) int {
 				return crs.TasksNumber() + 1
@@ -399,12 +383,7 @@ func TestCourse_ReplaceTaskDescription(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			crs := course.MustNewCourse(course.CreationParams{
-				ID:      "course-id",
-				Creator: creator,
-				Title:   "C#",
-				Period:  course.MustNewPeriod(2021, 2022, course.SecondSemester),
-			})
+			crs := NewCourse(t, course.MustNewAcademic("creator-id", course.TeacherType))
 			taskNumber := c.PrepareTask(crs)
 
 			err := crs.ReplaceTaskDescription(c.Academic, taskNumber, c.NewDescription)
@@ -424,12 +403,12 @@ func TestCourse_ReplaceTaskDescription(t *testing.T) {
 
 func TestCourse_ReplaceTaskDeadline(t *testing.T) {
 	t.Parallel()
-	creator := course.MustNewAcademic("creator-id", course.TeacherType)
 	newDeadline := course.MustNewDeadline(
 		time.Date(2023, time.March, 10, 0, 0, 0, 0, time.Local),
 		time.Date(2023, time.March, 22, 0, 0, 0, 0, time.Local),
 	)
 	addTasks := func(crs *course.Course) (int, int) {
+		creator := course.MustNewAcademic("creator-id", course.TeacherType)
 		manualTaskNumber, err := crs.AddManualCheckingTask(creator, course.ManualCheckingTaskCreationParams{
 			Deadline: course.MustNewDeadline(
 				time.Date(2023, time.March, 1, 0, 0, 0, 9, time.Local),
@@ -450,7 +429,7 @@ func TestCourse_ReplaceTaskDeadline(t *testing.T) {
 	}{
 		{
 			Name:        "replace_task_deadline_with_new_valid_deadline",
-			Academic:    creator,
+			Academic:    course.MustNewAcademic("creator-id", course.TeacherType),
 			NewDeadline: newDeadline,
 			PrepareTask: func(crs *course.Course) int {
 				manualTaskNumber, _ := addTasks(crs)
@@ -459,7 +438,7 @@ func TestCourse_ReplaceTaskDeadline(t *testing.T) {
 		},
 		{
 			Name:        "task_has_no_deadline",
-			Academic:    creator,
+			Academic:    course.MustNewAcademic("creator-id", course.TeacherType),
 			NewDeadline: newDeadline,
 			PrepareTask: func(crs *course.Course) int {
 				_, testingTaskNumber := addTasks(crs)
@@ -481,7 +460,7 @@ func TestCourse_ReplaceTaskDeadline(t *testing.T) {
 		},
 		{
 			Name:        "no_task_with_number",
-			Academic:    creator,
+			Academic:    course.MustNewAcademic("creator-id", course.TeacherType),
 			NewDeadline: newDeadline,
 			PrepareTask: func(crs *course.Course) int {
 				return crs.TasksNumber() + 1
@@ -497,12 +476,7 @@ func TestCourse_ReplaceTaskDeadline(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			crs := course.MustNewCourse(course.CreationParams{
-				ID:      "course-id",
-				Creator: creator,
-				Title:   "Python",
-				Period:  course.MustNewPeriod(2022, 2023, course.SecondSemester),
-			})
+			crs := NewCourse(t, course.MustNewAcademic("creator-id", course.TeacherType))
 			taskNumber := c.PrepareTask(crs)
 
 			err := crs.ReplaceTaskDeadline(c.Academic, taskNumber, c.NewDeadline)
@@ -524,8 +498,8 @@ func TestCourse_ReplaceTaskDeadline(t *testing.T) {
 
 func TestCourse_ReplaceTaskTestData(t *testing.T) {
 	t.Parallel()
-	creator := course.MustNewAcademic("creator-id", course.TeacherType)
 	addTasks := func(crs *course.Course) (int, int) {
+		creator := course.MustNewAcademic("creator-id", course.TeacherType)
 		manualTaskNumber, err := crs.AddManualCheckingTask(creator, course.ManualCheckingTaskCreationParams{})
 		require.NoError(t, err)
 		autoCodeTaskNumber, err := crs.AddAutoCodeCheckingTask(creator, course.AutoCodeCheckingTaskCreationParams{
@@ -544,7 +518,7 @@ func TestCourse_ReplaceTaskTestData(t *testing.T) {
 	}{
 		{
 			Name:        "replace_task_test_data_with_new_test_data",
-			Academic:    creator,
+			Academic:    course.MustNewAcademic("creator-id", course.TeacherType),
 			NewTestData: newTestData,
 			PrepareTask: func(crs *course.Course) int {
 				autoCodeTaskNumber, _ := addTasks(crs)
@@ -553,7 +527,7 @@ func TestCourse_ReplaceTaskTestData(t *testing.T) {
 		},
 		{
 			Name:        "task_has_no_test_data",
-			Academic:    creator,
+			Academic:    course.MustNewAcademic("creator-id", course.TeacherType),
 			NewTestData: newTestData,
 			PrepareTask: func(crs *course.Course) int {
 				_, manualTaskNumber := addTasks(crs)
@@ -575,7 +549,7 @@ func TestCourse_ReplaceTaskTestData(t *testing.T) {
 		},
 		{
 			Name:        "no_task_with_number",
-			Academic:    creator,
+			Academic:    course.MustNewAcademic("creator-id", course.TeacherType),
 			NewTestData: newTestData,
 			PrepareTask: func(crs *course.Course) int {
 				return crs.TasksNumber() + 1
@@ -591,12 +565,7 @@ func TestCourse_ReplaceTaskTestData(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			crs := course.MustNewCourse(course.CreationParams{
-				ID:      "course-id",
-				Creator: creator,
-				Title:   "Golang",
-				Period:  course.MustNewPeriod(2020, 2021, course.SecondSemester),
-			})
+			crs := NewCourse(t, course.MustNewAcademic("creator-id", course.TeacherType))
 			taskNumber := c.PrepareTask(crs)
 
 			err := crs.ReplaceTaskTestData(c.Academic, taskNumber, c.NewTestData)
@@ -618,8 +587,8 @@ func TestCourse_ReplaceTaskTestData(t *testing.T) {
 
 func TestCourse_ReplaceTaskTestPoints(t *testing.T) {
 	t.Parallel()
-	creator := course.MustNewAcademic("creator-id", course.TeacherType)
 	addTasks := func(crs *course.Course) (int, int) {
+		creator := course.MustNewAcademic("creator-id", course.TeacherType)
 		autoCodeTaskNumber, err := crs.AddAutoCodeCheckingTask(creator, course.AutoCodeCheckingTaskCreationParams{})
 		require.NoError(t, err)
 		testingTaskNumber, err := crs.AddTestingTask(creator, course.TestingTaskCreationParams{
@@ -638,7 +607,7 @@ func TestCourse_ReplaceTaskTestPoints(t *testing.T) {
 	}{
 		{
 			Name:          "replace_task_test_points_with_new_test_points",
-			Academic:      creator,
+			Academic:      course.MustNewAcademic("creator-id", course.TeacherType),
 			NewTestPoints: newTestPoints,
 			PrepareTask: func(crs *course.Course) int {
 				testingTaskNumber, _ := addTasks(crs)
@@ -647,7 +616,7 @@ func TestCourse_ReplaceTaskTestPoints(t *testing.T) {
 		},
 		{
 			Name:          "task_has_no_test_points",
-			Academic:      creator,
+			Academic:      course.MustNewAcademic("creator-id", course.TeacherType),
 			NewTestPoints: newTestPoints,
 			PrepareTask: func(crs *course.Course) int {
 				_, autoCodeTaskNumber := addTasks(crs)
@@ -669,7 +638,7 @@ func TestCourse_ReplaceTaskTestPoints(t *testing.T) {
 		},
 		{
 			Name:          "no_task_with_number",
-			Academic:      creator,
+			Academic:      course.MustNewAcademic("creator-id", course.TeacherType),
 			NewTestPoints: newTestPoints,
 			PrepareTask: func(crs *course.Course) int {
 				return crs.TasksNumber() + 1
@@ -685,12 +654,7 @@ func TestCourse_ReplaceTaskTestPoints(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			crs := course.MustNewCourse(course.CreationParams{
-				ID:      "course-id",
-				Creator: creator,
-				Title:   "Spring framework",
-				Period:  course.MustNewPeriod(2021, 2022, course.FirstSemester),
-			})
+			crs := NewCourse(t, course.MustNewAcademic("creator-id", course.TeacherType))
 			taskNumber := c.PrepareTask(crs)
 
 			err := crs.ReplaceTaskTestPoints(c.Academic, taskNumber, c.NewTestPoints)
