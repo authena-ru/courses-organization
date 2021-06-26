@@ -11,7 +11,7 @@ import (
 
 type CourseOption func(academic course.Academic, crs *course.Course)
 
-func WithStudents(students ...string) CourseOption {
+func withStudents(students ...string) CourseOption {
 	return func(academic course.Academic, crs *course.Course) {
 		err := crs.AddStudents(academic, students...)
 		if err != nil {
@@ -20,7 +20,7 @@ func WithStudents(students ...string) CourseOption {
 	}
 }
 
-func WithCollaborators(collaborators ...string) CourseOption {
+func withCollaborators(collaborators ...string) CourseOption {
 	return func(academic course.Academic, crs *course.Course) {
 		err := crs.AddCollaborators(academic, collaborators...)
 		if err != nil {
@@ -29,7 +29,7 @@ func WithCollaborators(collaborators ...string) CourseOption {
 	}
 }
 
-func NewCourse(t *testing.T, creator course.Academic, opts ...CourseOption) *course.Course {
+func newCourse(t *testing.T, creator course.Academic, opts ...CourseOption) *course.Course {
 	t.Helper()
 	crs := course.MustNewCourse(course.CreationParams{
 		ID:      "origin-course-id",
@@ -43,7 +43,7 @@ func NewCourse(t *testing.T, creator course.Academic, opts ...CourseOption) *cou
 	return crs
 }
 
-func AddManualCheckingTaskToCourse(t *testing.T, academic course.Academic, crs *course.Course) int {
+func addManualCheckingTaskToCourse(t *testing.T, academic course.Academic, crs *course.Course) int {
 	taskNumber, err := crs.AddManualCheckingTask(academic, course.ManualCheckingTaskCreationParams{
 		Title:       "Manual checking task title",
 		Description: "Manual checking task description",
@@ -56,7 +56,7 @@ func AddManualCheckingTaskToCourse(t *testing.T, academic course.Academic, crs *
 	return taskNumber
 }
 
-func AddAutoCodeCheckingTaskToCourse(t *testing.T, academic course.Academic, crs *course.Course) int {
+func addAutoCodeCheckingTaskToCourse(t *testing.T, academic course.Academic, crs *course.Course) int {
 	taskNumber, err := crs.AddAutoCodeCheckingTask(academic, course.AutoCodeCheckingTaskCreationParams{
 		Title:       "Auto code checking task title",
 		Description: "Auto code checking task description",
@@ -70,7 +70,7 @@ func AddAutoCodeCheckingTaskToCourse(t *testing.T, academic course.Academic, crs
 	return taskNumber
 }
 
-func AddTestingTaskToCourse(t *testing.T, academic course.Academic, crs *course.Course) int {
+func addTestingTaskToCourse(t *testing.T, academic course.Academic, crs *course.Course) int {
 	taskNumber, err := crs.AddTestingTask(academic, course.TestingTaskCreationParams{
 		Title:       "Testing task title",
 		Description: "Testing task description",

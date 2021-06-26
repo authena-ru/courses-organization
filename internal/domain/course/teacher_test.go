@@ -41,7 +41,7 @@ func TestCourse_AddCollaborators(t *testing.T) {
 			t.Parallel()
 
 			creator := course.MustNewAcademic("creator-id", course.TeacherType)
-			crs := NewCourse(t, creator, WithStudents("student-id"), WithCollaborators("collaborator-id"))
+			crs := newCourse(t, creator, withStudents("student-id"), withCollaborators("collaborator-id"))
 
 			err := crs.AddCollaborators(c.Academic, "collaborator1-id", "collaborator2-id")
 			if c.IsErr != nil {
@@ -93,11 +93,11 @@ func TestCourse_RemoveCollaborators(t *testing.T) {
 			t.Parallel()
 
 			creator := course.MustNewAcademic("creator-id", course.TeacherType)
-			crs := NewCourse(
+			crs := newCourse(
 				t,
 				creator,
-				WithStudents("student-id"),
-				WithCollaborators("collaborator-id", "collaborator-to-remove-id"),
+				withStudents("student-id"),
+				withCollaborators("collaborator-id", "collaborator-to-remove-id"),
 			)
 
 			err := crs.RemoveCollaborator(c.Academic, "collaborator-to-remove-id")

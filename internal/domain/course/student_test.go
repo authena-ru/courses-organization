@@ -41,7 +41,7 @@ func TestCourse_AddStudents(t *testing.T) {
 			t.Parallel()
 
 			creator := course.MustNewAcademic("creator-id", course.TeacherType)
-			crs := NewCourse(t, creator, WithStudents("student-id"), WithCollaborators("collaborator-id"))
+			crs := newCourse(t, creator, withStudents("student-id"), withCollaborators("collaborator-id"))
 			err := crs.AddStudents(c.Academic, "student1-id", "student2-id")
 			if c.IsErr != nil {
 				require.Error(t, err)
@@ -87,10 +87,10 @@ func TestCourse_RemoveStudents(t *testing.T) {
 			t.Parallel()
 
 			creator := course.MustNewAcademic("creator-id", course.TeacherType)
-			crs := NewCourse(
+			crs := newCourse(
 				t, creator,
-				WithStudents("student-id", "student-to-remove-id"),
-				WithCollaborators("collaborator-id"),
+				withStudents("student-id", "student-to-remove-id"),
+				withCollaborators("collaborator-id"),
 			)
 			err := crs.RemoveStudent(c.Academic, "student-to-remove-id")
 			if c.IsErr != nil {

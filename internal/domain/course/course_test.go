@@ -189,10 +189,10 @@ func TestCourse_Extend(t *testing.T) {
 			t.Parallel()
 
 			creator := course.MustNewAcademic("creator-id", course.TeacherType)
-			originCourse := NewCourse(t, creator, WithStudents("student-id"), WithCollaborators("collaborator-id"))
-			_ = AddManualCheckingTaskToCourse(t, creator, originCourse)
-			_ = AddAutoCodeCheckingTaskToCourse(t, creator, originCourse)
-			_ = AddTestingTaskToCourse(t, creator, originCourse)
+			originCourse := newCourse(t, creator, withStudents("student-id"), withCollaborators("collaborator-id"))
+			_ = addManualCheckingTaskToCourse(t, creator, originCourse)
+			_ = addAutoCodeCheckingTaskToCourse(t, creator, originCourse)
+			_ = addTestingTaskToCourse(t, creator, originCourse)
 
 			extendedCourse, err := originCourse.Extend(c.Params)
 

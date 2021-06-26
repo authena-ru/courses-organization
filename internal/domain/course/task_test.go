@@ -66,7 +66,7 @@ func TestCourse_AddManualCheckingTask(t *testing.T) {
 			t.Parallel()
 
 			creator := course.MustNewAcademic("creator-id", course.TeacherType)
-			crs := NewCourse(t, creator)
+			crs := newCourse(t, creator)
 
 			number, err := crs.AddManualCheckingTask(c.Academic, c.Params)
 			if c.IsErr != nil {
@@ -146,7 +146,7 @@ func TestCourse_AddAutoCodeCheckingTask(t *testing.T) {
 			t.Parallel()
 
 			creator := course.MustNewAcademic("creator-id", course.TeacherType)
-			crs := NewCourse(t, creator, WithCollaborators("collaborator-id"))
+			crs := newCourse(t, creator, withCollaborators("collaborator-id"))
 
 			number, err := crs.AddAutoCodeCheckingTask(c.Academic, c.Params)
 			if c.IsErr != nil {
@@ -223,7 +223,7 @@ func TestCourse_AddTestingTask(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			crs := NewCourse(t, course.MustNewAcademic("creator-id", course.TeacherType))
+			crs := newCourse(t, course.MustNewAcademic("creator-id", course.TeacherType))
 
 			number, err := crs.AddTestingTask(c.Academic, c.Params)
 			if c.IsErr != nil {
@@ -306,7 +306,7 @@ func TestCourse_RenameTask(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			crs := NewCourse(t, course.MustNewAcademic("creator-id", course.TeacherType))
+			crs := newCourse(t, course.MustNewAcademic("creator-id", course.TeacherType))
 			taskNumber := c.PrepareTask(crs)
 
 			err := crs.RenameTask(c.Academic, taskNumber, c.NewTitle)
@@ -383,7 +383,7 @@ func TestCourse_ReplaceTaskDescription(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			crs := NewCourse(t, course.MustNewAcademic("creator-id", course.TeacherType))
+			crs := newCourse(t, course.MustNewAcademic("creator-id", course.TeacherType))
 			taskNumber := c.PrepareTask(crs)
 
 			err := crs.ReplaceTaskDescription(c.Academic, taskNumber, c.NewDescription)
@@ -476,7 +476,7 @@ func TestCourse_ReplaceTaskDeadline(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			crs := NewCourse(t, course.MustNewAcademic("creator-id", course.TeacherType))
+			crs := newCourse(t, course.MustNewAcademic("creator-id", course.TeacherType))
 			taskNumber := c.PrepareTask(crs)
 
 			err := crs.ReplaceTaskDeadline(c.Academic, taskNumber, c.NewDeadline)
@@ -565,7 +565,7 @@ func TestCourse_ReplaceTaskTestData(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			crs := NewCourse(t, course.MustNewAcademic("creator-id", course.TeacherType))
+			crs := newCourse(t, course.MustNewAcademic("creator-id", course.TeacherType))
 			taskNumber := c.PrepareTask(crs)
 
 			err := crs.ReplaceTaskTestData(c.Academic, taskNumber, c.NewTestData)
@@ -654,7 +654,7 @@ func TestCourse_ReplaceTaskTestPoints(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			crs := NewCourse(t, course.MustNewAcademic("creator-id", course.TeacherType))
+			crs := newCourse(t, course.MustNewAcademic("creator-id", course.TeacherType))
 			taskNumber := c.PrepareTask(crs)
 
 			err := crs.ReplaceTaskTestPoints(c.Academic, taskNumber, c.NewTestPoints)
