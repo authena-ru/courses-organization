@@ -10,20 +10,6 @@ import (
 
 func TestCourse_AddCollaborators(t *testing.T) {
 	t.Parallel()
-	var (
-		creatorID            = "creator-id"
-		collaboratorID       = "collaborator-id"
-		studentID            = "student-id"
-		collaboratorIDsToAdd = []string{"collaborator-1-id", "collaborator-2-id"}
-	)
-	params := course.CreationParams{
-		ID:            "course-id",
-		Creator:       course.MustNewAcademic(creatorID, course.TeacherType),
-		Title:         "ASP.NET in C#",
-		Period:        course.MustNewPeriod(2021, 2022, course.SecondSemester),
-		Collaborators: []string{collaboratorID},
-		Students:      []string{studentID},
-	}
 	testCases := []struct {
 		Name     string
 		Academic course.Academic
@@ -31,15 +17,15 @@ func TestCourse_AddCollaborators(t *testing.T) {
 	}{
 		{
 			Name:     "creator_can_add_collaborators",
-			Academic: course.MustNewAcademic(creatorID, course.TeacherType),
+			Academic: course.MustNewAcademic("creator-id", course.TeacherType),
 		},
 		{
 			Name:     "collaborator_can_add_collaborators",
-			Academic: course.MustNewAcademic(collaboratorID, course.TeacherType),
+			Academic: course.MustNewAcademic("collaborator-id", course.TeacherType),
 		},
 		{
 			Name:     "student_cant_add_collaborators",
-			Academic: course.MustNewAcademic(studentID, course.StudentType),
+			Academic: course.MustNewAcademic("student-id", course.StudentType),
 			IsErr:    course.IsAcademicCantEditCourseError,
 		},
 		{
@@ -54,37 +40,27 @@ func TestCourse_AddCollaborators(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			crs := course.MustNewCourse(params)
+			creator := course.MustNewAcademic("creator-id", course.TeacherType)
+			crs := NewCourse(t, creator, WithStudents("student-id"), WithCollaborators("collaborator-id"))
 
-			err := crs.AddCollaborators(c.Academic, collaboratorIDsToAdd...)
+			err := crs.AddCollaborators(c.Academic, "collaborator1-id", "collaborator2-id")
 			if c.IsErr != nil {
 				require.Error(t, err)
 				require.True(t, c.IsErr(err))
 				return
 			}
 			require.NoError(t, err)
-			totalCollaborators := append(collaboratorIDsToAdd, collaboratorID)
-			require.ElementsMatch(t, totalCollaborators, crs.Collaborators())
+			require.ElementsMatch(
+				t,
+				[]string{"collaborator-id", "collaborator1-id", "collaborator2-id"},
+				crs.Collaborators(),
+			)
 		})
 	}
 }
 
 func TestCourse_RemoveCollaborators(t *testing.T) {
 	t.Parallel()
-	var (
-		creatorID              = "creator-id"
-		collaboratorID         = "collaborator-id"
-		studentID              = "student-id"
-		collaboratorIDToRemove = "collaborator-to-remove-id"
-	)
-	params := course.CreationParams{
-		ID:            "course-id",
-		Creator:       course.MustNewAcademic(creatorID, course.TeacherType),
-		Title:         "GraphQL",
-		Period:        course.MustNewPeriod(2025, 2026, course.FirstSemester),
-		Collaborators: []string{collaboratorID, collaboratorIDToRemove},
-		Students:      []string{studentID},
-	}
 	testCases := []struct {
 		Name     string
 		Academic course.Academic
@@ -92,16 +68,16 @@ func TestCourse_RemoveCollaborators(t *testing.T) {
 	}{
 		{
 			Name:     "creator_can_remove_collaborators",
-			Academic: course.MustNewAcademic(creatorID, course.TeacherType),
+			Academic: course.MustNewAcademic("creator-id", course.TeacherType),
 		},
 		{
 			Name:     "collaborator_cant_remove_collaborators",
-			Academic: course.MustNewAcademic(collaboratorID, course.TeacherType),
+			Academic: course.MustNewAcademic("collaborator-id", course.TeacherType),
 			IsErr:    course.IsAcademicCantEditCourseError,
 		},
 		{
 			Name:     "student_cant_remove_collaborators",
-			Academic: course.MustNewAcademic(studentID, course.StudentType),
+			Academic: course.MustNewAcademic("student-id", course.StudentType),
 			IsErr:    course.IsAcademicCantEditCourseError,
 		},
 		{
@@ -116,17 +92,22 @@ func TestCourse_RemoveCollaborators(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			crs := course.MustNewCourse(params)
+			creator := course.MustNewAcademic("creator-id", course.TeacherType)
+			crs := NewCourse(
+				t,
+				creator,
+				WithStudents("student-id"),
+				WithCollaborators("collaborator-id", "collaborator-to-remove-id"),
+			)
 
-			err := crs.RemoveCollaborator(c.Academic, collaboratorIDToRemove)
+			err := crs.RemoveCollaborator(c.Academic, "collaborator-to-remove-id")
 			if c.IsErr != nil {
 				require.Error(t, err)
 				require.True(t, c.IsErr(err))
 				return
 			}
 			require.NoError(t, err)
-			totalCollaborators := []string{collaboratorID}
-			require.ElementsMatch(t, totalCollaborators, crs.Collaborators())
+			require.ElementsMatch(t, []string{"collaborator-id"}, crs.Collaborators())
 		})
 	}
 }
