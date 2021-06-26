@@ -15,16 +15,11 @@ import (
 
 func TestAddCollaboratorHandler_Handle(t *testing.T) {
 	t.Parallel()
-	var (
-		courseID       = "course-id"
-		collaboratorID = "collaborator-id"
-		creator        = course.MustNewAcademic("creator-id", course.TeacherType)
-	)
 	addCourse := func(crs *course.Course) *mock.CoursesRepository {
 		return mock.NewCoursesRepository(crs)
 	}
 	addCollaborator := func() *mock.AcademicsService {
-		return mock.NewAcademicsService([]string{collaboratorID}, nil, nil)
+		return mock.NewAcademicsService([]string{"collaborator-id"}, nil, nil)
 	}
 	testCases := []struct {
 		Name                     string
@@ -36,9 +31,9 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 		{
 			Name: "add_collaborator",
 			Command: command.AddCollaboratorCommand{
-				Academic:       creator,
-				CourseID:       courseID,
-				CollaboratorID: collaboratorID,
+				Academic:       course.MustNewAcademic("creator-id", course.TeacherType),
+				CourseID:       "course-id",
+				CollaboratorID: "collaborator-id",
 			},
 			PrepareCoursesRepository: addCourse,
 			PrepareAcademicsService:  addCollaborator,
@@ -47,8 +42,8 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 			Name: "dont_add_when_teacher_cant_edit_course",
 			Command: command.AddCollaboratorCommand{
 				Academic:       course.MustNewAcademic("other-creator-id", course.TeacherType),
-				CourseID:       courseID,
-				CollaboratorID: collaboratorID,
+				CourseID:       "course-id",
+				CollaboratorID: "collaborator-id",
 			},
 			PrepareCoursesRepository: addCourse,
 			PrepareAcademicsService:  addCollaborator,
@@ -57,9 +52,9 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_add_when_collaborator_doesnt_exist_as_teacher",
 			Command: command.AddCollaboratorCommand{
-				Academic:       creator,
-				CourseID:       courseID,
-				CollaboratorID: collaboratorID,
+				Academic:       course.MustNewAcademic("creator-id", course.TeacherType),
+				CourseID:       "course-id",
+				CollaboratorID: "collaborator-id",
 			},
 			PrepareCoursesRepository: addCourse,
 			PrepareAcademicsService: func() *mock.AcademicsService {
@@ -72,9 +67,9 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_add_when_course_doesnt_exist",
 			Command: command.AddCollaboratorCommand{
-				Academic:       creator,
-				CourseID:       courseID,
-				CollaboratorID: collaboratorID,
+				Academic:       course.MustNewAcademic("creator-id", course.TeacherType),
+				CourseID:       "course-id",
+				CollaboratorID: "collaborator-id",
 			},
 			PrepareCoursesRepository: func(_ *course.Course) *mock.CoursesRepository {
 				return mock.NewCoursesRepository()
@@ -92,8 +87,8 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 			t.Parallel()
 
 			crs := course.MustNewCourse(course.CreationParams{
-				ID:      courseID,
-				Creator: creator,
+				ID:      "course-id",
+				Creator: course.MustNewAcademic("creator-id", course.TeacherType),
 				Title:   "Docker and Kubernetes",
 				Period:  course.MustNewPeriod(2023, 2024, course.FirstSemester),
 			})

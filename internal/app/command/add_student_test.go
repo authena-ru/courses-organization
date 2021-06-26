@@ -13,16 +13,11 @@ import (
 
 func TestAddStudentHandler_Handle(t *testing.T) {
 	t.Parallel()
-	var (
-		courseID  = "course-id"
-		studentID = "student-id"
-		creator   = course.MustNewAcademic("creator-id", course.TeacherType)
-	)
 	addCourse := func(crs *course.Course) *mock.CoursesRepository {
 		return mock.NewCoursesRepository(crs)
 	}
 	addStudent := func() *mock.AcademicsService {
-		return mock.NewAcademicsService(nil, []string{studentID}, nil)
+		return mock.NewAcademicsService(nil, []string{"student-id"}, nil)
 	}
 	testCases := []struct {
 		Name                     string
@@ -34,9 +29,9 @@ func TestAddStudentHandler_Handle(t *testing.T) {
 		{
 			Name: "add_student",
 			Command: command.AddStudentCommand{
-				Academic:  creator,
-				CourseID:  courseID,
-				StudentID: studentID,
+				Academic:  course.MustNewAcademic("creator-id", course.TeacherType),
+				CourseID:  "course-id",
+				StudentID: "student-id",
 			},
 			PrepareCoursesRepository: addCourse,
 			PrepareAcademicsService:  addStudent,
@@ -45,8 +40,8 @@ func TestAddStudentHandler_Handle(t *testing.T) {
 			Name: "dont_add_when_teacher_cant_edit_course",
 			Command: command.AddStudentCommand{
 				Academic:  course.MustNewAcademic("other-teacher-id", course.TeacherType),
-				CourseID:  courseID,
-				StudentID: studentID,
+				CourseID:  "course-id",
+				StudentID: "student-id",
 			},
 			PrepareCoursesRepository: addCourse,
 			PrepareAcademicsService:  addStudent,
@@ -55,9 +50,9 @@ func TestAddStudentHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_add_when_student_doesnt_exist",
 			Command: command.AddStudentCommand{
-				Academic:  creator,
-				CourseID:  courseID,
-				StudentID: studentID,
+				Academic:  course.MustNewAcademic("creator-id", course.TeacherType),
+				CourseID:  "course-id",
+				StudentID: "student-id",
 			},
 			PrepareCoursesRepository: addCourse,
 			PrepareAcademicsService: func() *mock.AcademicsService {
@@ -70,9 +65,9 @@ func TestAddStudentHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_add_when_course_doesnt_exist",
 			Command: command.AddStudentCommand{
-				Academic:  creator,
-				CourseID:  courseID,
-				StudentID: studentID,
+				Academic:  course.MustNewAcademic("creator-id", course.TeacherType),
+				CourseID:  "course-id",
+				StudentID: "student-id",
 			},
 			PrepareCoursesRepository: func(_ *course.Course) *mock.CoursesRepository {
 				return mock.NewCoursesRepository()
@@ -90,8 +85,8 @@ func TestAddStudentHandler_Handle(t *testing.T) {
 			t.Parallel()
 
 			crs := course.MustNewCourse(course.CreationParams{
-				ID:      courseID,
-				Creator: creator,
+				ID:      "course-id",
+				Creator: course.MustNewAcademic("creator-id", course.TeacherType),
 				Title:   "Math",
 				Period:  course.MustNewPeriod(2028, 2029, course.SecondSemester),
 			})

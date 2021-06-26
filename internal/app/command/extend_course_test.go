@@ -15,10 +15,6 @@ import (
 
 func TestExtendCourseHandler_Handle(t *testing.T) {
 	t.Parallel()
-	var (
-		originCourseID = "origin-course-id"
-		creator        = course.MustNewAcademic("creator-id", course.TeacherType)
-	)
 	addOriginCourse := func(crs *course.Course) *mock.CoursesRepository {
 		return mock.NewCoursesRepository(crs)
 	}
@@ -31,8 +27,8 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 		{
 			Name: "extend_existing_origin_course",
 			Command: command.ExtendCourseCommand{
-				Academic:       creator,
-				OriginCourseID: originCourseID,
+				Academic:       course.MustNewAcademic("creator-id", course.TeacherType),
+				OriginCourseID: "origin-course-id",
 				CourseStarted:  false,
 				CourseTitle:    "Phy Physics",
 				CoursePeriod:   course.MustNewPeriod(2026, 2027, course.SecondSemester),
@@ -42,8 +38,8 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_extend_when_origin_course_doesnt_exist",
 			Command: command.ExtendCourseCommand{
-				Academic:       creator,
-				OriginCourseID: originCourseID,
+				Academic:       course.MustNewAcademic("creator-id", course.TeacherType),
+				OriginCourseID: "origin-course-id",
 				CourseStarted:  true,
 			},
 			PrepareCoursesRepository: func(_ *course.Course) *mock.CoursesRepository {
@@ -54,7 +50,7 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_extend_when_zero_creator",
 			Command: command.ExtendCourseCommand{
-				OriginCourseID: originCourseID,
+				OriginCourseID: "origin-course-id",
 				CourseStarted:  false,
 			},
 			PrepareCoursesRepository: addOriginCourse,
@@ -63,7 +59,7 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_extend_when_not_teacher_extends_course",
 			Command: command.ExtendCourseCommand{
-				OriginCourseID: originCourseID,
+				OriginCourseID: "origin-course-id",
 				Academic:       course.MustNewAcademic("student-id", course.StudentType),
 				CourseStarted:  true,
 			},
@@ -78,8 +74,8 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 			t.Parallel()
 
 			originCourse := course.MustNewCourse(course.CreationParams{
-				ID:      originCourseID,
-				Creator: creator,
+				ID:      "origin-course-id",
+				Creator: course.MustNewAcademic("creator-id", course.TeacherType),
 				Title:   "Physics",
 				Period:  course.MustNewPeriod(2023, 2024, course.FirstSemester),
 			})

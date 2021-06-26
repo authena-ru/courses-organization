@@ -17,10 +17,6 @@ import (
 
 func TestAddTaskHandler_Handle(t *testing.T) {
 	t.Parallel()
-	var (
-		courseID = "course-id"
-		creator  = course.MustNewAcademic("creator-id", course.TeacherType)
-	)
 	addCourse := func(crs *course.Course) *mock.CoursesRepository {
 		return mock.NewCoursesRepository(crs)
 	}
@@ -33,8 +29,8 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 		{
 			Name: "add_manual_checking_task",
 			Command: command.AddTaskCommand{
-				Academic:        creator,
-				CourseID:        courseID,
+				Academic:        course.MustNewAcademic("creator-id", course.TeacherType),
+				CourseID:        "course-id",
 				TaskTitle:       "Manual checking task",
 				TaskDescription: "Do this task",
 				TaskType:        course.ManualCheckingType,
@@ -48,8 +44,8 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 		{
 			Name: "add_auto_code_checking_task",
 			Command: command.AddTaskCommand{
-				Academic:        creator,
-				CourseID:        courseID,
+				Academic:        course.MustNewAcademic("creator-id", course.TeacherType),
+				CourseID:        "course-id",
 				TaskTitle:       "Auto code checking task",
 				TaskDescription: "Do this task",
 				TaskType:        course.AutoCodeCheckingType,
@@ -60,8 +56,8 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 		{
 			Name: "add_testing_task",
 			Command: command.AddTaskCommand{
-				Academic:        creator,
-				CourseID:        courseID,
+				Academic:        course.MustNewAcademic("creator-id", course.TeacherType),
+				CourseID:        "course-id",
 				TaskTitle:       "Testing task",
 				TaskDescription: "Do this task",
 				TaskType:        course.TestingType,
@@ -72,8 +68,8 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_add_when_invalid_task_type",
 			Command: command.AddTaskCommand{
-				Academic:        creator,
-				CourseID:        courseID,
+				Academic:        course.MustNewAcademic("creator-id", course.TeacherType),
+				CourseID:        "course-id",
 				TaskTitle:       "Some task",
 				TaskDescription: "Don't do this task",
 				TaskType:        course.TaskType(100),
@@ -86,8 +82,8 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_add_when_task_title_too_long",
 			Command: command.AddTaskCommand{
-				Academic:        creator,
-				CourseID:        courseID,
+				Academic:        course.MustNewAcademic("creator-id", course.TeacherType),
+				CourseID:        "course-id",
 				TaskTitle:       strings.Repeat("x", 201),
 				TaskDescription: "Do do do",
 				TaskType:        course.ManualCheckingType,
@@ -100,8 +96,8 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_add_when_task_description_too_long",
 			Command: command.AddTaskCommand{
-				Academic:        creator,
-				CourseID:        courseID,
+				Academic:        course.MustNewAcademic("creator-id", course.TeacherType),
+				CourseID:        "course-id",
 				TaskTitle:       "Some course task",
 				TaskDescription: strings.Repeat("x", 1001),
 				TaskType:        course.TestingType,
@@ -115,7 +111,7 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 			Name: "dont_add_when_academic_cant_edit_course",
 			Command: command.AddTaskCommand{
 				Academic:        course.MustNewAcademic("student-id", course.StudentType),
-				CourseID:        courseID,
+				CourseID:        "course-id",
 				TaskTitle:       "Some task title",
 				TaskDescription: "If you want do this task",
 				TaskType:        course.ManualCheckingType,
@@ -126,8 +122,8 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_add_when_course_doesnt_exist",
 			Command: command.AddTaskCommand{
-				Academic:        creator,
-				CourseID:        courseID,
+				Academic:        course.MustNewAcademic("creator-id", course.TeacherType),
+				CourseID:        "course-id",
 				TaskTitle:       "Task of non-existing course",
 				TaskDescription: "Don't do this",
 				TaskType:        course.ManualCheckingType,
@@ -147,8 +143,8 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 			t.Parallel()
 
 			crs := course.MustNewCourse(course.CreationParams{
-				ID:      courseID,
-				Creator: creator,
+				ID:      "course-id",
+				Creator: course.MustNewAcademic("creator-id", course.TeacherType),
 				Title:   "Universal course",
 				Period:  course.MustNewPeriod(2043, 2044, course.FirstSemester),
 			})

@@ -14,7 +14,6 @@ import (
 
 func TestCreateCourseHandler_Handle(t *testing.T) {
 	t.Parallel()
-	creator := course.MustNewAcademic("creator-id", course.TeacherType)
 	testCases := []struct {
 		Name        string
 		Command     command.CreateCourseCommand
@@ -23,7 +22,7 @@ func TestCreateCourseHandler_Handle(t *testing.T) {
 		{
 			Name: "create_course",
 			Command: command.CreateCourseCommand{
-				Academic:      creator,
+				Academic:      course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseStarted: true,
 				CourseTitle:   "Bla Bla Literature",
 				CoursePeriod:  course.MustNewPeriod(2019, 2020, course.FirstSemester),
@@ -41,7 +40,7 @@ func TestCreateCourseHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_create_when_empty_course_title",
 			Command: command.CreateCourseCommand{
-				Academic:      creator,
+				Academic:      course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseStarted: true,
 				CoursePeriod:  course.MustNewPeriod(2040, 2041, course.FirstSemester),
 			},
@@ -50,7 +49,7 @@ func TestCreateCourseHandler_Handle(t *testing.T) {
 		{
 			Name: "dont_create_when_zero_course_period",
 			Command: command.CreateCourseCommand{
-				Academic:      creator,
+				Academic:      course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseStarted: false,
 				CourseTitle:   "Literature",
 			},

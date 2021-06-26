@@ -15,11 +15,6 @@ import (
 
 func TestRemoveStudentHandler_Handle(t *testing.T) {
 	t.Parallel()
-	var (
-		courseID  = "course-id"
-		studentID = "student-id"
-		creator   = course.MustNewAcademic("creator-id", course.TeacherType)
-	)
 	addCourse := func(crs *course.Course) *mock.CoursesRepository {
 		return mock.NewCoursesRepository(crs)
 	}
@@ -32,18 +27,18 @@ func TestRemoveStudentHandler_Handle(t *testing.T) {
 		{
 			Name: "remove_student",
 			Command: command.RemoveStudentCommand{
-				Academic:  creator,
-				CourseID:  courseID,
-				StudentID: studentID,
+				Academic:  course.MustNewAcademic("creator-id", course.TeacherType),
+				CourseID:  "course-id",
+				StudentID: "student-id",
 			},
 			PrepareCourseRepository: addCourse,
 		},
 		{
 			Name: "dont_remove_student_when_course_doesnt_exist",
 			Command: command.RemoveStudentCommand{
-				Academic:  creator,
-				CourseID:  courseID,
-				StudentID: studentID,
+				Academic:  course.MustNewAcademic("creator-id", course.TeacherType),
+				CourseID:  "course-id",
+				StudentID: "student-id",
 			},
 			PrepareCourseRepository: func(_ *course.Course) *mock.CoursesRepository {
 				return mock.NewCoursesRepository()
@@ -56,8 +51,8 @@ func TestRemoveStudentHandler_Handle(t *testing.T) {
 			Name: "dont_remove_student_when_academic_cant_edit_course",
 			Command: command.RemoveStudentCommand{
 				Academic:  course.MustNewAcademic("other-teacher-id", course.TeacherType),
-				CourseID:  courseID,
-				StudentID: studentID,
+				CourseID:  "course-id",
+				StudentID: "student-id",
 			},
 			PrepareCourseRepository: addCourse,
 			IsErr:                   course.IsAcademicCantEditCourseError,
@@ -71,10 +66,10 @@ func TestRemoveStudentHandler_Handle(t *testing.T) {
 
 			crs := course.MustNewCourse(course.CreationParams{
 				ID:       "course-id",
-				Creator:  creator,
+				Creator:  course.MustNewAcademic("creator-id", course.TeacherType),
 				Title:    "Advanced Math",
 				Period:   course.MustNewPeriod(2023, 2024, course.FirstSemester),
-				Students: []string{studentID},
+				Students: []string{"student-id"},
 			})
 			coursesRepository := c.PrepareCourseRepository(crs)
 			handler := command.NewRemoveStudentHandler(coursesRepository)
@@ -87,7 +82,7 @@ func TestRemoveStudentHandler_Handle(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
-			require.NotContains(t, crs.Students(), studentID)
+			require.NotContains(t, crs.Students(), "student-id")
 		})
 	}
 }

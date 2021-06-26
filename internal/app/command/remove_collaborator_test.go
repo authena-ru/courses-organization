@@ -15,11 +15,6 @@ import (
 
 func TestRemoveCollaboratorHandler_Handle(t *testing.T) {
 	t.Parallel()
-	var (
-		courseID       = "course-id"
-		collaboratorID = "collaborator-id"
-		creator        = course.MustNewAcademic("creator-id", course.TeacherType)
-	)
 	addCourse := func(crs *course.Course) *mock.CoursesRepository {
 		return mock.NewCoursesRepository(crs)
 	}
@@ -32,18 +27,18 @@ func TestRemoveCollaboratorHandler_Handle(t *testing.T) {
 		{
 			Name: "remove_collaborator",
 			Command: command.RemoveCollaboratorCommand{
-				Academic:       creator,
-				CourseID:       courseID,
-				CollaboratorID: collaboratorID,
+				Academic:       course.MustNewAcademic("creator-id", course.TeacherType),
+				CourseID:       "course-id",
+				CollaboratorID: "collaborator-id",
 			},
 			PrepareCoursesRepository: addCourse,
 		},
 		{
 			Name: "dont_remove_collaborator_when_course_doesnt_exist",
 			Command: command.RemoveCollaboratorCommand{
-				Academic:       creator,
-				CourseID:       courseID,
-				CollaboratorID: collaboratorID,
+				Academic:       course.MustNewAcademic("creator-id", course.TeacherType),
+				CourseID:       "course-id",
+				CollaboratorID: "collaborator-id",
 			},
 			PrepareCoursesRepository: func(_ *course.Course) *mock.CoursesRepository {
 				return mock.NewCoursesRepository()
@@ -56,8 +51,8 @@ func TestRemoveCollaboratorHandler_Handle(t *testing.T) {
 			Name: "dont_remove_collaborator_when_academic_cant_edit_course",
 			Command: command.RemoveCollaboratorCommand{
 				Academic:       course.MustNewAcademic("other-teacher-id", course.TeacherType),
-				CourseID:       courseID,
-				CollaboratorID: collaboratorID,
+				CourseID:       "course-id",
+				CollaboratorID: "collaborator-id",
 			},
 			PrepareCoursesRepository: func(crs *course.Course) *mock.CoursesRepository {
 				return mock.NewCoursesRepository(crs)
@@ -72,11 +67,11 @@ func TestRemoveCollaboratorHandler_Handle(t *testing.T) {
 			t.Parallel()
 
 			crs := course.MustNewCourse(course.CreationParams{
-				ID:            courseID,
-				Creator:       creator,
+				ID:            "course-id",
+				Creator:       course.MustNewAcademic("creator-id", course.TeacherType),
 				Title:         "Chemistry",
 				Period:        course.MustNewPeriod(2032, 2033, course.SecondSemester),
-				Collaborators: []string{collaboratorID},
+				Collaborators: []string{"collaborator-id"},
 			})
 			coursesRepository := c.PrepareCoursesRepository(crs)
 			handler := command.NewRemoveCollaboratorHandler(coursesRepository)
