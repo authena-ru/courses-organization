@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 
+	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/app/command"
 	"github.com/authena-ru/courses-organization/internal/app/command/mock"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
@@ -16,12 +17,12 @@ func TestCreateCourseHandler_Handle(t *testing.T) {
 	t.Parallel()
 	testCases := []struct {
 		Name        string
-		Command     command.CreateCourseCommand
+		Command     app.CreateCourseCommand
 		ExpectedErr error
 	}{
 		{
 			Name: "create_course",
-			Command: command.CreateCourseCommand{
+			Command: app.CreateCourseCommand{
 				Academic:      course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseStarted: true,
 				CourseTitle:   "Bla Bla Literature",
@@ -30,7 +31,7 @@ func TestCreateCourseHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_create_when_zero_creator",
-			Command: command.CreateCourseCommand{
+			Command: app.CreateCourseCommand{
 				CourseStarted: false,
 				CourseTitle:   "Bla Literature",
 				CoursePeriod:  course.MustNewPeriod(2024, 2025, course.SecondSemester),
@@ -39,7 +40,7 @@ func TestCreateCourseHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_create_when_empty_course_title",
-			Command: command.CreateCourseCommand{
+			Command: app.CreateCourseCommand{
 				Academic:      course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseStarted: true,
 				CoursePeriod:  course.MustNewPeriod(2040, 2041, course.FirstSemester),
@@ -48,7 +49,7 @@ func TestCreateCourseHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_create_when_zero_course_period",
-			Command: command.CreateCourseCommand{
+			Command: app.CreateCourseCommand{
 				Academic:      course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseStarted: false,
 				CourseTitle:   "Literature",
@@ -57,7 +58,7 @@ func TestCreateCourseHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_create_when_not_teacher_creates_course",
-			Command: command.CreateCourseCommand{
+			Command: app.CreateCourseCommand{
 				Academic:      course.MustNewAcademic("student-id", course.StudentType),
 				CourseStarted: false,
 				CourseTitle:   "Literature bla",

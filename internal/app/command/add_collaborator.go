@@ -5,14 +5,9 @@ import (
 
 	"github.com/pkg/errors"
 
+	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
-
-type AddCollaboratorCommand struct {
-	Academic       course.Academic
-	CourseID       string
-	CollaboratorID string
-}
 
 type AddCollaboratorHandler struct {
 	coursesRepository coursesRepository
@@ -32,12 +27,7 @@ func NewAddCollaboratorHandler(repository coursesRepository, service academicsSe
 	}
 }
 
-// Handle is AddCollaboratorCommand handler.
-// Adds one collaborator to course, returns one of possible errors:
-// app.ErrTeacherDoesntExist, app.ErrCourseDoesntExist, app.ErrDatabaseProblems,
-// error that can be detected using course.IsAcademicCantEditCourseError and
-// others without definition.
-func (h AddCollaboratorHandler) Handle(ctx context.Context, cmd AddCollaboratorCommand) error {
+func (h AddCollaboratorHandler) Handle(ctx context.Context, cmd app.AddCollaboratorCommand) error {
 	err := h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, h.addCollaborator(cmd))
 	return errors.Wrapf(
 		err,
@@ -46,7 +36,7 @@ func (h AddCollaboratorHandler) Handle(ctx context.Context, cmd AddCollaboratorC
 	)
 }
 
-func (h AddCollaboratorHandler) addCollaborator(cmd AddCollaboratorCommand) UpdateFunction {
+func (h AddCollaboratorHandler) addCollaborator(cmd app.AddCollaboratorCommand) UpdateFunction {
 	return func(ctx context.Context, crs *course.Course) (*course.Course, error) {
 		if err := h.academicsService.TeacherExists(ctx, cmd.CollaboratorID); err != nil {
 			return nil, err

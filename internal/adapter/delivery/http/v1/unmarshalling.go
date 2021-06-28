@@ -7,8 +7,7 @@ import (
 
 	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/auth"
 	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/httperr"
-	"github.com/authena-ru/courses-organization/internal/app/command"
-	"github.com/authena-ru/courses-organization/internal/app/query"
+	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
@@ -23,7 +22,7 @@ func decode(w http.ResponseWriter, r *http.Request, v interface{}) bool {
 func unmarshallAllTasksQuery(
 	w http.ResponseWriter, r *http.Request,
 	courseID string, params GetCourseTasksParams,
-) (qry query.AllTasksQuery, ok bool) {
+) (qry app.AllTasksQuery, ok bool) {
 	academic, ok := unmarshallAcademic(w, r)
 	if !ok {
 		return
@@ -47,7 +46,7 @@ func unmarshallAllTasksQuery(
 		}
 	}
 
-	return query.AllTasksQuery{
+	return app.AllTasksQuery{
 		Academic: academic,
 		CourseID: courseID,
 		Type:     taskType,
@@ -58,12 +57,12 @@ func unmarshallAllTasksQuery(
 func unmarshallSpecificTaskQuery(
 	w http.ResponseWriter, r *http.Request,
 	courseID string, taskNumber int,
-) (qry query.SpecificTaskQuery, ok bool) {
+) (qry app.SpecificTaskQuery, ok bool) {
 	academic, ok := unmarshallAcademic(w, r)
 	if !ok {
 		return
 	}
-	return query.SpecificTaskQuery{
+	return app.SpecificTaskQuery{
 		Academic:   academic,
 		CourseID:   courseID,
 		TaskNumber: taskNumber,
@@ -73,7 +72,7 @@ func unmarshallSpecificTaskQuery(
 func unmarshallAddStudentCommand(
 	w http.ResponseWriter, r *http.Request,
 	courseID string,
-) (cmd command.AddStudentCommand, ok bool) {
+) (cmd app.AddStudentCommand, ok bool) {
 	academic, ok := unmarshallAcademic(w, r)
 	if !ok {
 		return
@@ -82,7 +81,7 @@ func unmarshallAddStudentCommand(
 	if ok = decode(w, r, &rb); !ok {
 		return
 	}
-	return command.AddStudentCommand{
+	return app.AddStudentCommand{
 		Academic:  academic,
 		CourseID:  courseID,
 		StudentID: rb.Id,
@@ -92,12 +91,12 @@ func unmarshallAddStudentCommand(
 func unmarshallRemoveStudentCommand(
 	w http.ResponseWriter, r *http.Request,
 	courseID, studentID string,
-) (cmd command.RemoveStudentCommand, ok bool) {
+) (cmd app.RemoveStudentCommand, ok bool) {
 	academic, ok := unmarshallAcademic(w, r)
 	if !ok {
 		return
 	}
-	return command.RemoveStudentCommand{
+	return app.RemoveStudentCommand{
 		Academic:  academic,
 		CourseID:  courseID,
 		StudentID: studentID,
@@ -107,7 +106,7 @@ func unmarshallRemoveStudentCommand(
 func unmarshallAddCollaboratorCommand(
 	w http.ResponseWriter, r *http.Request,
 	courseID string,
-) (cmd command.AddCollaboratorCommand, ok bool) {
+) (cmd app.AddCollaboratorCommand, ok bool) {
 	academic, ok := unmarshallAcademic(w, r)
 	if !ok {
 		return
@@ -116,7 +115,7 @@ func unmarshallAddCollaboratorCommand(
 	if ok = decode(w, r, &rb); !ok {
 		return
 	}
-	return command.AddCollaboratorCommand{
+	return app.AddCollaboratorCommand{
 		Academic:       academic,
 		CourseID:       courseID,
 		CollaboratorID: rb.Id,
@@ -126,19 +125,19 @@ func unmarshallAddCollaboratorCommand(
 func unmarshallRemoveCollaboratorCommand(
 	w http.ResponseWriter, r *http.Request,
 	courseID, collaboratorID string,
-) (cmd command.RemoveCollaboratorCommand, ok bool) {
+) (cmd app.RemoveCollaboratorCommand, ok bool) {
 	academic, ok := unmarshallAcademic(w, r)
 	if !ok {
 		return
 	}
-	return command.RemoveCollaboratorCommand{
+	return app.RemoveCollaboratorCommand{
 		Academic:       academic,
 		CourseID:       courseID,
 		CollaboratorID: collaboratorID,
 	}, true
 }
 
-func unmarshallCreateCourseCommand(w http.ResponseWriter, r *http.Request) (cmd command.CreateCourseCommand, ok bool) {
+func unmarshallCreateCourseCommand(w http.ResponseWriter, r *http.Request) (cmd app.CreateCourseCommand, ok bool) {
 	academic, ok := unmarshallAcademic(w, r)
 	if !ok {
 		return
@@ -151,7 +150,7 @@ func unmarshallCreateCourseCommand(w http.ResponseWriter, r *http.Request) (cmd 
 	if !ok {
 		return
 	}
-	return command.CreateCourseCommand{
+	return app.CreateCourseCommand{
 		Academic:      academic,
 		CourseStarted: rb.Started,
 		CourseTitle:   rb.Title,
@@ -162,7 +161,7 @@ func unmarshallCreateCourseCommand(w http.ResponseWriter, r *http.Request) (cmd 
 func unmarshallExtendCourseCommand(
 	w http.ResponseWriter, r *http.Request,
 	courseID string,
-) (cmd command.ExtendCourseCommand, ok bool) {
+) (cmd app.ExtendCourseCommand, ok bool) {
 	academic, ok := unmarshallAcademic(w, r)
 	if !ok {
 		return
@@ -175,7 +174,7 @@ func unmarshallExtendCourseCommand(
 	if !ok {
 		return
 	}
-	return command.ExtendCourseCommand{
+	return app.ExtendCourseCommand{
 		Academic:       academic,
 		OriginCourseID: courseID,
 		CourseStarted:  rb.Started,
@@ -187,7 +186,7 @@ func unmarshallExtendCourseCommand(
 func unmarshallAddTaskCommand(
 	w http.ResponseWriter, r *http.Request,
 	courseID string,
-) (cmd command.AddTaskCommand, ok bool) {
+) (cmd app.AddTaskCommand, ok bool) {
 	academic, ok := unmarshallAcademic(w, r)
 	if !ok {
 		return
@@ -217,7 +216,7 @@ func unmarshallAddTaskCommand(
 	if !ok {
 		return
 	}
-	return command.AddTaskCommand{
+	return app.AddTaskCommand{
 		Academic:        academic,
 		CourseID:        courseID,
 		TaskTitle:       rb.Title,

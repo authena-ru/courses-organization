@@ -6,15 +6,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 
+	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
-
-type CreateCourseCommand struct {
-	Academic      course.Academic
-	CourseStarted bool
-	CourseTitle   string
-	CoursePeriod  course.Period
-}
 
 type CreateCourseHandler struct {
 	coursesRepository coursesRepository
@@ -27,11 +21,7 @@ func NewCreateCourseHandler(repository coursesRepository) CreateCourseHandler {
 	return CreateCourseHandler{coursesRepository: repository}
 }
 
-// Handle is CreateCourseCommand handler.
-// Creates course, returns ID of new brand course and one of possible errors:
-// app.ErrDatabaseProblems, course.ErrNotTeacherCantCreateCourse, error that can
-// be detected using methods course.IsInvalidTaskParametersError and others without definition.
-func (h CreateCourseHandler) Handle(ctx context.Context, cmd CreateCourseCommand) (courseID string, err error) {
+func (h CreateCourseHandler) Handle(ctx context.Context, cmd app.CreateCourseCommand) (courseID string, err error) {
 	defer func() {
 		err = errors.Wrapf(err, "course creation by teacher #%s", cmd.Academic.ID())
 	}()

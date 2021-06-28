@@ -20,13 +20,13 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 	}
 	testCases := []struct {
 		Name                     string
-		Command                  command.ExtendCourseCommand
+		Command                  app.ExtendCourseCommand
 		PrepareCoursesRepository func(crs *course.Course) *mock.CoursesRepository
 		ExpectedErr              error
 	}{
 		{
 			Name: "extend_existing_origin_course",
-			Command: command.ExtendCourseCommand{
+			Command: app.ExtendCourseCommand{
 				Academic:       course.MustNewAcademic("creator-id", course.TeacherType),
 				OriginCourseID: "origin-course-id",
 				CourseStarted:  false,
@@ -37,7 +37,7 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_extend_when_origin_course_doesnt_exist",
-			Command: command.ExtendCourseCommand{
+			Command: app.ExtendCourseCommand{
 				Academic:       course.MustNewAcademic("creator-id", course.TeacherType),
 				OriginCourseID: "origin-course-id",
 				CourseStarted:  true,
@@ -49,7 +49,7 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_extend_when_zero_creator",
-			Command: command.ExtendCourseCommand{
+			Command: app.ExtendCourseCommand{
 				OriginCourseID: "origin-course-id",
 				CourseStarted:  false,
 			},
@@ -58,7 +58,7 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_extend_when_not_teacher_extends_course",
-			Command: command.ExtendCourseCommand{
+			Command: app.ExtendCourseCommand{
 				OriginCourseID: "origin-course-id",
 				Academic:       course.MustNewAcademic("student-id", course.StudentType),
 				CourseStarted:  true,

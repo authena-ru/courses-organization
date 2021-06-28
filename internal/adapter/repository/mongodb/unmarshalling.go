@@ -1,7 +1,7 @@
 package mongodb
 
 import (
-	"github.com/authena-ru/courses-organization/internal/app/query"
+	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
@@ -61,9 +61,9 @@ func unmarshallTestPoints(documents []testPointDocument) []course.TestPoint {
 	return testPoints
 }
 
-func unmarshallSpecificTask(academic course.Academic, document taskDocument) query.SpecificTask {
+func unmarshallSpecificTask(academic course.Academic, document taskDocument) app.SpecificTask {
 	forTeacher := academic.Type() == course.TeacherType
-	return query.SpecificTask{
+	return app.SpecificTask{
 		Number:      document.Number,
 		Title:       document.Title,
 		Description: document.Description,
@@ -74,23 +74,23 @@ func unmarshallSpecificTask(academic course.Academic, document taskDocument) que
 	}
 }
 
-func unmarshallQueryDeadline(document *deadlineDocument) *query.Deadline {
+func unmarshallQueryDeadline(document *deadlineDocument) *app.Deadline {
 	if document == nil {
 		return nil
 	}
-	return &query.Deadline{
+	return &app.Deadline{
 		ExcellentGradeTime: document.ExcellentGradeTime,
 		GoodGradeTime:      document.GoodGradeTime,
 	}
 }
 
-func unmarshallQueryTestData(forTeacher bool, documents []testDataDocument) []query.TestData {
+func unmarshallQueryTestData(forTeacher bool, documents []testDataDocument) []app.TestData {
 	if !forTeacher {
 		return nil
 	}
-	queryTestData := make([]query.TestData, 0, len(documents))
+	queryTestData := make([]app.TestData, 0, len(documents))
 	for _, d := range documents {
-		queryTestData = append(queryTestData, query.TestData{
+		queryTestData = append(queryTestData, app.TestData{
 			InputData:  d.InputData,
 			OutputData: d.OutputData,
 		})
@@ -98,14 +98,14 @@ func unmarshallQueryTestData(forTeacher bool, documents []testDataDocument) []qu
 	return queryTestData
 }
 
-func unmarshallQueryTestPoints(forTeacher bool, documents []testPointDocument) []query.TestPoint {
-	queryTestPoints := make([]query.TestPoint, 0, len(documents))
+func unmarshallQueryTestPoints(forTeacher bool, documents []testPointDocument) []app.TestPoint {
+	queryTestPoints := make([]app.TestPoint, 0, len(documents))
 	for _, d := range documents {
 		var correctVariantNumbers []int
 		if forTeacher {
 			correctVariantNumbers = d.CorrectVariantNumbers
 		}
-		queryTestPoints = append(queryTestPoints, query.TestPoint{
+		queryTestPoints = append(queryTestPoints, app.TestPoint{
 			Description:           d.Description,
 			Variants:              d.Variants,
 			CorrectVariantNumbers: correctVariantNumbers,
@@ -115,10 +115,10 @@ func unmarshallQueryTestPoints(forTeacher bool, documents []testPointDocument) [
 	return queryTestPoints
 }
 
-func unmarshallGeneralTasks(documents []taskDocument) []query.GeneralTask {
-	tasks := make([]query.GeneralTask, 0, len(documents))
+func unmarshallGeneralTasks(documents []taskDocument) []app.GeneralTask {
+	tasks := make([]app.GeneralTask, 0, len(documents))
 	for _, d := range documents {
-		tasks = append(tasks, query.GeneralTask{
+		tasks = append(tasks, app.GeneralTask{
 			Number:      d.Number,
 			Title:       d.Title,
 			Description: d.Description,

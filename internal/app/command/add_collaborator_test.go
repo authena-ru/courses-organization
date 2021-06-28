@@ -23,14 +23,14 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 	}
 	testCases := []struct {
 		Name                     string
-		Command                  command.AddCollaboratorCommand
+		Command                  app.AddCollaboratorCommand
 		PrepareCoursesRepository func(crs *course.Course) *mock.CoursesRepository
 		PrepareAcademicsService  func() *mock.AcademicsService
 		IsErr                    func(err error) bool
 	}{
 		{
 			Name: "add_collaborator",
-			Command: command.AddCollaboratorCommand{
+			Command: app.AddCollaboratorCommand{
 				Academic:       course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseID:       "course-id",
 				CollaboratorID: "collaborator-id",
@@ -40,7 +40,7 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_add_when_teacher_cant_edit_course",
-			Command: command.AddCollaboratorCommand{
+			Command: app.AddCollaboratorCommand{
 				Academic:       course.MustNewAcademic("other-creator-id", course.TeacherType),
 				CourseID:       "course-id",
 				CollaboratorID: "collaborator-id",
@@ -51,7 +51,7 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_add_when_collaborator_doesnt_exist_as_teacher",
-			Command: command.AddCollaboratorCommand{
+			Command: app.AddCollaboratorCommand{
 				Academic:       course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseID:       "course-id",
 				CollaboratorID: "collaborator-id",
@@ -66,7 +66,7 @@ func TestAddCollaboratorHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_add_when_course_doesnt_exist",
-			Command: command.AddCollaboratorCommand{
+			Command: app.AddCollaboratorCommand{
 				Academic:       course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseID:       "course-id",
 				CollaboratorID: "collaborator-id",

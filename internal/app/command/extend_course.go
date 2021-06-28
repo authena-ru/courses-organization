@@ -6,16 +6,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 
+	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
-
-type ExtendCourseCommand struct {
-	Academic       course.Academic
-	OriginCourseID string
-	CourseStarted  bool
-	CourseTitle    string
-	CoursePeriod   course.Period
-}
 
 type ExtendCourseHandler struct {
 	coursesRepository coursesRepository
@@ -28,12 +21,7 @@ func NewExtendCourseHandler(repository coursesRepository) ExtendCourseHandler {
 	return ExtendCourseHandler{coursesRepository: repository}
 }
 
-// Handle is ExtendCourseCommand handler.
-// Extends origin course, returns extended course ID and one of possible errors:
-// app.ErrCourseDoesntExist, app.ErrDatabaseProblems, course.ErrNotTeacherCantCreateCourse,
-// errors that can be detected using method course.IsInvalidTaskParametersError,
-// course.IsAcademicCantEditCourseError, and others without definition.
-func (h ExtendCourseHandler) Handle(ctx context.Context, cmd ExtendCourseCommand) (extendedCourseID string, err error) {
+func (h ExtendCourseHandler) Handle(ctx context.Context, cmd app.ExtendCourseCommand) (extendedCourseID string, err error) {
 	defer func() {
 		err = errors.Wrapf(err, "extension of course #%s by teacher #%s", cmd.OriginCourseID, cmd.Academic.ID())
 	}()
@@ -49,7 +37,7 @@ func (h ExtendCourseHandler) Handle(ctx context.Context, cmd ExtendCourseCommand
 	return extendedCourseID, nil
 }
 
-func extendCourse(extendedCourseID string, cmd ExtendCourseCommand) UpdateFunction {
+func extendCourse(extendedCourseID string, cmd app.ExtendCourseCommand) UpdateFunction {
 	return func(_ context.Context, crs *course.Course) (*course.Course, error) {
 		return crs.Extend(course.CreationParams{
 			ID:      extendedCourseID,

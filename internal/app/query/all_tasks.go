@@ -2,18 +2,12 @@ package query
 
 import (
 	"context"
+	"github.com/authena-ru/courses-organization/internal/app"
 
 	"github.com/pkg/errors"
 
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
-
-type AllTasksQuery struct {
-	Academic course.Academic
-	CourseID string
-	Type     course.TaskType
-	Text     string
-}
 
 type TasksFilterParams struct {
 	Type course.TaskType
@@ -25,7 +19,7 @@ type allTasksReadModel interface {
 		ctx context.Context,
 		academic course.Academic, courseID string,
 		filterParams TasksFilterParams,
-	) ([]GeneralTask, error)
+	) ([]app.GeneralTask, error)
 }
 
 type AllTasksHandler struct {
@@ -39,11 +33,7 @@ func NewAllTasksHandler(readModel allTasksReadModel) AllTasksHandler {
 	return AllTasksHandler{readModel: readModel}
 }
 
-// Handle is AllTasksQuery handler.
-// Returns list of course tasks with general task parameters.
-// Tasks filtered by type, title and description.
-// If course doesn't exist, error equal app.ErrCourseDoesntExist
-func (h AllTasksHandler) Handle(ctx context.Context, qry AllTasksQuery) ([]GeneralTask, error) {
+func (h AllTasksHandler) Handle(ctx context.Context, qry app.AllTasksQuery) ([]app.GeneralTask, error) {
 	tasks, err := h.readModel.FindAllTasks(ctx, qry.Academic, qry.CourseID, TasksFilterParams{
 		Type: qry.Type,
 		Text: qry.Text,

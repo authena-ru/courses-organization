@@ -20,13 +20,13 @@ func TestRemoveCollaboratorHandler_Handle(t *testing.T) {
 	}
 	testCases := []struct {
 		Name                     string
-		Command                  command.RemoveCollaboratorCommand
+		Command                  app.RemoveCollaboratorCommand
 		PrepareCoursesRepository func(crs *course.Course) *mock.CoursesRepository
 		IsErr                    func(err error) bool
 	}{
 		{
 			Name: "remove_collaborator",
-			Command: command.RemoveCollaboratorCommand{
+			Command: app.RemoveCollaboratorCommand{
 				Academic:       course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseID:       "course-id",
 				CollaboratorID: "collaborator-id",
@@ -35,7 +35,7 @@ func TestRemoveCollaboratorHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_remove_collaborator_when_course_doesnt_exist",
-			Command: command.RemoveCollaboratorCommand{
+			Command: app.RemoveCollaboratorCommand{
 				Academic:       course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseID:       "course-id",
 				CollaboratorID: "collaborator-id",
@@ -49,7 +49,7 @@ func TestRemoveCollaboratorHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_remove_collaborator_when_academic_cant_edit_course",
-			Command: command.RemoveCollaboratorCommand{
+			Command: app.RemoveCollaboratorCommand{
 				Academic:       course.MustNewAcademic("other-teacher-id", course.TeacherType),
 				CourseID:       "course-id",
 				CollaboratorID: "collaborator-id",

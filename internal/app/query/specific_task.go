@@ -5,17 +5,12 @@ import (
 
 	"github.com/pkg/errors"
 
+	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
-type SpecificTaskQuery struct {
-	Academic   course.Academic
-	CourseID   string
-	TaskNumber int
-}
-
 type specificTaskReadModel interface {
-	FindTask(ctx context.Context, academic course.Academic, courseID string, taskNumber int) (SpecificTask, error)
+	FindTask(ctx context.Context, academic course.Academic, courseID string, taskNumber int) (app.SpecificTask, error)
 }
 
 type SpecificTaskHandler struct {
@@ -29,11 +24,7 @@ func NewSpecificTaskHandler(readModel specificTaskReadModel) SpecificTaskHandler
 	return SpecificTaskHandler{readModel: readModel}
 }
 
-// Handle is SpecificTaskQuery handler.
-// Returns course task with given number.
-// If course doesn't exist, an error equal app.ErrCourseDoesntExist.
-// If task doesn't exist, an error equal app.ErrTaskDoesntExist.
-func (h SpecificTaskHandler) Handle(ctx context.Context, qry SpecificTaskQuery) (SpecificTask, error) {
+func (h SpecificTaskHandler) Handle(ctx context.Context, qry app.SpecificTaskQuery) (app.SpecificTask, error) {
 	task, err := h.readModel.FindTask(ctx, qry.Academic, qry.CourseID, qry.TaskNumber)
 	return task, errors.Wrapf(err, "getting task No %d of course #%s", qry.TaskNumber, qry.CourseID)
 }

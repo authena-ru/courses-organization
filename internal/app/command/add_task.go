@@ -5,19 +5,9 @@ import (
 
 	"github.com/pkg/errors"
 
+	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
-
-type AddTaskCommand struct {
-	Academic        course.Academic
-	CourseID        string
-	TaskTitle       string
-	TaskDescription string
-	TaskType        course.TaskType
-	Deadline        course.Deadline
-	TestPoints      []course.TestPoint
-	TestData        []course.TestData
-}
 
 type AddTaskHandler struct {
 	coursesRepository coursesRepository
@@ -30,13 +20,7 @@ func NewAddTaskHandler(repository coursesRepository) AddTaskHandler {
 	return AddTaskHandler{coursesRepository: repository}
 }
 
-// Handle is AddTaskCommand handler.
-// Adds task with manual checking, auto code checking or testing type,
-// returns one of possible errors. app.ErrCourseDoesntExist, errors that can
-// be detected using methods course.IsInvalidTaskParametersError, course.IsInvalidDeadlineError,
-// course.IsInvalidTestDataError, course.IsInvalidTestPointError, course.IsAcademicCantEditCourseError
-// and others without definition.
-func (h AddTaskHandler) Handle(ctx context.Context, cmd AddTaskCommand) (taskNumber int, err error) {
+func (h AddTaskHandler) Handle(ctx context.Context, cmd app.AddTaskCommand) (taskNumber int, err error) {
 	err = h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, addTask(cmd, &taskNumber))
 	return taskNumber, errors.Wrapf(
 		err,
@@ -47,7 +31,7 @@ func (h AddTaskHandler) Handle(ctx context.Context, cmd AddTaskCommand) (taskNum
 
 var errInvalidTaskType = errors.New("invalid task type")
 
-func addTask(cmd AddTaskCommand, givenTaskNumber *int) UpdateFunction {
+func addTask(cmd app.AddTaskCommand, givenTaskNumber *int) UpdateFunction {
 	return func(_ context.Context, crs *course.Course) (*course.Course, error) {
 		var (
 			number int

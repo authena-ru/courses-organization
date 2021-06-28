@@ -2,13 +2,15 @@ package command_test
 
 import (
 	"context"
+	"testing"
+
+	"github.com/pkg/errors"
+	"github.com/stretchr/testify/require"
+
 	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/app/command"
 	"github.com/authena-ru/courses-organization/internal/app/command/mock"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
-	"github.com/pkg/errors"
-	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestAddStudentHandler_Handle(t *testing.T) {
@@ -21,14 +23,14 @@ func TestAddStudentHandler_Handle(t *testing.T) {
 	}
 	testCases := []struct {
 		Name                     string
-		Command                  command.AddStudentCommand
+		Command                  app.AddStudentCommand
 		PrepareCoursesRepository func(crs *course.Course) *mock.CoursesRepository
 		PrepareAcademicsService  func() *mock.AcademicsService
 		IsErr                    func(err error) bool
 	}{
 		{
 			Name: "add_student",
-			Command: command.AddStudentCommand{
+			Command: app.AddStudentCommand{
 				Academic:  course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseID:  "course-id",
 				StudentID: "student-id",
@@ -38,7 +40,7 @@ func TestAddStudentHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_add_when_teacher_cant_edit_course",
-			Command: command.AddStudentCommand{
+			Command: app.AddStudentCommand{
 				Academic:  course.MustNewAcademic("other-teacher-id", course.TeacherType),
 				CourseID:  "course-id",
 				StudentID: "student-id",
@@ -49,7 +51,7 @@ func TestAddStudentHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_add_when_student_doesnt_exist",
-			Command: command.AddStudentCommand{
+			Command: app.AddStudentCommand{
 				Academic:  course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseID:  "course-id",
 				StudentID: "student-id",
@@ -64,7 +66,7 @@ func TestAddStudentHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_add_when_course_doesnt_exist",
-			Command: command.AddStudentCommand{
+			Command: app.AddStudentCommand{
 				Academic:  course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseID:  "course-id",
 				StudentID: "student-id",

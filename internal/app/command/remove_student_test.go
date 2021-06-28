@@ -20,13 +20,13 @@ func TestRemoveStudentHandler_Handle(t *testing.T) {
 	}
 	testCases := []struct {
 		Name                    string
-		Command                 command.RemoveStudentCommand
+		Command                 app.RemoveStudentCommand
 		PrepareCourseRepository func(crs *course.Course) *mock.CoursesRepository
 		IsErr                   func(err error) bool
 	}{
 		{
 			Name: "remove_student",
-			Command: command.RemoveStudentCommand{
+			Command: app.RemoveStudentCommand{
 				Academic:  course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseID:  "course-id",
 				StudentID: "student-id",
@@ -35,7 +35,7 @@ func TestRemoveStudentHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_remove_student_when_course_doesnt_exist",
-			Command: command.RemoveStudentCommand{
+			Command: app.RemoveStudentCommand{
 				Academic:  course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseID:  "course-id",
 				StudentID: "student-id",
@@ -49,7 +49,7 @@ func TestRemoveStudentHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_remove_student_when_academic_cant_edit_course",
-			Command: command.RemoveStudentCommand{
+			Command: app.RemoveStudentCommand{
 				Academic:  course.MustNewAcademic("other-teacher-id", course.TeacherType),
 				CourseID:  "course-id",
 				StudentID: "student-id",

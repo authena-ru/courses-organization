@@ -22,13 +22,13 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 	}
 	testCases := []struct {
 		Name                     string
-		Command                  command.AddTaskCommand
+		Command                  app.AddTaskCommand
 		PrepareCoursesRepository func(crs *course.Course) *mock.CoursesRepository
 		IsErr                    func(err error) bool
 	}{
 		{
 			Name: "add_manual_checking_task",
-			Command: command.AddTaskCommand{
+			Command: app.AddTaskCommand{
 				Academic:        course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseID:        "course-id",
 				TaskTitle:       "Manual checking task",
@@ -43,7 +43,7 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "add_auto_code_checking_task",
-			Command: command.AddTaskCommand{
+			Command: app.AddTaskCommand{
 				Academic:        course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseID:        "course-id",
 				TaskTitle:       "Auto code checking task",
@@ -55,7 +55,7 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "add_testing_task",
-			Command: command.AddTaskCommand{
+			Command: app.AddTaskCommand{
 				Academic:        course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseID:        "course-id",
 				TaskTitle:       "Testing task",
@@ -67,7 +67,7 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_add_when_invalid_task_type",
-			Command: command.AddTaskCommand{
+			Command: app.AddTaskCommand{
 				Academic:        course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseID:        "course-id",
 				TaskTitle:       "Some task",
@@ -81,7 +81,7 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_add_when_task_title_too_long",
-			Command: command.AddTaskCommand{
+			Command: app.AddTaskCommand{
 				Academic:        course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseID:        "course-id",
 				TaskTitle:       strings.Repeat("x", 201),
@@ -95,7 +95,7 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_add_when_task_description_too_long",
-			Command: command.AddTaskCommand{
+			Command: app.AddTaskCommand{
 				Academic:        course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseID:        "course-id",
 				TaskTitle:       "Some course task",
@@ -109,7 +109,7 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_add_when_academic_cant_edit_course",
-			Command: command.AddTaskCommand{
+			Command: app.AddTaskCommand{
 				Academic:        course.MustNewAcademic("student-id", course.StudentType),
 				CourseID:        "course-id",
 				TaskTitle:       "Some task title",
@@ -121,7 +121,7 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 		},
 		{
 			Name: "dont_add_when_course_doesnt_exist",
-			Command: command.AddTaskCommand{
+			Command: app.AddTaskCommand{
 				Academic:        course.MustNewAcademic("creator-id", course.TeacherType),
 				CourseID:        "course-id",
 				TaskTitle:       "Task of non-existing course",

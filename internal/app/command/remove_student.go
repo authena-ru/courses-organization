@@ -5,14 +5,9 @@ import (
 
 	"github.com/pkg/errors"
 
+	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
-
-type RemoveStudentCommand struct {
-	Academic  course.Academic
-	CourseID  string
-	StudentID string
-}
 
 type RemoveStudentHandler struct {
 	coursesRepository coursesRepository
@@ -25,11 +20,7 @@ func NewRemoveStudentHandler(repository coursesRepository) RemoveStudentHandler 
 	return RemoveStudentHandler{coursesRepository: repository}
 }
 
-// Handle is RemoveStudentCommand handler.
-// Removes one student from course, returns one of possible errors:
-// app.ErrCourseDoesntExist, app.ErrDatabaseProblems, course.ErrCourseHasNoSuchStudent
-// error that can be detected using method course.IsAcademicCantEditCourseError and others without definition.
-func (h RemoveStudentHandler) Handle(ctx context.Context, cmd RemoveStudentCommand) error {
+func (h RemoveStudentHandler) Handle(ctx context.Context, cmd app.RemoveStudentCommand) error {
 	err := h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, removeStudent(cmd))
 	return errors.Wrapf(
 		err,
@@ -38,7 +29,7 @@ func (h RemoveStudentHandler) Handle(ctx context.Context, cmd RemoveStudentComma
 	)
 }
 
-func removeStudent(cmd RemoveStudentCommand) UpdateFunction {
+func removeStudent(cmd app.RemoveStudentCommand) UpdateFunction {
 	return func(_ context.Context, crs *course.Course) (*course.Course, error) {
 		if err := crs.RemoveStudent(cmd.Academic, cmd.StudentID); err != nil {
 			return nil, err

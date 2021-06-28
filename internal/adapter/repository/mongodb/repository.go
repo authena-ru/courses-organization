@@ -78,7 +78,7 @@ func (r *CoursesRepository) UpdateCourse(ctx context.Context, courseID string, u
 func (r *CoursesRepository) FindTask(
 	ctx context.Context,
 	academic course.Academic, courseID string, taskNumber int,
-) (query.SpecificTask, error) {
+) (app.SpecificTask, error) {
 	filter := makeCourseForAcademicFilter(academic, courseID)
 	projection := makeFindTaskProjection(taskNumber)
 	opt := options.FindOne().SetProjection(projection)
@@ -86,13 +86,13 @@ func (r *CoursesRepository) FindTask(
 	var document courseDocument
 	if err := r.courses.FindOne(ctx, filter, opt).Decode(&document); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return query.SpecificTask{}, app.Wrap(app.ErrCourseDoesntExist, err)
+			return app.SpecificTask{}, app.Wrap(app.ErrCourseDoesntExist, err)
 		}
-		return query.SpecificTask{}, app.Wrap(app.ErrDatabaseProblems, err)
+		return app.SpecificTask{}, app.Wrap(app.ErrDatabaseProblems, err)
 	}
 
 	if len(document.Tasks) == 0 {
-		return query.SpecificTask{}, app.ErrTaskDoesntExist
+		return app.SpecificTask{}, app.ErrTaskDoesntExist
 	}
 
 	return unmarshallSpecificTask(academic, document.Tasks[0]), nil
@@ -114,7 +114,7 @@ func (r *CoursesRepository) FindAllTasks(
 	ctx context.Context,
 	academic course.Academic, courseID string,
 	filterParams query.TasksFilterParams,
-) ([]query.GeneralTask, error) {
+) ([]app.GeneralTask, error) {
 	pipeline := makeFindAllTasksPipeline(academic, courseID, filterParams)
 	cursor, err := r.courses.Aggregate(ctx, pipeline)
 	if err != nil {

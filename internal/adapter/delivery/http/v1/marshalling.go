@@ -6,11 +6,11 @@ import (
 	"github.com/deepmap/oapi-codegen/pkg/types"
 	"github.com/go-chi/render"
 
-	"github.com/authena-ru/courses-organization/internal/app/query"
+	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
-func marshallSpecificTask(w http.ResponseWriter, r *http.Request, task query.SpecificTask) {
+func marshallSpecificTask(w http.ResponseWriter, r *http.Request, task app.SpecificTask) {
 	type taskResponse struct {
 		TaskResponse
 		Deadline *Deadline   `json:"deadline,omitempty"`
@@ -33,7 +33,7 @@ func marshallSpecificTask(w http.ResponseWriter, r *http.Request, task query.Spe
 	render.Respond(w, r, response)
 }
 
-func marshallGeneralTasks(w http.ResponseWriter, r *http.Request, tasks []query.GeneralTask) {
+func marshallGeneralTasks(w http.ResponseWriter, r *http.Request, tasks []app.GeneralTask) {
 	response := make([]TaskResponse, 0, len(tasks))
 	for _, t := range tasks {
 		response = append(response, TaskResponse{
@@ -60,7 +60,7 @@ func marshallTaskType(taskType course.TaskType) TaskType {
 	return "UNKNOWN"
 }
 
-func marshallDeadline(deadline *query.Deadline) *Deadline {
+func marshallDeadline(deadline *app.Deadline) *Deadline {
 	if deadline == nil {
 		return nil
 	}
@@ -70,7 +70,7 @@ func marshallDeadline(deadline *query.Deadline) *Deadline {
 	}
 }
 
-func marshallTestData(testData []query.TestData) []TestData {
+func marshallTestData(testData []app.TestData) []TestData {
 	marshalled := make([]TestData, 0, len(testData))
 	for _, td := range testData {
 		inputData, outputData := td.InputData, td.OutputData
@@ -82,7 +82,7 @@ func marshallTestData(testData []query.TestData) []TestData {
 	return marshalled
 }
 
-func marshallTestPoints(testPoints []query.TestPoint) []TestPoint {
+func marshallTestPoints(testPoints []app.TestPoint) []TestPoint {
 	marshalled := make([]TestPoint, 0, len(testPoints))
 	for _, tp := range testPoints {
 		var correctVariantNumbers *[]int

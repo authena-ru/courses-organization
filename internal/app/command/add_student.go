@@ -2,16 +2,12 @@ package command
 
 import (
 	"context"
+
 	"github.com/pkg/errors"
 
+	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
-
-type AddStudentCommand struct {
-	Academic  course.Academic
-	CourseID  string
-	StudentID string
-}
 
 type AddStudentHandler struct {
 	coursesRepository coursesRepository
@@ -31,12 +27,7 @@ func NewAddStudentHandler(repository coursesRepository, service academicsService
 	}
 }
 
-// Handle is AddStudentCommand handler.
-// Adds one student to course, returns one of possible errors:
-// app.ErrStudentDoesntExist, app.ErrCourseDoesntExist, app.ErrDatabaseProblems,
-// error that can be detected using method course.IsAcademicCantEditCourseError and
-// others without definition.
-func (h AddStudentHandler) Handle(ctx context.Context, cmd AddStudentCommand) error {
+func (h AddStudentHandler) Handle(ctx context.Context, cmd app.AddStudentCommand) error {
 	err := h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, h.addStudent(cmd))
 	return errors.Wrapf(
 		err,
@@ -45,7 +36,7 @@ func (h AddStudentHandler) Handle(ctx context.Context, cmd AddStudentCommand) er
 	)
 }
 
-func (h AddStudentHandler) addStudent(cmd AddStudentCommand) UpdateFunction {
+func (h AddStudentHandler) addStudent(cmd app.AddStudentCommand) UpdateFunction {
 	return func(ctx context.Context, crs *course.Course) (*course.Course, error) {
 		if err := h.academicsService.StudentExists(ctx, cmd.StudentID); err != nil {
 			return nil, err
