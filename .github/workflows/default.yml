@@ -30,5 +30,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Download dependencies
+        run: go mod tidy
+
       - name: Unit tests
         run: go test --short ./...
