@@ -13,7 +13,7 @@ import (
 
 func decode(w http.ResponseWriter, r *http.Request, v interface{}) bool {
 	if err := render.Decode(r, v); err != nil {
-		httperr.BadRequest("invalid-request-body", err, w, r)
+		httperr.BadRequest("bad-request", err, w, r)
 
 		return false
 	}

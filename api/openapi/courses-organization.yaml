@@ -33,7 +33,7 @@ paths:
                 type: string
           description: course created
         '400':
-          description: invalid request data
+          description: bad request
           content:
             application/json:
               schema:
@@ -46,6 +46,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '403':
           description: only authorized teacher can create course
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: invalid data for course creation
           content:
             application/json:
               schema:
@@ -149,7 +155,7 @@ paths:
         '204':
           description: course edited
         '400':
-          description: invalid request data
+          description: bad request
           content:
             application/json:
               schema:
@@ -168,6 +174,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '403':
           description: only authorized teacher can edit course
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: invalid request data for course editing
           content:
             application/json:
               schema:
@@ -246,7 +258,7 @@ paths:
               schema:
                 type: string
         '400':
-          description: invalid request data
+          description: bad request
           content:
             application/json:
               schema:
@@ -306,13 +318,13 @@ paths:
               schema:
                 type: string
         '400':
-          description: invalid request data
+          description: bad request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: course not found
+          description: bad request
           content:
             application/json:
               schema:
@@ -325,6 +337,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '403':
           description: only authorized teacher can extend course
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: invalid request data for course extending
           content:
             application/json:
               schema:
@@ -440,6 +458,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '403':
           description: only authorized teacher can create task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: invalid request data for task creation
           content:
             application/json:
               schema:
@@ -571,7 +595,7 @@ paths:
         '204':
           description: collaborator added to course
         '400':
-          description: invalid request data
+          description: bad request
           content:
             application/json:
               schema:
@@ -729,7 +753,7 @@ paths:
         '204':
           description: student added to course
         '400':
-          description: invalid request data
+          description: bad request
           content:
             application/json:
               schema:

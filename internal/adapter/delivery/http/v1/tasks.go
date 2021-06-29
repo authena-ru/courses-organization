@@ -32,25 +32,25 @@ func (h handler) AddTaskToCourse(w http.ResponseWriter, r *http.Request, courseI
 	}
 
 	if course.IsInvalidTaskParametersError(err) {
-		httperr.BadRequest("invalid-task-parameters", err, w, r)
+		httperr.UnprocessableEntity("invalid-task-parameters", err, w, r)
 
 		return
 	}
 
 	if course.IsInvalidDeadlineError(err) {
-		httperr.BadRequest("invalid-deadline", err, w, r)
+		httperr.UnprocessableEntity("invalid-deadline", err, w, r)
 
 		return
 	}
 
 	if course.IsInvalidTestDataError(err) {
-		httperr.BadRequest("invalid-test-data", err, w, r)
+		httperr.UnprocessableEntity("invalid-test-data", err, w, r)
 
 		return
 	}
 
 	if course.IsInvalidTestPointError(err) {
-		httperr.BadRequest("invalid-test-points", err, w, r)
+		httperr.UnprocessableEntity("invalid-test-points", err, w, r)
 
 		return
 	}
