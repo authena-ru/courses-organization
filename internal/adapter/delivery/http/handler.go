@@ -12,7 +12,7 @@ import (
 
 	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/auth"
 	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/logging"
-	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/v1"
+	v1 "github.com/authena-ru/courses-organization/internal/adapter/delivery/http/v1"
 	"github.com/authena-ru/courses-organization/internal/app"
 )
 
@@ -22,6 +22,7 @@ func NewHandler(app app.Application) http.Handler {
 
 	rootRouter := chi.NewRouter()
 	rootRouter.Mount("/v1", v1.NewHandler(app, apiRouter))
+
 	return rootRouter
 }
 
