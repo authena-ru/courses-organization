@@ -19,11 +19,13 @@ func NewCoursesRepository(courses ...*course.Course) *CoursesRepository {
 	for _, crs := range courses {
 		crm.courses[crs.ID()] = *crs
 	}
+
 	return crm
 }
 
 func (m *CoursesRepository) AddCourse(_ context.Context, crs *course.Course) error {
 	m.courses[crs.ID()] = *crs
+
 	return nil
 }
 
@@ -32,6 +34,7 @@ func (m *CoursesRepository) GetCourse(_ context.Context, courseID string) (*cour
 	if !ok {
 		return nil, app.ErrCourseDoesntExist
 	}
+
 	return &crs, nil
 }
 
@@ -44,11 +47,14 @@ func (m *CoursesRepository) UpdateCourse(
 	if !ok {
 		return app.ErrCourseDoesntExist
 	}
+
 	updatedCrs, err := updateFn(ctx, &crs)
 	if err != nil {
 		return err
 	}
+
 	m.courses[updatedCrs.ID()] = *updatedCrs
+
 	return nil
 }
 
@@ -71,12 +77,15 @@ func NewAcademicsService(teachers []string, students []string, groups []string) 
 	for _, t := range teachers {
 		asm.teachers[t] = true
 	}
+
 	for _, s := range students {
 		asm.students[s] = true
 	}
+
 	for _, g := range groups {
 		asm.groups[g] = true
 	}
+
 	return asm
 }
 
@@ -84,6 +93,7 @@ func (m *AcademicsService) TeacherExists(_ context.Context, teacherID string) er
 	if m.teachers[teacherID] {
 		return nil
 	}
+
 	return app.ErrTeacherDoesntExist
 }
 
@@ -91,6 +101,7 @@ func (m *AcademicsService) StudentExists(_ context.Context, studentID string) er
 	if m.students[studentID] {
 		return nil
 	}
+
 	return app.ErrStudentDoesntExist
 }
 
@@ -98,5 +109,6 @@ func (m *AcademicsService) GroupExists(_ context.Context, groupID string) error 
 	if m.groups[groupID] {
 		return nil
 	}
+
 	return app.ErrGroupDoesntExist
 }
