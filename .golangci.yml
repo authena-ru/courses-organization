@@ -78,6 +78,6 @@ issues:
         - goerr113
         #- gosec
         #- noctx
-    - path: (internal/delivery/http)
+    - path: (internal/adapter/delivery/http)
       linters:
         - godot
