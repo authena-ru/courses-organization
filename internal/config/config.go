@@ -39,6 +39,7 @@ func New(configsDir string) (*Config, error) {
 	if err := parseEnv(); err != nil {
 		return nil, err
 	}
+
 	if err := parseConfigFile(configsDir, viper.GetString("environment")); err != nil {
 		return nil, err
 	}
@@ -47,6 +48,7 @@ func New(configsDir string) (*Config, error) {
 	if err := unmarshall(&cfg); err != nil {
 		return nil, err
 	}
+
 	setFromEnv(&cfg)
 
 	return &cfg, nil
@@ -62,6 +64,7 @@ func parseEnv() error {
 	if err := parseMongoFromEnv(); err != nil {
 		return err
 	}
+
 	return parseAppFromEnv()
 }
 
@@ -71,9 +74,11 @@ func parseMongoFromEnv() error {
 	if err := viper.BindEnv("uri"); err != nil {
 		return err
 	}
+
 	if err := viper.BindEnv("username"); err != nil {
 		return err
 	}
+
 	return viper.BindEnv("password")
 }
 
@@ -86,6 +91,7 @@ func parseAppFromEnv() error {
 func parseConfigFile(configsDir, env string) error {
 	viper.AddConfigPath(configsDir)
 	viper.SetConfigName(env)
+
 	return viper.ReadInConfig()
 }
 
@@ -100,5 +106,6 @@ func unmarshall(cfg *Config) error {
 	if err := viper.UnmarshalKey("http", &cfg.HTTP); err != nil {
 		return err
 	}
+
 	return viper.UnmarshalKey("mongo", &cfg.Mongo)
 }

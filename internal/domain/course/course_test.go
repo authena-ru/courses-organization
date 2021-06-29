@@ -11,6 +11,7 @@ import (
 
 func TestNewCourse(t *testing.T) {
 	t.Parallel()
+
 	testCases := []struct {
 		Name        string
 		Params      course.CreationParams
@@ -91,6 +92,7 @@ func TestNewCourse(t *testing.T) {
 			if c.ExpectedErr != nil {
 				require.Error(t, err)
 				require.True(t, errors.Is(err, c.ExpectedErr))
+
 				return
 			}
 			require.NoError(t, err)
@@ -107,6 +109,7 @@ func TestNewCourse(t *testing.T) {
 
 func TestCourse_Extend(t *testing.T) {
 	t.Parallel()
+
 	testCases := []struct {
 		Name              string
 		Params            course.CreationParams
@@ -199,6 +202,7 @@ func TestCourse_Extend(t *testing.T) {
 			if c.IsErr != nil {
 				require.Error(t, err)
 				require.True(t, c.IsErr(err))
+
 				return
 			}
 			require.NoError(t, err)

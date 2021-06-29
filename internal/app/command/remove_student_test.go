@@ -15,6 +15,7 @@ import (
 
 func TestRemoveStudentHandler_Handle(t *testing.T) {
 	t.Parallel()
+
 	addCourse := func(crs *course.Course) *mock.CoursesRepository {
 		return mock.NewCoursesRepository(crs)
 	}
@@ -79,6 +80,7 @@ func TestRemoveStudentHandler_Handle(t *testing.T) {
 			if c.IsErr != nil {
 				require.Error(t, err)
 				require.True(t, c.IsErr(err))
+
 				return
 			}
 			require.NoError(t, err)

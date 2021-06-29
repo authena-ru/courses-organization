@@ -10,7 +10,7 @@ import (
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
-func (h handler) GetAllCourseCollaborators(w http.ResponseWriter, r *http.Request, courseId string) {
+func (h handler) GetAllCourseCollaborators(w http.ResponseWriter, _ *http.Request, _ string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -19,23 +19,32 @@ func (h handler) AddCollaboratorToCourse(w http.ResponseWriter, r *http.Request,
 	if !ok {
 		return
 	}
+
 	err := h.app.Commands.AddCollaborator.Handle(r.Context(), cmd)
 	if err == nil {
 		w.WriteHeader(http.StatusNoContent)
+
 		return
 	}
+
 	if errors.Is(err, app.ErrCourseDoesntExist) {
 		httperr.NotFound("course-not-found", err, w, r)
+
 		return
 	}
+
 	if errors.Is(err, app.ErrTeacherDoesntExist) {
 		httperr.UnprocessableEntity("teacher-not-found", err, w, r)
+
 		return
 	}
+
 	if course.IsAcademicCantEditCourseError(err) {
 		httperr.Forbidden("academic-cant-edit-course", err, w, r)
+
 		return
 	}
+
 	httperr.InternalServerError("unexpected-error", err, w, r)
 }
 
@@ -47,22 +56,31 @@ func (h handler) RemoveCollaboratorFromCourse(
 	if !ok {
 		return
 	}
+
 	err := h.app.Commands.RemoveCollaborator.Handle(r.Context(), cmd)
 	if err == nil {
 		w.WriteHeader(http.StatusNoContent)
+
 		return
 	}
+
 	if errors.Is(err, app.ErrCourseDoesntExist) {
 		httperr.NotFound("course-not-found", err, w, r)
+
 		return
 	}
+
 	if errors.Is(err, course.ErrCourseHasNoSuchCollaborator) {
 		httperr.NotFound("course-collaborator-not-found", err, w, r)
+
 		return
 	}
+
 	if course.IsAcademicCantEditCourseError(err) {
 		httperr.Forbidden("academic-cant-edit-course", err, w, r)
+
 		return
 	}
+
 	httperr.InternalServerError("unexpected-error", err, w, r)
 }

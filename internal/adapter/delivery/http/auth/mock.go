@@ -24,11 +24,13 @@ func MockAuthHTTPMiddleware(next http.Handler) http.Handler {
 		)
 		if err != nil {
 			httperr.BadRequest("unable-to-get-jwt", err, w, r)
+
 			return
 		}
 
 		if !token.Valid {
 			httperr.Unauthorized("invalid-jwt", nil, w, r)
+
 			return
 		}
 
@@ -37,6 +39,7 @@ func MockAuthHTTPMiddleware(next http.Handler) http.Handler {
 
 		if !idIsOk || !roleIsOk {
 			httperr.Unauthorized("invalid-jwt-claims", nil, w, r)
+
 			return
 		}
 

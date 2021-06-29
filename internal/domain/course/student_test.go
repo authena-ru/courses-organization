@@ -10,6 +10,7 @@ import (
 
 func TestCourse_AddStudents(t *testing.T) {
 	t.Parallel()
+
 	testCases := []struct {
 		Name     string
 		Academic course.Academic
@@ -46,6 +47,7 @@ func TestCourse_AddStudents(t *testing.T) {
 			if c.IsErr != nil {
 				require.Error(t, err)
 				require.True(t, c.IsErr(err))
+
 				return
 			}
 			require.NoError(t, err)
@@ -56,6 +58,7 @@ func TestCourse_AddStudents(t *testing.T) {
 
 func TestCourse_RemoveStudents(t *testing.T) {
 	t.Parallel()
+
 	testCases := []struct {
 		Name     string
 		Academic course.Academic
@@ -96,6 +99,7 @@ func TestCourse_RemoveStudents(t *testing.T) {
 			if c.IsErr != nil {
 				require.Error(t, err)
 				require.True(t, c.IsErr(err))
+
 				return
 			}
 			require.NoError(t, err)

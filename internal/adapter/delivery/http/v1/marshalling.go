@@ -17,6 +17,7 @@ func marshallSpecificTask(w http.ResponseWriter, r *http.Request, task app.Speci
 		TestData []TestData  `json:"testData,omitempty"`
 		Points   []TestPoint `json:"points,omitempty"`
 	}
+
 	response := taskResponse{
 		TaskResponse: TaskResponse{
 			Number: task.Number,
@@ -45,6 +46,7 @@ func marshallGeneralTasks(w http.ResponseWriter, r *http.Request, tasks []app.Ge
 			},
 		})
 	}
+
 	render.Respond(w, r, response)
 }
 
@@ -57,6 +59,7 @@ func marshallTaskType(taskType course.TaskType) TaskType {
 	case course.TestingType:
 		return TaskTypeTESTING
 	}
+
 	return "UNKNOWN"
 }
 
@@ -64,6 +67,7 @@ func marshallDeadline(deadline *app.Deadline) *Deadline {
 	if deadline == nil {
 		return nil
 	}
+
 	return &Deadline{
 		ExcellentGradeTime: types.Date{Time: deadline.ExcellentGradeTime},
 		GoodGradeTime:      types.Date{Time: deadline.GoodGradeTime},
@@ -72,24 +76,30 @@ func marshallDeadline(deadline *app.Deadline) *Deadline {
 
 func marshallTestData(testData []app.TestData) []TestData {
 	marshalled := make([]TestData, 0, len(testData))
+
 	for _, td := range testData {
 		inputData, outputData := td.InputData, td.OutputData
+
 		marshalled = append(marshalled, TestData{
 			InputData:  &inputData,
 			OutputData: &outputData,
 		})
 	}
+
 	return marshalled
 }
 
 func marshallTestPoints(testPoints []app.TestPoint) []TestPoint {
 	marshalled := make([]TestPoint, 0, len(testPoints))
+
 	for _, tp := range testPoints {
 		var correctVariantNumbers *[]int
 		if tp.CorrectVariantNumbers != nil {
 			correctVariantNumbers = &tp.CorrectVariantNumbers
 		}
+
 		singleCorrectVariant := tp.SingleCorrectVariant
+
 		marshalled = append(marshalled, TestPoint{
 			Description:           tp.Description,
 			Variants:              tp.Variants,
@@ -97,5 +107,6 @@ func marshallTestPoints(testPoints []app.TestPoint) []TestPoint {
 			SingleCorrectVariant:  &singleCorrectVariant,
 		})
 	}
+
 	return marshalled
 }

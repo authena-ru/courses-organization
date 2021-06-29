@@ -15,6 +15,7 @@ import (
 
 func TestCreateCourseHandler_Handle(t *testing.T) {
 	t.Parallel()
+
 	testCases := []struct {
 		Name        string
 		Command     app.CreateCourseCommand
@@ -82,6 +83,7 @@ func TestCreateCourseHandler_Handle(t *testing.T) {
 				require.Error(t, err)
 				require.True(t, errors.Is(err, c.ExpectedErr))
 				require.Empty(t, courseID)
+
 				return
 			}
 			require.NoError(t, err)

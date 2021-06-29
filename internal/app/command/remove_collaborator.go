@@ -17,11 +17,13 @@ func NewRemoveCollaboratorHandler(repository coursesRepository) RemoveCollaborat
 	if repository == nil {
 		panic("coursesRepository is nil")
 	}
+
 	return RemoveCollaboratorHandler{coursesRepository: repository}
 }
 
 func (h RemoveCollaboratorHandler) Handle(ctx context.Context, cmd app.RemoveCollaboratorCommand) error {
 	err := h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, removeCollaborator(cmd))
+
 	return errors.Wrapf(
 		err,
 		"removing collaborator #%s from course #%s by teacher #%s",
@@ -34,6 +36,7 @@ func removeCollaborator(cmd app.RemoveCollaboratorCommand) UpdateFunction {
 		if err := crs.RemoveCollaborator(cmd.Academic, cmd.CollaboratorID); err != nil {
 			return nil, err
 		}
+
 		return crs, nil
 	}
 }

@@ -21,6 +21,7 @@ func (s Semester) String() string {
 	case SecondSemester:
 		return "2nd semester"
 	}
+
 	return "%!Semester(" + strconv.Itoa(int(s)) + ")"
 }
 
@@ -29,6 +30,7 @@ func (s Semester) IsValid() bool {
 	case FirstSemester, SecondSemester:
 		return true
 	}
+
 	return false
 }
 
@@ -49,15 +51,19 @@ func NewPeriod(academicStartYear, academicEndYear int, semester Semester) (Perio
 	if academicStartYear > academicEndYear {
 		return Period{}, ErrStartYearAfterEnd
 	}
+
 	if academicEndYear-academicStartYear > 1 {
 		return Period{}, ErrYearDurationOverYear
 	}
+
 	if academicStartYear == academicEndYear {
 		return Period{}, ErrStartYearEqualsEndYear
 	}
+
 	if !semester.IsValid() {
 		return Period{}, ErrInvalidSemester
 	}
+
 	return Period{
 		academicStartYear: academicStartYear,
 		academicEndYear:   academicEndYear,
@@ -70,6 +76,7 @@ func MustNewPeriod(academicStartYear, academicEndYear int, semester Semester) Pe
 	if err != nil {
 		panic(err)
 	}
+
 	return p
 }
 

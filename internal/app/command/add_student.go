@@ -18,9 +18,11 @@ func NewAddStudentHandler(repository coursesRepository, service academicsService
 	if repository == nil {
 		panic("coursesRepository is nil")
 	}
+
 	if service == nil {
 		panic("academicsService is nil")
 	}
+
 	return AddStudentHandler{
 		coursesRepository: repository,
 		academicsService:  service,
@@ -29,6 +31,7 @@ func NewAddStudentHandler(repository coursesRepository, service academicsService
 
 func (h AddStudentHandler) Handle(ctx context.Context, cmd app.AddStudentCommand) error {
 	err := h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, h.addStudent(cmd))
+
 	return errors.Wrapf(
 		err,
 		"adding student #%s to course #%s by academic #%s",
@@ -41,9 +44,11 @@ func (h AddStudentHandler) addStudent(cmd app.AddStudentCommand) UpdateFunction 
 		if err := h.academicsService.StudentExists(ctx, cmd.StudentID); err != nil {
 			return nil, err
 		}
+
 		if err := crs.AddStudents(cmd.Academic, cmd.StudentID); err != nil {
 			return nil, err
 		}
+
 		return crs, nil
 	}
 }

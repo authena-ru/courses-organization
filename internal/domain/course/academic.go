@@ -21,6 +21,7 @@ func (at AcademicType) String() string {
 	case StudentType:
 		return "student"
 	}
+
 	return "%!AcademicType(" + strconv.Itoa(int(at)) + ")"
 }
 
@@ -31,6 +32,7 @@ func NewAcademicTypeFromString(value string) AcademicType {
 	case "student":
 		return StudentType
 	}
+
 	return AcademicType(0)
 }
 
@@ -44,6 +46,7 @@ func (at AcademicType) IsValid() bool {
 	case TeacherType, StudentType:
 		return true
 	}
+
 	return false
 }
 
@@ -57,9 +60,11 @@ func NewAcademic(id string, t AcademicType) (Academic, error) {
 	if id == "" {
 		return Academic{}, ErrEmptyAcademicID
 	}
+
 	if !t.IsValid() {
 		return Academic{}, ErrInvalidAcademicType
 	}
+
 	return Academic{t: t, id: id}, nil
 }
 
@@ -68,6 +73,7 @@ func MustNewAcademic(id string, t AcademicType) Academic {
 	if err != nil {
 		panic(err)
 	}
+
 	return academic
 }
 
@@ -97,6 +103,7 @@ func (a Access) String() string {
 	case CreatorAccess:
 		return "`creator` access"
 	}
+
 	return "%!Access(" + strconv.Itoa(int(a)) + ")"
 }
 
@@ -109,11 +116,13 @@ func (e academicCantEditCourseError) Error() string {
 	if e.academicType == StudentType {
 		return "student can't edit course"
 	}
+
 	return fmt.Sprintf("teacher can't edit course with %s", e.access)
 }
 
 func IsAcademicCantEditCourseError(err error) bool {
 	var e academicCantEditCourseError
+
 	return errors.As(err, &e)
 }
 
@@ -122,11 +131,14 @@ func (c *Course) canAcademicEditWithAccess(academic Academic, access Access) err
 		if access == TeacherAccess && c.hasTeacher(academic.ID()) {
 			return nil
 		}
+
 		if access == CreatorAccess && c.hasCreator(academic.ID()) {
 			return nil
 		}
+
 		return academicCantEditCourseError{academicType: TeacherType, access: access}
 	}
+
 	return academicCantEditCourseError{academicType: StudentType}
 }
 
@@ -134,5 +146,6 @@ func (a Academic) canCreateCourse() error {
 	if a.Type() == TeacherType {
 		return nil
 	}
+
 	return ErrNotTeacherCantCreateCourse
 }

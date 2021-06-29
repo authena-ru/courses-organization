@@ -35,6 +35,7 @@ func unmarshallTasks(taskDocuments []taskDocument) []course.UnmarshallingTaskPar
 			TestPoints:  unmarshallTestPoints(td.TestPoints),
 		})
 	}
+
 	return taskParams
 }
 
@@ -42,6 +43,7 @@ func unmarshalDeadline(document *deadlineDocument) course.Deadline {
 	if document == nil {
 		return course.Deadline{}
 	}
+
 	return course.MustNewDeadline(document.ExcellentGradeTime, document.GoodGradeTime)
 }
 
@@ -50,6 +52,7 @@ func unmarshallTestData(documents []testDataDocument) []course.TestData {
 	for _, d := range documents {
 		testData = append(testData, course.MustNewTestData(d.OutputData, d.OutputData))
 	}
+
 	return testData
 }
 
@@ -58,11 +61,13 @@ func unmarshallTestPoints(documents []testPointDocument) []course.TestPoint {
 	for _, d := range documents {
 		testPoints = append(testPoints, course.MustNewTestPoint(d.Description, d.Variants, d.CorrectVariantNumbers))
 	}
+
 	return testPoints
 }
 
 func unmarshallSpecificTask(academic course.Academic, document taskDocument) app.SpecificTask {
 	forTeacher := academic.Type() == course.TeacherType
+
 	return app.SpecificTask{
 		Number:      document.Number,
 		Title:       document.Title,
@@ -78,6 +83,7 @@ func unmarshallQueryDeadline(document *deadlineDocument) *app.Deadline {
 	if document == nil {
 		return nil
 	}
+
 	return &app.Deadline{
 		ExcellentGradeTime: document.ExcellentGradeTime,
 		GoodGradeTime:      document.GoodGradeTime,
@@ -88,23 +94,28 @@ func unmarshallQueryTestData(forTeacher bool, documents []testDataDocument) []ap
 	if !forTeacher {
 		return nil
 	}
+
 	queryTestData := make([]app.TestData, 0, len(documents))
+
 	for _, d := range documents {
 		queryTestData = append(queryTestData, app.TestData{
 			InputData:  d.InputData,
 			OutputData: d.OutputData,
 		})
 	}
+
 	return queryTestData
 }
 
 func unmarshallQueryTestPoints(forTeacher bool, documents []testPointDocument) []app.TestPoint {
 	queryTestPoints := make([]app.TestPoint, 0, len(documents))
+
 	for _, d := range documents {
 		var correctVariantNumbers []int
 		if forTeacher {
 			correctVariantNumbers = d.CorrectVariantNumbers
 		}
+
 		queryTestPoints = append(queryTestPoints, app.TestPoint{
 			Description:           d.Description,
 			Variants:              d.Variants,
@@ -112,6 +123,7 @@ func unmarshallQueryTestPoints(forTeacher bool, documents []testPointDocument) [
 			SingleCorrectVariant:  len(d.CorrectVariantNumbers) > 1,
 		})
 	}
+
 	return queryTestPoints
 }
 
@@ -125,5 +137,6 @@ func unmarshallGeneralTasks(documents []taskDocument) []app.GeneralTask {
 			Type:        d.Type,
 		})
 	}
+
 	return tasks
 }

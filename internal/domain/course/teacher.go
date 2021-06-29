@@ -7,6 +7,7 @@ func (c *Course) Collaborators() []string {
 	for c := range c.collaborators {
 		collaborators = append(collaborators, c)
 	}
+
 	return collaborators
 }
 
@@ -14,7 +15,9 @@ func (c *Course) AddCollaborators(academic Academic, teacherIDs ...string) error
 	if err := c.canAcademicEditWithAccess(academic, TeacherAccess); err != nil {
 		return err
 	}
+
 	c.putCollaborators(teacherIDs)
+
 	return nil
 }
 
@@ -30,10 +33,13 @@ func (c *Course) RemoveCollaborator(academic Academic, teacherID string) error {
 	if err := c.canAcademicEditWithAccess(academic, CreatorAccess); err != nil {
 		return err
 	}
+
 	if !c.hasTeacher(teacherID) {
 		return ErrCourseHasNoSuchCollaborator
 	}
+
 	delete(c.collaborators, teacherID)
+
 	return nil
 }
 

@@ -10,6 +10,7 @@ import (
 
 func TestCourse_AddCollaborators(t *testing.T) {
 	t.Parallel()
+
 	testCases := []struct {
 		Name     string
 		Academic course.Academic
@@ -47,6 +48,7 @@ func TestCourse_AddCollaborators(t *testing.T) {
 			if c.IsErr != nil {
 				require.Error(t, err)
 				require.True(t, c.IsErr(err))
+
 				return
 			}
 			require.NoError(t, err)
@@ -61,6 +63,7 @@ func TestCourse_AddCollaborators(t *testing.T) {
 
 func TestCourse_RemoveCollaborators(t *testing.T) {
 	t.Parallel()
+
 	testCases := []struct {
 		Name     string
 		Academic course.Academic
@@ -104,6 +107,7 @@ func TestCourse_RemoveCollaborators(t *testing.T) {
 			if c.IsErr != nil {
 				require.Error(t, err)
 				require.True(t, c.IsErr(err))
+
 				return
 			}
 			require.NoError(t, err)

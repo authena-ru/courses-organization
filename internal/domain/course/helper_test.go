@@ -31,19 +31,24 @@ func withCollaborators(collaborators ...string) CourseOption {
 
 func newCourse(t *testing.T, creator course.Academic, opts ...CourseOption) *course.Course {
 	t.Helper()
+
 	crs := course.MustNewCourse(course.CreationParams{
 		ID:      "origin-course-id",
 		Creator: creator,
 		Title:   "Course title",
 		Period:  course.MustNewPeriod(2024, 2025, course.FirstSemester),
 	})
+
 	for _, opt := range opts {
 		opt(creator, crs)
 	}
+
 	return crs
 }
 
 func addManualCheckingTaskToCourse(t *testing.T, academic course.Academic, crs *course.Course) int {
+	t.Helper()
+
 	taskNumber, err := crs.AddManualCheckingTask(academic, course.ManualCheckingTaskCreationParams{
 		Title:       "Manual checking task title",
 		Description: "Manual checking task description",
@@ -53,10 +58,13 @@ func addManualCheckingTaskToCourse(t *testing.T, academic course.Academic, crs *
 		),
 	})
 	require.NoError(t, err)
+
 	return taskNumber
 }
 
 func addAutoCodeCheckingTaskToCourse(t *testing.T, academic course.Academic, crs *course.Course) int {
+	t.Helper()
+
 	taskNumber, err := crs.AddAutoCodeCheckingTask(academic, course.AutoCodeCheckingTaskCreationParams{
 		Title:       "Auto code checking task title",
 		Description: "Auto code checking task description",
@@ -67,16 +75,20 @@ func addAutoCodeCheckingTaskToCourse(t *testing.T, academic course.Academic, crs
 		TestData: []course.TestData{course.MustNewTestData("1", "Print: 1")},
 	})
 	require.NoError(t, err)
+
 	return taskNumber
 }
 
 func addTestingTaskToCourse(t *testing.T, academic course.Academic, crs *course.Course) int {
+	t.Helper()
+
 	taskNumber, err := crs.AddTestingTask(academic, course.TestingTaskCreationParams{
 		Title:       "Testing task title",
 		Description: "Testing task description",
 		TestPoints:  []course.TestPoint{course.MustNewTestPoint("Yes/no question", []string{"Yes", "No"}, []int{1})},
 	})
 	require.NoError(t, err)
+
 	return taskNumber
 }
 
@@ -87,18 +99,23 @@ func requireExtendedCourse(
 	params course.CreationParams,
 	newTitleWasGiven, newPeriodWasGiven bool,
 ) {
+	t.Helper()
+
 	require.Equal(t, params.ID, extendedCourse.ID())
 	require.Equal(t, params.Creator.ID(), extendedCourse.CreatorID())
+
 	if newPeriodWasGiven {
 		require.Equal(t, params.Period, extendedCourse.Period())
 	} else {
 		require.Equal(t, course.MustNewPeriod(2025, 2026, course.FirstSemester), extendedCourse.Period())
 	}
+
 	if newTitleWasGiven {
 		require.Equal(t, params.Title, extendedCourse.Title())
 	} else {
 		require.Equal(t, originCourse.Title(), extendedCourse.Title())
 	}
+
 	require.ElementsMatch(t, append(originCourse.Students(), params.Students...), extendedCourse.Students())
 	require.ElementsMatch(t, append(originCourse.Collaborators(), params.Collaborators...), extendedCourse.Collaborators())
 	requireCourseTasksEquals(t, originCourse, extendedCourse)
@@ -106,7 +123,9 @@ func requireExtendedCourse(
 
 func requireCourseTasksEquals(t *testing.T, originCourse, extendedCourse *course.Course) {
 	t.Helper()
+
 	require.Equal(t, originCourse.TasksNumber(), extendedCourse.TasksNumber())
+
 	for i := 1; i <= extendedCourse.TasksNumber(); i++ {
 		taskFromOrigin, err := originCourse.Task(i)
 		require.NoError(t, err)
@@ -118,11 +137,15 @@ func requireCourseTasksEquals(t *testing.T, originCourse, extendedCourse *course
 		require.Equal(t, taskFromOrigin.Type(), taskFromExtended.Type())
 		extendedDeadline, _ := taskFromExtended.Deadline()
 		require.True(t, extendedDeadline.IsZero())
+
 		originTestData, _ := taskFromOrigin.TestData()
 		extendedTestData, _ := taskFromExtended.TestData()
+
 		require.Equal(t, originTestData, extendedTestData)
+
 		originTestPoints, _ := taskFromOrigin.TestPoints()
 		extendedTestPoints, _ := taskFromExtended.TestPoints()
+
 		require.Equal(t, originTestPoints, extendedTestPoints)
 	}
 }
@@ -132,6 +155,8 @@ func requireGeneralTaskParamsEquals(
 	task course.Task,
 	number int, taskType course.TaskType, title, description string,
 ) {
+	t.Helper()
+
 	require.Equal(t, number, task.Number())
 	require.Equal(t, taskType, task.Type())
 	require.Equal(t, title, task.Title())

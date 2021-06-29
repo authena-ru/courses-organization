@@ -1,5 +1,5 @@
 run:
-  timeout: 1m
+  timeout: 15s
 
 linters:
   disable-all: true

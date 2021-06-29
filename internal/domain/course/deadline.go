@@ -28,12 +28,15 @@ func NewDeadline(excellentGradeTime time.Time, goodGradeTime time.Time) (Deadlin
 	if excellentGradeTime.IsZero() {
 		return Deadline{}, ErrZeroExcellentGradeTime
 	}
+
 	if goodGradeTime.IsZero() {
 		return Deadline{}, ErrZeroGoodGradeTime
 	}
+
 	if excellentGradeTime.After(goodGradeTime) {
 		return Deadline{}, ErrExcellentGradeTimeAfterGood
 	}
+
 	return Deadline{
 		excellentGradeTime: excellentGradeTime,
 		goodGradeTime:      goodGradeTime,
@@ -45,6 +48,7 @@ func MustNewDeadline(excellentGradeTime time.Time, goodGradeTime time.Time) Dead
 	if err != nil {
 		panic(err)
 	}
+
 	return deadline
 }
 

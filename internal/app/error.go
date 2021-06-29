@@ -24,9 +24,11 @@ func Wrap(applicationError error, originError error) error {
 	if originError == nil {
 		return nil
 	}
+
 	if applicationError == nil {
 		return originError
 	}
+
 	return errors.WithStack(&errorWrapper{
 		appErr:    applicationError,
 		originErr: originError,

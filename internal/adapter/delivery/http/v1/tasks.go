@@ -16,36 +16,51 @@ func (h handler) AddTaskToCourse(w http.ResponseWriter, r *http.Request, courseI
 	if !ok {
 		return
 	}
+
 	taskNumber, err := h.app.Commands.AddTask.Handle(r.Context(), cmd)
 	if err == nil {
 		w.Header().Set("Content-Location", fmt.Sprintf("courses/%s/tasks/%d", courseID, taskNumber))
 		w.WriteHeader(http.StatusCreated)
+
 		return
 	}
+
 	if errors.Is(err, app.ErrCourseDoesntExist) {
 		httperr.NotFound("course-not-found", err, w, r)
+
 		return
 	}
+
 	if course.IsInvalidTaskParametersError(err) {
 		httperr.BadRequest("invalid-task-parameters", err, w, r)
+
 		return
 	}
+
 	if course.IsInvalidDeadlineError(err) {
 		httperr.BadRequest("invalid-deadline", err, w, r)
+
 		return
 	}
+
 	if course.IsInvalidTestDataError(err) {
 		httperr.BadRequest("invalid-test-data", err, w, r)
+
 		return
 	}
+
 	if course.IsInvalidTestPointError(err) {
 		httperr.BadRequest("invalid-test-points", err, w, r)
+
 		return
 	}
+
 	if course.IsAcademicCantEditCourseError(err) {
 		httperr.Forbidden("academic-cant-edit-course", err, w, r)
+
 		return
 	}
+
 	httperr.InternalServerError("unexpected-error", err, w, r)
 }
 
@@ -54,15 +69,20 @@ func (h handler) GetCourseTasks(w http.ResponseWriter, r *http.Request, courseID
 	if !ok {
 		return
 	}
+
 	tasks, err := h.app.Queries.AllTasks.Handle(r.Context(), qry)
 	if err == nil {
 		marshallGeneralTasks(w, r, tasks)
+
 		return
 	}
+
 	if errors.Is(err, app.ErrCourseDoesntExist) {
 		httperr.BadRequest("course-not-found", err, w, r)
+
 		return
 	}
+
 	httperr.InternalServerError("unexpected-error", err, w, r)
 }
 
@@ -71,18 +91,25 @@ func (h handler) GetCourseTask(w http.ResponseWriter, r *http.Request, courseID 
 	if !ok {
 		return
 	}
+
 	task, err := h.app.Queries.SpecificTask.Handle(r.Context(), qry)
 	if err == nil {
 		marshallSpecificTask(w, r, task)
+
 		return
 	}
+
 	if errors.Is(err, app.ErrCourseDoesntExist) {
 		httperr.BadRequest("course-not-found", err, w, r)
+
 		return
 	}
+
 	if errors.Is(err, app.ErrTaskDoesntExist) {
 		httperr.NotFound("course-task-not-found", err, w, r)
+
 		return
 	}
+
 	httperr.InternalServerError("unexpected-error", err, w, r)
 }

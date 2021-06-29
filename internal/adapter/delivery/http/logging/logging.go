@@ -40,11 +40,13 @@ type StructuredLoggerEntry struct {
 	Logger logrus.FieldLogger
 }
 
+const responseRounding = 100
+
 func (e *StructuredLoggerEntry) Write(status, bytes int, _ http.Header, elapsed time.Duration, _ interface{}) {
 	e.Logger = e.Logger.WithFields(logrus.Fields{
 		"resp_status":       status,
 		"resp_bytes_length": bytes,
-		"resp_elapsed":      elapsed.Round(time.Millisecond / 100).String(),
+		"resp_elapsed":      elapsed.Round(time.Millisecond / responseRounding).String(),
 	})
 	e.Logger.Info("Request completed")
 }
@@ -57,6 +59,10 @@ func (e *StructuredLoggerEntry) Panic(v interface{}, stack []byte) {
 }
 
 func GetLogEntry(r *http.Request) logrus.FieldLogger {
-	entry := middleware.GetLogEntry(r).(*StructuredLoggerEntry)
+	entry, ok := middleware.GetLogEntry(r).(*StructuredLoggerEntry)
+	if !ok {
+		panic("LogEntry isn't *StructuredLoggerEntry")
+	}
+
 	return entry.Logger
 }

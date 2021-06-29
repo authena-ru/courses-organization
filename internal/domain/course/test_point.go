@@ -30,24 +30,31 @@ func NewTestPoint(description string, variants []string, correctVariantNumbers [
 	if len(description) > testPointDescriptionMaxLen {
 		return TestPoint{}, ErrTestPointDescriptionTooLong
 	}
+
 	if len(variants) == 0 {
 		return TestPoint{}, ErrEmptyTestPointVariants
 	}
+
 	if len(correctVariantNumbers) == 0 {
 		return TestPoint{}, ErrEmptyTestPointCorrectVariants
 	}
+
 	if len(correctVariantNumbers) > len(variants) {
 		return TestPoint{}, ErrTooMuchTestPointCorrectVariants
 	}
+
 	for _, n := range correctVariantNumbers {
 		if n >= len(variants) || n < 0 {
 			return TestPoint{}, ErrInvalidTestPointVariantNumber
 		}
 	}
+
 	variantsCopy := make([]string, len(variants))
 	copy(variantsCopy, variants)
+
 	correctVariantNumbersCopy := make([]int, len(correctVariantNumbers))
 	copy(correctVariantNumbersCopy, correctVariantNumbers)
+
 	return TestPoint{
 		description:           description,
 		variants:              variantsCopy,
@@ -60,6 +67,7 @@ func MustNewTestPoint(description string, variants []string, correctVariantNumbe
 	if err != nil {
 		panic(err)
 	}
+
 	return tp
 }
 
@@ -70,12 +78,14 @@ func (tp TestPoint) Description() string {
 func (tp TestPoint) Variants() []string {
 	variantsCopy := make([]string, len(tp.variants))
 	copy(variantsCopy, tp.variants)
+
 	return variantsCopy
 }
 
 func (tp TestPoint) CorrectVariantNumbers() []int {
 	correctVariantNumbersCopy := make([]int, len(tp.correctVariantNumbers))
 	copy(correctVariantNumbersCopy, tp.correctVariantNumbers)
+
 	return correctVariantNumbersCopy
 }
 

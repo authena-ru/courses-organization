@@ -18,6 +18,7 @@ func NewCreateCourseHandler(repository coursesRepository) CreateCourseHandler {
 	if repository == nil {
 		panic("coursesRepository is nil")
 	}
+
 	return CreateCourseHandler{coursesRepository: repository}
 }
 
@@ -27,6 +28,7 @@ func (h CreateCourseHandler) Handle(ctx context.Context, cmd app.CreateCourseCom
 	}()
 
 	courseID = uuid.NewString()
+
 	crs, err := course.NewCourse(course.CreationParams{
 		ID:      courseID,
 		Creator: cmd.Academic,
@@ -37,8 +39,10 @@ func (h CreateCourseHandler) Handle(ctx context.Context, cmd app.CreateCourseCom
 	if err != nil {
 		return "", err
 	}
+
 	if err := h.coursesRepository.AddCourse(ctx, crs); err != nil {
 		return "", err
 	}
+
 	return
 }

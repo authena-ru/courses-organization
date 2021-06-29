@@ -13,6 +13,7 @@ import (
 
 func TestCourse_AddManualCheckingTask(t *testing.T) {
 	t.Parallel()
+
 	correctTaskCreationParams := course.ManualCheckingTaskCreationParams{
 		Title:       "Make container",
 		Description: "Containerization",
@@ -73,6 +74,7 @@ func TestCourse_AddManualCheckingTask(t *testing.T) {
 				require.Error(t, err)
 				require.True(t, c.IsErr(err))
 				require.Equal(t, 0, number)
+
 				return
 			}
 			require.Equal(t, 1, crs.TasksNumber())
@@ -92,6 +94,7 @@ func TestCourse_AddManualCheckingTask(t *testing.T) {
 
 func TestCourse_AddAutoCodeCheckingTask(t *testing.T) {
 	t.Parallel()
+
 	correctTaskCreationParams := course.AutoCodeCheckingTaskCreationParams{
 		Title:       "Print sum of two integers",
 		Description: "You should read two integers from console and print sum",
@@ -153,6 +156,7 @@ func TestCourse_AddAutoCodeCheckingTask(t *testing.T) {
 				require.Error(t, err)
 				require.True(t, c.IsErr(err))
 				require.Equal(t, 0, number)
+
 				return
 			}
 			require.Equal(t, 1, crs.TasksNumber())
@@ -174,6 +178,7 @@ func TestCourse_AddAutoCodeCheckingTask(t *testing.T) {
 
 func TestCourse_AddTestingTask(t *testing.T) {
 	t.Parallel()
+
 	correctTaskCreationParams := course.TestingTaskCreationParams{
 		Title:       "Golang syntax",
 		Description: "Choose right syntactic constructions",
@@ -230,6 +235,7 @@ func TestCourse_AddTestingTask(t *testing.T) {
 				require.Error(t, err)
 				require.True(t, c.IsErr(err))
 				require.Equal(t, 0, number)
+
 				return
 			}
 			require.Equal(t, 1, crs.TasksNumber())
@@ -249,6 +255,7 @@ func TestCourse_AddTestingTask(t *testing.T) {
 
 func TestCourse_RenameTask(t *testing.T) {
 	t.Parallel()
+
 	addTask := func(crs *course.Course) int {
 		taskNumber, err := crs.AddManualCheckingTask(
 			course.MustNewAcademic("creator-id", course.TeacherType),
@@ -257,6 +264,7 @@ func TestCourse_RenameTask(t *testing.T) {
 			},
 		)
 		require.NoError(t, err)
+
 		return taskNumber
 	}
 	testCases := []struct {
@@ -314,6 +322,7 @@ func TestCourse_RenameTask(t *testing.T) {
 			if c.IsErr != nil {
 				require.Error(t, err)
 				require.True(t, c.IsErr(err))
+
 				return
 			}
 			require.NoError(t, err)
@@ -326,6 +335,7 @@ func TestCourse_RenameTask(t *testing.T) {
 
 func TestCourse_ReplaceTaskDescription(t *testing.T) {
 	t.Parallel()
+
 	addTask := func(crs *course.Course) int {
 		taskNumber, err := crs.AddManualCheckingTask(
 			course.MustNewAcademic("creator-id", course.TeacherType),
@@ -334,6 +344,7 @@ func TestCourse_ReplaceTaskDescription(t *testing.T) {
 			},
 		)
 		require.NoError(t, err)
+
 		return taskNumber
 	}
 	testCases := []struct {
@@ -391,6 +402,7 @@ func TestCourse_ReplaceTaskDescription(t *testing.T) {
 			if c.IsErr != nil {
 				require.Error(t, err)
 				require.True(t, c.IsErr(err))
+
 				return
 			}
 			require.NoError(t, err)
@@ -403,6 +415,7 @@ func TestCourse_ReplaceTaskDescription(t *testing.T) {
 
 func TestCourse_ReplaceTaskDeadline(t *testing.T) {
 	t.Parallel()
+
 	newDeadline := course.MustNewDeadline(
 		time.Date(2023, time.March, 10, 0, 0, 0, 0, time.Local),
 		time.Date(2023, time.March, 22, 0, 0, 0, 0, time.Local),
@@ -418,6 +431,7 @@ func TestCourse_ReplaceTaskDeadline(t *testing.T) {
 		require.NoError(t, err)
 		testingTaskNumber, err := crs.AddTestingTask(creator, course.TestingTaskCreationParams{})
 		require.NoError(t, err)
+
 		return manualTaskNumber, testingTaskNumber
 	}
 	testCases := []struct {
@@ -433,6 +447,7 @@ func TestCourse_ReplaceTaskDeadline(t *testing.T) {
 			NewDeadline: newDeadline,
 			PrepareTask: func(crs *course.Course) int {
 				manualTaskNumber, _ := addTasks(crs)
+
 				return manualTaskNumber
 			},
 		},
@@ -442,6 +457,7 @@ func TestCourse_ReplaceTaskDeadline(t *testing.T) {
 			NewDeadline: newDeadline,
 			PrepareTask: func(crs *course.Course) int {
 				_, testingTaskNumber := addTasks(crs)
+
 				return testingTaskNumber
 			},
 			IsErr: func(err error) bool {
@@ -454,6 +470,7 @@ func TestCourse_ReplaceTaskDeadline(t *testing.T) {
 			NewDeadline: newDeadline,
 			PrepareTask: func(crs *course.Course) int {
 				manualTaskNumber, _ := addTasks(crs)
+
 				return manualTaskNumber
 			},
 			IsErr: course.IsAcademicCantEditCourseError,
@@ -484,6 +501,7 @@ func TestCourse_ReplaceTaskDeadline(t *testing.T) {
 			if c.IsErr != nil {
 				require.Error(t, err)
 				require.True(t, c.IsErr(err))
+
 				return
 			}
 			require.NoError(t, err)
@@ -498,6 +516,7 @@ func TestCourse_ReplaceTaskDeadline(t *testing.T) {
 
 func TestCourse_ReplaceTaskTestData(t *testing.T) {
 	t.Parallel()
+
 	addTasks := func(crs *course.Course) (int, int) {
 		creator := course.MustNewAcademic("creator-id", course.TeacherType)
 		manualTaskNumber, err := crs.AddManualCheckingTask(creator, course.ManualCheckingTaskCreationParams{})
@@ -506,6 +525,7 @@ func TestCourse_ReplaceTaskTestData(t *testing.T) {
 			TestData: []course.TestData{course.MustNewTestData("1 1 2 3", "7")},
 		})
 		require.NoError(t, err)
+
 		return autoCodeTaskNumber, manualTaskNumber
 	}
 	newTestData := []course.TestData{course.MustNewTestData("1 1 2 3", "7"), course.MustNewTestData("1 1", "2")}
@@ -522,6 +542,7 @@ func TestCourse_ReplaceTaskTestData(t *testing.T) {
 			NewTestData: newTestData,
 			PrepareTask: func(crs *course.Course) int {
 				autoCodeTaskNumber, _ := addTasks(crs)
+
 				return autoCodeTaskNumber
 			},
 		},
@@ -531,6 +552,7 @@ func TestCourse_ReplaceTaskTestData(t *testing.T) {
 			NewTestData: newTestData,
 			PrepareTask: func(crs *course.Course) int {
 				_, manualTaskNumber := addTasks(crs)
+
 				return manualTaskNumber
 			},
 			IsErr: func(err error) bool {
@@ -543,6 +565,7 @@ func TestCourse_ReplaceTaskTestData(t *testing.T) {
 			NewTestData: newTestData,
 			PrepareTask: func(crs *course.Course) int {
 				autoCodeTaskNumber, _ := addTasks(crs)
+
 				return autoCodeTaskNumber
 			},
 			IsErr: course.IsAcademicCantEditCourseError,
@@ -573,6 +596,7 @@ func TestCourse_ReplaceTaskTestData(t *testing.T) {
 			if c.IsErr != nil {
 				require.Error(t, err)
 				require.True(t, c.IsErr(err))
+
 				return
 			}
 			require.NoError(t, err)
@@ -587,6 +611,7 @@ func TestCourse_ReplaceTaskTestData(t *testing.T) {
 
 func TestCourse_ReplaceTaskTestPoints(t *testing.T) {
 	t.Parallel()
+
 	addTasks := func(crs *course.Course) (int, int) {
 		creator := course.MustNewAcademic("creator-id", course.TeacherType)
 		autoCodeTaskNumber, err := crs.AddAutoCodeCheckingTask(creator, course.AutoCodeCheckingTaskCreationParams{})
@@ -595,6 +620,7 @@ func TestCourse_ReplaceTaskTestPoints(t *testing.T) {
 			TestPoints: []course.TestPoint{course.MustNewTestPoint("Spring is DI container", []string{"Yes", "No"}, []int{0})},
 		})
 		require.NoError(t, err)
+
 		return testingTaskNumber, autoCodeTaskNumber
 	}
 	newTestPoints := []course.TestPoint{course.MustNewTestPoint("Spring is just DI container", []string{"Yes", "No"}, []int{1})}
@@ -611,6 +637,7 @@ func TestCourse_ReplaceTaskTestPoints(t *testing.T) {
 			NewTestPoints: newTestPoints,
 			PrepareTask: func(crs *course.Course) int {
 				testingTaskNumber, _ := addTasks(crs)
+
 				return testingTaskNumber
 			},
 		},
@@ -620,6 +647,7 @@ func TestCourse_ReplaceTaskTestPoints(t *testing.T) {
 			NewTestPoints: newTestPoints,
 			PrepareTask: func(crs *course.Course) int {
 				_, autoCodeTaskNumber := addTasks(crs)
+
 				return autoCodeTaskNumber
 			},
 			IsErr: func(err error) bool {
@@ -632,6 +660,7 @@ func TestCourse_ReplaceTaskTestPoints(t *testing.T) {
 			NewTestPoints: newTestPoints,
 			PrepareTask: func(crs *course.Course) int {
 				testingTaskNumber, _ := addTasks(crs)
+
 				return testingTaskNumber
 			},
 			IsErr: course.IsAcademicCantEditCourseError,
@@ -662,6 +691,7 @@ func TestCourse_ReplaceTaskTestPoints(t *testing.T) {
 			if c.IsErr != nil {
 				require.Error(t, err)
 				require.True(t, c.IsErr(err))
+
 				return
 			}
 			require.NoError(t, err)

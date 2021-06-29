@@ -17,11 +17,13 @@ func NewAddTaskHandler(repository coursesRepository) AddTaskHandler {
 	if repository == nil {
 		panic("coursesRepository is nil")
 	}
+
 	return AddTaskHandler{coursesRepository: repository}
 }
 
 func (h AddTaskHandler) Handle(ctx context.Context, cmd app.AddTaskCommand) (taskNumber int, err error) {
 	err = h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, addTask(cmd, &taskNumber))
+
 	return taskNumber, errors.Wrapf(
 		err,
 		"adding %s task to course #%s by academic #%s",
@@ -37,6 +39,7 @@ func addTask(cmd app.AddTaskCommand, givenTaskNumber *int) UpdateFunction {
 			number int
 			err    error
 		)
+
 		switch cmd.TaskType {
 		case course.ManualCheckingType:
 			number, err = crs.AddManualCheckingTask(cmd.Academic, course.ManualCheckingTaskCreationParams{
@@ -60,10 +63,13 @@ func addTask(cmd app.AddTaskCommand, givenTaskNumber *int) UpdateFunction {
 		default:
 			number, err = 0, errInvalidTaskType
 		}
+
 		*givenTaskNumber = number
+
 		if err != nil {
 			return nil, err
 		}
+
 		return crs, nil
 	}
 }

@@ -15,6 +15,7 @@ import (
 
 func TestExtendCourseHandler_Handle(t *testing.T) {
 	t.Parallel()
+
 	addOriginCourse := func(crs *course.Course) *mock.CoursesRepository {
 		return mock.NewCoursesRepository(crs)
 	}
@@ -88,6 +89,7 @@ func TestExtendCourseHandler_Handle(t *testing.T) {
 				require.Error(t, err)
 				require.True(t, errors.Is(err, c.ExpectedErr))
 				require.Empty(t, extendedCourseID)
+
 				return
 			}
 			require.NoError(t, err)

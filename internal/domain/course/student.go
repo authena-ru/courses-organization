@@ -7,6 +7,7 @@ func (c *Course) Students() []string {
 	for s := range c.students {
 		students = append(students, s)
 	}
+
 	return students
 }
 
@@ -14,7 +15,9 @@ func (c *Course) AddStudents(academic Academic, studentIDs ...string) error {
 	if err := c.canAcademicEditWithAccess(academic, TeacherAccess); err != nil {
 		return err
 	}
+
 	c.putStudents(studentIDs)
+
 	return nil
 }
 
@@ -30,9 +33,12 @@ func (c *Course) RemoveStudent(academic Academic, studentID string) error {
 	if err := c.canAcademicEditWithAccess(academic, TeacherAccess); err != nil {
 		return err
 	}
+
 	if !c.hasStudent(studentID) {
 		return ErrCourseHasNoSuchStudent
 	}
+
 	delete(c.students, studentID)
+
 	return nil
 }

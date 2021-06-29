@@ -44,18 +44,23 @@ func NewCourse(params CreationParams) (*Course, error) {
 	if params.ID == "" {
 		return nil, ErrEmptyCourseID
 	}
+
 	if params.Creator.IsZero() {
 		return nil, ErrZeroCreator
 	}
+
 	if err := params.Creator.canCreateCourse(); err != nil {
 		return nil, err
 	}
+
 	if params.Title == "" {
 		return nil, ErrEmptyCourseTitle
 	}
+
 	if params.Period.IsZero() {
 		return nil, ErrZeroCoursePeriod
 	}
+
 	crs := &Course{
 		id:             params.ID,
 		creatorID:      params.Creator.ID(),
@@ -67,12 +72,15 @@ func NewCourse(params CreationParams) (*Course, error) {
 		tasks:          make(map[int]*Task),
 		nextTaskNumber: 1,
 	}
+
 	for _, c := range params.Collaborators {
 		crs.collaborators[c] = true
 	}
+
 	for _, s := range params.Students {
 		crs.students[s] = true
 	}
+
 	return crs, nil
 }
 
@@ -80,23 +88,29 @@ func (c *Course) Extend(params CreationParams) (*Course, error) {
 	if params.ID == "" {
 		return nil, ErrEmptyCourseID
 	}
+
 	if params.Creator.IsZero() {
 		return nil, ErrZeroCreator
 	}
+
 	if err := params.Creator.canCreateCourse(); err != nil {
 		return nil, err
 	}
+
 	if err := c.canAcademicEditWithAccess(params.Creator, TeacherAccess); err != nil {
 		return nil, err
 	}
+
 	extendedCourseTitle := c.Title()
 	if params.Title != "" {
 		extendedCourseTitle = params.Title
 	}
+
 	extendedCoursePeriod := c.period.next()
 	if !params.Period.IsZero() {
 		extendedCoursePeriod = params.Period
 	}
+
 	crs := &Course{
 		id:             params.ID,
 		creatorID:      params.Creator.ID(),
@@ -108,11 +122,13 @@ func (c *Course) Extend(params CreationParams) (*Course, error) {
 		tasks:          make(map[int]*Task, len(c.tasks)),
 		nextTaskNumber: len(c.tasks) + 1,
 	}
+
 	for i, t := range c.tasksCopy() {
 		number := i + 1
 		crs.tasks[number] = t
 		crs.tasks[number].number = number
 	}
+
 	return crs, nil
 }
 
@@ -121,6 +137,7 @@ func MustNewCourse(params CreationParams) *Course {
 	if err != nil {
 		panic(err)
 	}
+
 	return crs
 }
 
@@ -181,6 +198,7 @@ func UnmarshallFromDatabase(params UnmarshallingParams) *Course {
 		tasks:          tasks,
 		nextTaskNumber: lastNumber + 1,
 	}
+
 	return crs
 }
 
@@ -189,12 +207,14 @@ func unmarshallIDs(ids []string) map[string]bool {
 	for _, id := range ids {
 		unmarshalled[id] = true
 	}
+
 	return unmarshalled
 }
 
 func unmarshallTasks(taskParams []UnmarshallingTaskParams) (map[int]*Task, int) {
 	tasks := make(map[int]*Task, len(taskParams))
 	lastNumber := 0
+
 	for _, tp := range taskParams {
 		tasks[tp.Number] = &Task{
 			number:      tp.Number,
@@ -207,9 +227,11 @@ func unmarshallTasks(taskParams []UnmarshallingTaskParams) (map[int]*Task, int) 
 				testPoints: tp.TestPoints,
 			},
 		}
+
 		if tp.Number > lastNumber {
 			lastNumber = tp.Number
 		}
 	}
+
 	return tasks, lastNumber
 }

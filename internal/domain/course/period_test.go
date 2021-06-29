@@ -11,6 +11,7 @@ import (
 
 func TestNewPeriod(t *testing.T) {
 	t.Parallel()
+
 	testCases := []struct {
 		Name              string
 		AcademicStartYear int
@@ -62,6 +63,7 @@ func TestNewPeriod(t *testing.T) {
 			if c.ExpectedErr != nil {
 				require.Error(t, err)
 				require.True(t, errors.Is(err, c.ExpectedErr))
+
 				return
 			}
 			require.NoError(t, err)
@@ -74,6 +76,7 @@ func TestNewPeriod(t *testing.T) {
 
 func TestPeriod_IsZero(t *testing.T) {
 	t.Parallel()
+
 	testCases := []struct {
 		Name         string
 		Period       course.Period

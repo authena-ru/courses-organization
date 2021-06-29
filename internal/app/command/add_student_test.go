@@ -15,6 +15,7 @@ import (
 
 func TestAddStudentHandler_Handle(t *testing.T) {
 	t.Parallel()
+
 	addCourse := func(crs *course.Course) *mock.CoursesRepository {
 		return mock.NewCoursesRepository(crs)
 	}
@@ -102,6 +103,7 @@ func TestAddStudentHandler_Handle(t *testing.T) {
 				require.Error(t, err)
 				require.True(t, c.IsErr(err))
 				require.NotContains(t, crs.Students(), c.Command.StudentID)
+
 				return
 			}
 			require.NoError(t, err)

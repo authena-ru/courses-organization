@@ -11,6 +11,7 @@ import (
 
 func TestNewAcademic(t *testing.T) {
 	t.Parallel()
+
 	testCases := []struct {
 		Name         string
 		AcademicID   string
@@ -44,6 +45,7 @@ func TestNewAcademic(t *testing.T) {
 			if c.ExpectedErr != nil {
 				require.Error(t, err)
 				require.True(t, errors.Is(err, c.ExpectedErr))
+
 				return
 			}
 
@@ -56,6 +58,7 @@ func TestNewAcademic(t *testing.T) {
 
 func TestAcademic_IsZero(t *testing.T) {
 	t.Parallel()
+
 	testCases := []struct {
 		Name         string
 		Academic     course.Academic

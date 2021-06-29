@@ -18,6 +18,7 @@ func NewExtendCourseHandler(repository coursesRepository) ExtendCourseHandler {
 	if repository == nil {
 		panic("coursesRepository is nil")
 	}
+
 	return ExtendCourseHandler{coursesRepository: repository}
 }
 
@@ -34,6 +35,7 @@ func (h ExtendCourseHandler) Handle(ctx context.Context, cmd app.ExtendCourseCom
 	); err != nil {
 		return "", err
 	}
+
 	return extendedCourseID, nil
 }
 

@@ -2,10 +2,10 @@ package query
 
 import (
 	"context"
-	"github.com/authena-ru/courses-organization/internal/app"
 
 	"github.com/pkg/errors"
 
+	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
@@ -30,6 +30,7 @@ func NewAllTasksHandler(readModel allTasksReadModel) AllTasksHandler {
 	if readModel == nil {
 		panic("readModel is nil")
 	}
+
 	return AllTasksHandler{readModel: readModel}
 }
 
@@ -38,5 +39,6 @@ func (h AllTasksHandler) Handle(ctx context.Context, qry app.AllTasksQuery) ([]a
 		Type: qry.Type,
 		Text: qry.Text,
 	})
+
 	return tasks, errors.Wrapf(err, "getting all tasks of course #%s", qry.CourseID)
 }

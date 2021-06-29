@@ -12,6 +12,7 @@ import (
 
 func TestNewTestPoint(t *testing.T) {
 	t.Parallel()
+
 	testCases := []struct {
 		Name                  string
 		Description           string
@@ -79,6 +80,7 @@ func TestNewTestPoint(t *testing.T) {
 			if c.ExpectedErr != nil {
 				require.Error(t, err)
 				require.True(t, errors.Is(err, c.ExpectedErr))
+
 				return
 			}
 			require.NoError(t, err)
@@ -91,6 +93,7 @@ func TestNewTestPoint(t *testing.T) {
 
 func TestTestPoint_IsZero(t *testing.T) {
 	t.Parallel()
+
 	testCases := []struct {
 		Name         string
 		TestPoint    course.TestPoint

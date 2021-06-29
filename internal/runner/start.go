@@ -27,6 +27,7 @@ func newConfig(configsDir string) *config.Config {
 	if err != nil {
 		logrus.WithError(err).Fatal("Failed to parse config")
 	}
+
 	return cfg
 }
 
@@ -35,6 +36,7 @@ func newMongoDatabase(cfg *config.Config) *mongo.Database {
 	if err != nil {
 		logrus.WithError(err).Fatal("Failed to connect to MongoDB")
 	}
+
 	return client.Database(cfg.Mongo.DatabaseName)
 }
 
@@ -45,6 +47,7 @@ func newApplication(db *mongo.Database) app.Application {
 		[]string{"798155cb-91b7-41d4-9f91-a1970339707e"},
 		[]string{"95dca190-f307-4954-8700-f992f8c12a86"},
 	)
+
 	return app.Application{
 		Commands: app.Commands{
 			CreateCourse:       command.NewCreateCourseHandler(coursesRepository),
@@ -64,7 +67,9 @@ func newApplication(db *mongo.Database) app.Application {
 
 func startServer(cfg *config.Config, application app.Application) {
 	logrus.Info("Starting HTTP server on address :8080")
+
 	httpServer := server.New(cfg, httpapi.NewHandler(application))
 	err := httpServer.Run()
+
 	logrus.WithError(err).Fatal("HTTP server stopped")
 }

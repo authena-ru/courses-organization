@@ -68,8 +68,10 @@ func marshallCourseDocument(crs *course.Course) courseDocument {
 
 func marshallTaskDocuments(tasks []course.Task) []taskDocument {
 	taskDocuments := make([]taskDocument, 0, len(tasks))
+
 	for _, t := range tasks {
 		deadline, _ := t.Deadline()
+
 		var deadlineDoc *deadlineDocument
 		if !deadline.IsZero() {
 			deadlineDoc = &deadlineDocument{
@@ -77,8 +79,10 @@ func marshallTaskDocuments(tasks []course.Task) []taskDocument {
 				ExcellentGradeTime: deadline.ExcellentGradeTime(),
 			}
 		}
+
 		testData, _ := t.TestData()
 		testPoints, _ := t.TestPoints()
+
 		taskDocuments = append(taskDocuments, taskDocument{
 			Number:      t.Number(),
 			Title:       t.Title(),
@@ -89,6 +93,7 @@ func marshallTaskDocuments(tasks []course.Task) []taskDocument {
 			TestPoints:  marshallTestPointDocuments(testPoints),
 		})
 	}
+
 	return taskDocuments
 }
 
@@ -100,6 +105,7 @@ func marshallTestDataDocuments(testData []course.TestData) []testDataDocument {
 			OutputData: td.OutputData(),
 		})
 	}
+
 	return testDataDocuments
 }
 
@@ -112,5 +118,6 @@ func marshallTestPointDocuments(testPoints []course.TestPoint) []testPointDocume
 			CorrectVariantNumbers: tp.CorrectVariantNumbers(),
 		})
 	}
+
 	return testPointDocuments
 }

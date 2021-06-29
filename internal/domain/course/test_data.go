@@ -23,9 +23,11 @@ func NewTestData(inputData, outputData string) (TestData, error) {
 	if len(inputData) > testDataMaxLen {
 		return TestData{}, ErrTestInputDataTooLong
 	}
+
 	if len(outputData) > testDataMaxLen {
 		return TestData{}, ErrTestOutputDataTooLong
 	}
+
 	return TestData{
 		inputData:  inputData,
 		outputData: outputData,
@@ -37,6 +39,7 @@ func MustNewTestData(inputData, outputData string) TestData {
 	if err != nil {
 		panic(err)
 	}
+
 	return td
 }
 

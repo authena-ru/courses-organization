@@ -18,9 +18,11 @@ func NewAddCollaboratorHandler(repository coursesRepository, service academicsSe
 	if repository == nil {
 		panic("coursesRepository is nil")
 	}
+
 	if service == nil {
 		panic("academicsService is nil")
 	}
+
 	return AddCollaboratorHandler{
 		coursesRepository: repository,
 		academicsService:  service,
@@ -29,6 +31,7 @@ func NewAddCollaboratorHandler(repository coursesRepository, service academicsSe
 
 func (h AddCollaboratorHandler) Handle(ctx context.Context, cmd app.AddCollaboratorCommand) error {
 	err := h.coursesRepository.UpdateCourse(ctx, cmd.CourseID, h.addCollaborator(cmd))
+
 	return errors.Wrapf(
 		err,
 		"adding collaborator #%s to course #%s by academic #%s",
@@ -41,9 +44,11 @@ func (h AddCollaboratorHandler) addCollaborator(cmd app.AddCollaboratorCommand) 
 		if err := h.academicsService.TeacherExists(ctx, cmd.CollaboratorID); err != nil {
 			return nil, err
 		}
+
 		if err := crs.AddCollaborators(cmd.Academic, cmd.CollaboratorID); err != nil {
 			return nil, err
 		}
+
 		return crs, nil
 	}
 }

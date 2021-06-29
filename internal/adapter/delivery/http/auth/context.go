@@ -18,5 +18,6 @@ func AcademicFromCtx(ctx context.Context) (course.Academic, error) {
 	if a, ok := ctx.Value(academicCtxKey).(course.Academic); ok {
 		return a, nil
 	}
+
 	return course.Academic{}, ErrNoAcademicInContext
 }
