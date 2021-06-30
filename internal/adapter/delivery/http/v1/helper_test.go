@@ -25,12 +25,18 @@ func newHandler(t *testing.T, application app.Application) http.Handler {
 	return v1.NewHandler(application, router)
 }
 
-func newRequest(t *testing.T, method, target, requestBody string, authorized course.Academic) *http.Request {
+func newRequest(t *testing.T, method, target, body string, authorized course.Academic) *http.Request {
 	t.Helper()
 
-	r := httptest.NewRequest(method, target, bytes.NewBufferString(requestBody))
+	var r *http.Request
+	if body != "" {
+		r = httptest.NewRequest(method, target, bytes.NewBufferString(body))
+		r.Header.Set("Content-Type", "application/json")
+	} else {
+		r = httptest.NewRequest(method, target, nil)
+	}
+
 	r = r.WithContext(auth.WithAcademicInCtx(r.Context(), authorized))
-	r.Header.Set("Content-Type", "application/json")
 
 	return r
 }
