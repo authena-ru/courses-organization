@@ -1,20 +1,15 @@
-package v1
+package v1_test
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
-	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/auth"
-	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/logging"
 	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/app/command/mock"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
@@ -163,24 +158,19 @@ func TestHandler_AddCollaboratorToCourse(t *testing.T) {
 		t.Run(c.Name, func(t *testing.T) {
 			t.Parallel()
 
-			router := chi.NewRouter()
-			router.Use(logging.NewStructuredLogger(logrus.StandardLogger()))
-
 			application := app.Application{
 				Commands: app.Commands{
 					AddCollaborator: c.PrepareHandler(c.Command),
 				},
 			}
-			h := NewHandler(application, router)
+			h := newHandler(t, application)
 
 			w := httptest.NewRecorder()
-			r := httptest.NewRequest(
-				http.MethodPut,
-				fmt.Sprintf("/courses/%s/collaborators", c.CourseID),
-				bytes.NewBufferString(c.RequestBody),
+			r := newRequest(
+				t,
+				http.MethodPut, fmt.Sprintf("/courses/%s/collaborators", c.CourseID),
+				c.RequestBody, c.Authorized,
 			)
-			r = r.WithContext(auth.WithAcademicInCtx(r.Context(), c.Authorized))
-			r.Header.Set("Content-Type", "application/json")
 
 			h.ServeHTTP(w, r)
 
