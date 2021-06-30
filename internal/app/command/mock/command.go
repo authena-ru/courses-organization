@@ -17,3 +17,15 @@ type RemoveCollaboratorHandler func(ctx context.Context, cmd app.RemoveCollabora
 func (m RemoveCollaboratorHandler) Handle(ctx context.Context, cmd app.RemoveCollaboratorCommand) error {
 	return m(ctx, cmd)
 }
+
+type CreateCourseHandler func(ctx context.Context, cmd app.CreateCourseCommand) (string, error)
+
+func (m CreateCourseHandler) Handle(ctx context.Context, cmd app.CreateCourseCommand) (string, error) {
+	return m(ctx, cmd)
+}
+
+type ExtendCourseHandler func(ctx context.Context, cmd app.ExtendCourseCommand) (string, error)
+
+func (m ExtendCourseHandler) Handle(ctx context.Context, cmd app.ExtendCourseCommand) (string, error) {
+	return m(ctx, cmd)
+}
