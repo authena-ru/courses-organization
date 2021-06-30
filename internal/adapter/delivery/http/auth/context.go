@@ -21,3 +21,7 @@ func AcademicFromCtx(ctx context.Context) (course.Academic, error) {
 
 	return course.Academic{}, ErrNoAcademicInContext
 }
+
+func WithAcademicInCtx(ctx context.Context, academic course.Academic) context.Context {
+	return context.WithValue(ctx, academicCtxKey, academic)
+}
