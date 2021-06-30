@@ -217,6 +217,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetAllAuxiliaryMaterialsResponse'
+        '404':
+          description: course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '401':
           description: authentication required
           content:
@@ -324,7 +330,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: bad request
+          description: origin course not found
           content:
             application/json:
               schema:
@@ -396,7 +402,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '400':
-          description: invalid course id, for example course with such id not found
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: course not found
           content:
             application/json:
               schema:
