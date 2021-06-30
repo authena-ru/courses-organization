@@ -107,21 +107,24 @@ func (a Access) String() string {
 	return "%!Access(" + strconv.Itoa(int(a)) + ")"
 }
 
-type academicCantEditCourseError struct {
+type AcademicCantEditCourseError struct {
 	academicType AcademicType
 	access       Access
 }
 
-func (e academicCantEditCourseError) Error() string {
-	if e.academicType == StudentType {
+func (e AcademicCantEditCourseError) Error() string {
+	switch e.academicType {
+	case StudentType:
 		return "student can't edit course"
+	case TeacherType:
+		return fmt.Sprintf("teacher can't edit course with %s", e.access)
 	}
 
-	return fmt.Sprintf("teacher can't edit course with %s", e.access)
+	return "academic can't edit course"
 }
 
 func IsAcademicCantEditCourseError(err error) bool {
-	var e academicCantEditCourseError
+	var e AcademicCantEditCourseError
 
 	return errors.As(err, &e)
 }
@@ -136,10 +139,10 @@ func (c *Course) canAcademicEditWithAccess(academic Academic, access Access) err
 			return nil
 		}
 
-		return academicCantEditCourseError{academicType: TeacherType, access: access}
+		return AcademicCantEditCourseError{academicType: TeacherType, access: access}
 	}
 
-	return academicCantEditCourseError{academicType: StudentType}
+	return AcademicCantEditCourseError{academicType: StudentType}
 }
 
 func (a Academic) canCreateCourse() error {

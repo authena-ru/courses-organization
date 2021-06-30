@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
@@ -74,6 +75,86 @@ func TestHandler_AddCollaboratorToCourse(t *testing.T) {
 								"slug": "bad-request",
 								"details": "json: cannot unmarshal string into Go value of type v1.AddCollaboratorToCourseRequest"
 							}`,
+		},
+		{
+			Name:        "course_doesnt_exist",
+			RequestBody: `{"id": "6db33767-f116-4499-89b2-3ef26fe842e3"}`,
+			Authorized:  course.MustNewAcademic("69d13ada-be30-4c99-a93c-08cf1bce7eb8", course.TeacherType),
+			CourseID:    "b59cc92a-574d-4065-87d1-955709b6964d",
+			Command: app.AddCollaboratorCommand{
+				CourseID:       "b59cc92a-574d-4065-87d1-955709b6964d",
+				Academic:       course.MustNewAcademic("69d13ada-be30-4c99-a93c-08cf1bce7eb8", course.TeacherType),
+				CollaboratorID: "6db33767-f116-4499-89b2-3ef26fe842e3",
+			},
+			PrepareHandler: func(expectedCommand app.AddCollaboratorCommand) mock.AddCollaboratorsHandler {
+				return func(_ context.Context, givenCommand app.AddCollaboratorCommand) error {
+					require.Equal(t, expectedCommand, givenCommand)
+
+					return app.ErrCourseDoesntExist
+				}
+			},
+			StatusCode:   http.StatusNotFound,
+			ResponseBody: `{"slug": "course-not-found", "details": "course doesn't exist"}`,
+		},
+		{
+			Name:        "teacher_not_found",
+			RequestBody: `{"id": "d825c9e0-abca-48f2-90a9-c53ef9636bde"}`,
+			Authorized:  course.MustNewAcademic("aac3880c-46f2-44c9-9d2f-06e016124e48", course.TeacherType),
+			CourseID:    "28104db1-8476-4279-830d-c49a6643a4b5",
+			Command: app.AddCollaboratorCommand{
+				CourseID:       "28104db1-8476-4279-830d-c49a6643a4b5",
+				Academic:       course.MustNewAcademic("aac3880c-46f2-44c9-9d2f-06e016124e48", course.TeacherType),
+				CollaboratorID: "d825c9e0-abca-48f2-90a9-c53ef9636bde",
+			},
+			PrepareHandler: func(expectedCommand app.AddCollaboratorCommand) mock.AddCollaboratorsHandler {
+				return func(_ context.Context, givenCommand app.AddCollaboratorCommand) error {
+					require.Equal(t, expectedCommand, givenCommand)
+
+					return app.ErrTeacherDoesntExist
+				}
+			},
+			StatusCode:   http.StatusUnprocessableEntity,
+			ResponseBody: `{"slug": "teacher-not-found", "details": "teacher doesn't exist"}`,
+		},
+		{
+			Name:        "academic_cant_edit_course",
+			RequestBody: `{"id": "22c381b2-d2d7-487b-b4f8-1f6b78f9cb92"}`,
+			Authorized:  course.MustNewAcademic("d5cc070d-c562-4bcb-a6e8-e2af858d4a68", course.TeacherType),
+			CourseID:    "b55d1633-f6d5-40a0-9bce-7a79f86518e5",
+			Command: app.AddCollaboratorCommand{
+				CourseID:       "b55d1633-f6d5-40a0-9bce-7a79f86518e5",
+				Academic:       course.MustNewAcademic("d5cc070d-c562-4bcb-a6e8-e2af858d4a68", course.TeacherType),
+				CollaboratorID: "22c381b2-d2d7-487b-b4f8-1f6b78f9cb92",
+			},
+			PrepareHandler: func(expectedCommand app.AddCollaboratorCommand) mock.AddCollaboratorsHandler {
+				return func(_ context.Context, givenCommand app.AddCollaboratorCommand) error {
+					require.Equal(t, expectedCommand, givenCommand)
+
+					return course.AcademicCantEditCourseError{}
+				}
+			},
+			StatusCode:   http.StatusForbidden,
+			ResponseBody: `{"slug": "academic-cant-edit-course", "details": "academic can't edit course"}`,
+		},
+		{
+			Name:        "unexpected_error",
+			RequestBody: `{"id": "8b41b8a4-4821-4029-87fc-a79ae0713cd5"}`,
+			Authorized:  course.MustNewAcademic("60cddd22-8718-4d18-921b-8935f85ed7b8", course.TeacherType),
+			CourseID:    "914c9a37-504c-496b-9715-f0ff2c8917ab",
+			Command: app.AddCollaboratorCommand{
+				CourseID:       "914c9a37-504c-496b-9715-f0ff2c8917ab",
+				Academic:       course.MustNewAcademic("60cddd22-8718-4d18-921b-8935f85ed7b8", course.TeacherType),
+				CollaboratorID: "8b41b8a4-4821-4029-87fc-a79ae0713cd5",
+			},
+			PrepareHandler: func(expectedCommand app.AddCollaboratorCommand) mock.AddCollaboratorsHandler {
+				return func(_ context.Context, givenCommand app.AddCollaboratorCommand) error {
+					require.Equal(t, expectedCommand, givenCommand)
+
+					return errors.New("unexpected error")
+				}
+			},
+			StatusCode:   http.StatusInternalServerError,
+			ResponseBody: `{"slug": "unexpected-error", "details": "unexpected error"}`,
 		},
 	}
 
