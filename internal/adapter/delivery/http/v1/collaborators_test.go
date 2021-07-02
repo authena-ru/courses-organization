@@ -163,10 +163,10 @@ func TestHandler_AddCollaboratorToCourse(t *testing.T) {
 					AddCollaborator: c.PrepareHandler(c.Command),
 				},
 			}
-			h := newHandler(t, application)
+			h := newHTTPHandler(t, application)
 
 			w := httptest.NewRecorder()
-			r := newRequest(
+			r := newHTTPRequest(
 				t,
 				http.MethodPut, fmt.Sprintf("/courses/%s/collaborators", c.CourseID),
 				c.RequestBody, c.Authorized,
@@ -308,10 +308,10 @@ func TestHandler_RemoveCollaboratorFromCourse(t *testing.T) {
 					RemoveCollaborator: c.PrepareHandler(c.Command),
 				},
 			}
-			h := newHandler(t, application)
+			h := newHTTPHandler(t, application)
 
 			w := httptest.NewRecorder()
-			r := newRequest(
+			r := newHTTPRequest(
 				t,
 				http.MethodDelete, fmt.Sprintf("/courses/%s/collaborators/%s", c.CourseID, c.CollaboratorID),
 				"", c.Authorized,
