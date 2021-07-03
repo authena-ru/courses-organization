@@ -92,7 +92,7 @@ func unmarshallAddStudentCommand(
 		Academic:  academic,
 		CourseID:  courseID,
 		StudentID: rb.Id,
-	}, false
+	}, true
 }
 
 func unmarshallRemoveStudentCommand(
