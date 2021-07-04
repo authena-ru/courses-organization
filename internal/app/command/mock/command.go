@@ -35,3 +35,9 @@ type AddStudentHandler func(ctx context.Context, cmd app.AddStudentCommand) erro
 func (m AddStudentHandler) Handle(ctx context.Context, cmd app.AddStudentCommand) error {
 	return m(ctx, cmd)
 }
+
+type RemoveStudentHandler func(ctx context.Context, cmd app.RemoveStudentCommand) error
+
+func (m RemoveStudentHandler) Handle(ctx context.Context, cmd app.RemoveStudentCommand) error {
+	return m(ctx, cmd)
+}

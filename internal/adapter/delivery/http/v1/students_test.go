@@ -171,3 +171,146 @@ func TestHandler_AddStudentToCourse(t *testing.T) {
 		})
 	}
 }
+
+func TestHandler_RemoveStudentFromCourse(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		Name           string
+		Authorized     course.Academic
+		CourseID       string
+		StudentID      string
+		Command        app.RemoveStudentCommand
+		PrepareHandler func(expectedCommand app.RemoveStudentCommand) mock.RemoveStudentHandler
+		StatusCode     int
+		ResponseBody   string
+	}{
+		{
+			Name:       "student_removed_from_course",
+			Authorized: course.MustNewAcademic("4eff6499-fbde-4090-a552-293be8053e53", course.TeacherType),
+			CourseID:   "8c4d464c-420e-4eb3-9bfa-94cf8a97883a",
+			StudentID:  "7ef909eb-38be-4531-9055-2ed3ad79a260",
+			Command: app.RemoveStudentCommand{
+				Academic:  course.MustNewAcademic("4eff6499-fbde-4090-a552-293be8053e53", course.TeacherType),
+				CourseID:  "8c4d464c-420e-4eb3-9bfa-94cf8a97883a",
+				StudentID: "7ef909eb-38be-4531-9055-2ed3ad79a260",
+			},
+			PrepareHandler: func(expectedCommand app.RemoveStudentCommand) mock.RemoveStudentHandler {
+				return func(_ context.Context, givenCommand app.RemoveStudentCommand) error {
+					require.Equal(t, expectedCommand, givenCommand)
+
+					return nil
+				}
+			},
+			StatusCode:   http.StatusNoContent,
+			ResponseBody: "",
+		},
+		{
+			Name:       "course_not_found",
+			Authorized: course.MustNewAcademic("76d00409-08b1-4c3e-b81b-2a0bbb73683e", course.TeacherType),
+			CourseID:   "8052b540-4189-4bff-9035-10695891623a",
+			StudentID:  "7132d45f-ca7f-4bc4-82e1-169f9443738e",
+			Command: app.RemoveStudentCommand{
+				Academic:  course.MustNewAcademic("76d00409-08b1-4c3e-b81b-2a0bbb73683e", course.TeacherType),
+				CourseID:  "8052b540-4189-4bff-9035-10695891623a",
+				StudentID: "7132d45f-ca7f-4bc4-82e1-169f9443738e",
+			},
+			PrepareHandler: func(expectedCommand app.RemoveStudentCommand) mock.RemoveStudentHandler {
+				return func(_ context.Context, givenCommand app.RemoveStudentCommand) error {
+					return app.ErrCourseDoesntExist
+				}
+			},
+			StatusCode:   http.StatusNotFound,
+			ResponseBody: `{"slug": "course-not-found", "details": "course doesn't exist"}`,
+		},
+		{
+			Name:       "course_student_not_found",
+			Authorized: course.MustNewAcademic("f888e716-35f1-479b-9565-d3720c289508", course.TeacherType),
+			CourseID:   "ae0e3b76-39dc-46ed-9f01-72ea469ae33b",
+			StudentID:  "91bc4990-5fd8-4b0b-b930-e2fea7266d9c",
+			Command: app.RemoveStudentCommand{
+				Academic:  course.MustNewAcademic("f888e716-35f1-479b-9565-d3720c289508", course.TeacherType),
+				CourseID:  "ae0e3b76-39dc-46ed-9f01-72ea469ae33b",
+				StudentID: "91bc4990-5fd8-4b0b-b930-e2fea7266d9c",
+			},
+			PrepareHandler: func(expectedCommand app.RemoveStudentCommand) mock.RemoveStudentHandler {
+				return func(_ context.Context, givenCommand app.RemoveStudentCommand) error {
+					require.Equal(t, expectedCommand, givenCommand)
+
+					return course.ErrCourseHasNoSuchStudent
+				}
+			},
+			StatusCode:   http.StatusNotFound,
+			ResponseBody: `{"slug": "course-student-not-found", "details": "course has no such student"}`,
+		},
+		{
+			Name:       "academic_cant_edit_course",
+			Authorized: course.MustNewAcademic("b3917d2e-e3fe-4915-a023-96aa499d9bd1", course.StudentType),
+			CourseID:   "e8b5975d-d87e-42fe-b305-068bf62b85b2",
+			StudentID:  "fac6cee9-f665-4b11-bb8e-33a9185e0b39",
+			Command: app.RemoveStudentCommand{
+				Academic:  course.MustNewAcademic("b3917d2e-e3fe-4915-a023-96aa499d9bd1", course.StudentType),
+				CourseID:  "e8b5975d-d87e-42fe-b305-068bf62b85b2",
+				StudentID: "fac6cee9-f665-4b11-bb8e-33a9185e0b39",
+			},
+			PrepareHandler: func(expectedCommand app.RemoveStudentCommand) mock.RemoveStudentHandler {
+				return func(_ context.Context, givenCommand app.RemoveStudentCommand) error {
+					require.Equal(t, expectedCommand, givenCommand)
+
+					return course.AcademicCantEditCourseError{}
+				}
+			},
+			StatusCode:   http.StatusForbidden,
+			ResponseBody: `{"slug": "academic-cant-edit-course", "details": "academic can't edit course"}`,
+		},
+		{
+			Name:       "unexpected_error",
+			Authorized: course.MustNewAcademic("d9d01cb4-a41c-47cb-be40-0bf5d350143d", course.TeacherType),
+			CourseID:   "413e271b-6d02-436a-9cde-e8e52ebeb10c",
+			StudentID:  "0005bf02-2851-4cb0-8fcc-4bbf81b00b94",
+			Command: app.RemoveStudentCommand{
+				Academic:  course.MustNewAcademic("d9d01cb4-a41c-47cb-be40-0bf5d350143d", course.TeacherType),
+				CourseID:  "413e271b-6d02-436a-9cde-e8e52ebeb10c",
+				StudentID: "0005bf02-2851-4cb0-8fcc-4bbf81b00b94",
+			},
+			PrepareHandler: func(expectedCommand app.RemoveStudentCommand) mock.RemoveStudentHandler {
+				return func(_ context.Context, givenCommand app.RemoveStudentCommand) error {
+					require.Equal(t, expectedCommand, givenCommand)
+
+					return errors.New("unexpected error")
+				}
+			},
+			StatusCode:   http.StatusInternalServerError,
+			ResponseBody: `{"slug": "unexpected-error", "details": "unexpected error"}`,
+		},
+	}
+
+	for i := range testCases {
+		c := testCases[i]
+		t.Run(c.Name, func(t *testing.T) {
+			t.Parallel()
+
+			application := app.Application{
+				Commands: app.Commands{
+					RemoveStudent: c.PrepareHandler(c.Command),
+				},
+			}
+			h := newHTTPHandler(t, application)
+
+			w := httptest.NewRecorder()
+			r := newHTTPRequest(
+				t,
+				http.MethodDelete, fmt.Sprintf("/courses/%s/students/%s",
+					c.CourseID, c.StudentID), "", c.Authorized,
+			)
+
+			h.ServeHTTP(w, r)
+
+			require.Equal(t, c.StatusCode, w.Code)
+
+			if c.ResponseBody != "" {
+				require.JSONEq(t, c.ResponseBody, w.Body.String())
+			}
+		})
+	}
+}
