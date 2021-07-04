@@ -72,7 +72,7 @@ func TestHandler_AddCollaboratorToCourse(t *testing.T) {
 							}`,
 		},
 		{
-			Name:        "course_doesnt_exist",
+			Name:        "course_not_found",
 			RequestBody: `{"id": "6db33767-f116-4499-89b2-3ef26fe842e3"}`,
 			Authorized:  course.MustNewAcademic("69d13ada-be30-4c99-a93c-08cf1bce7eb8", course.TeacherType),
 			CourseID:    "b59cc92a-574d-4065-87d1-955709b6964d",
@@ -163,10 +163,10 @@ func TestHandler_AddCollaboratorToCourse(t *testing.T) {
 					AddCollaborator: c.PrepareHandler(c.Command),
 				},
 			}
-			h := newHandler(t, application)
+			h := newHTTPHandler(t, application)
 
 			w := httptest.NewRecorder()
-			r := newRequest(
+			r := newHTTPRequest(
 				t,
 				http.MethodPut, fmt.Sprintf("/courses/%s/collaborators", c.CourseID),
 				c.RequestBody, c.Authorized,
@@ -308,10 +308,10 @@ func TestHandler_RemoveCollaboratorFromCourse(t *testing.T) {
 					RemoveCollaborator: c.PrepareHandler(c.Command),
 				},
 			}
-			h := newHandler(t, application)
+			h := newHTTPHandler(t, application)
 
 			w := httptest.NewRecorder()
-			r := newRequest(
+			r := newHTTPRequest(
 				t,
 				http.MethodDelete, fmt.Sprintf("/courses/%s/collaborators/%s", c.CourseID, c.CollaboratorID),
 				"", c.Authorized,

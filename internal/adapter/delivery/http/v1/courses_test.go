@@ -132,10 +132,10 @@ func TestHandler_CreateCourse(t *testing.T) {
 					CreateCourse: c.PrepareHandler(c.Command),
 				},
 			}
-			h := newHandler(t, application)
+			h := newHTTPHandler(t, application)
 
 			w := httptest.NewRecorder()
-			r := newRequest(t, http.MethodPost, "/courses", c.RequestBody, c.Authorized)
+			r := newHTTPRequest(t, http.MethodPost, "/courses", c.RequestBody, c.Authorized)
 
 			h.ServeHTTP(w, r)
 
@@ -310,10 +310,10 @@ func TestHandler_ExtendCourse(t *testing.T) {
 					ExtendCourse: c.PrepareHandler(c.Command),
 				},
 			}
-			h := newHandler(t, application)
+			h := newHTTPHandler(t, application)
 
 			w := httptest.NewRecorder()
-			r := newRequest(
+			r := newHTTPRequest(
 				t,
 				http.MethodPost, fmt.Sprintf("/courses/%s/extended", c.OriginCourseID),
 				c.RequestBody, c.Authorized,

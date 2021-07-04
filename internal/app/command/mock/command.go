@@ -29,3 +29,15 @@ type ExtendCourseHandler func(ctx context.Context, cmd app.ExtendCourseCommand) 
 func (m ExtendCourseHandler) Handle(ctx context.Context, cmd app.ExtendCourseCommand) (string, error) {
 	return m(ctx, cmd)
 }
+
+type AddStudentHandler func(ctx context.Context, cmd app.AddStudentCommand) error
+
+func (m AddStudentHandler) Handle(ctx context.Context, cmd app.AddStudentCommand) error {
+	return m(ctx, cmd)
+}
+
+type RemoveStudentHandler func(ctx context.Context, cmd app.RemoveStudentCommand) error
+
+func (m RemoveStudentHandler) Handle(ctx context.Context, cmd app.RemoveStudentCommand) error {
+	return m(ctx, cmd)
+}

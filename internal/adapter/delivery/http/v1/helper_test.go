@@ -16,7 +16,7 @@ import (
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
-func newHandler(t *testing.T, application app.Application) http.Handler {
+func newHTTPHandler(t *testing.T, application app.Application) http.Handler {
 	t.Helper()
 
 	router := chi.NewRouter()
@@ -25,7 +25,7 @@ func newHandler(t *testing.T, application app.Application) http.Handler {
 	return v1.NewHandler(application, router)
 }
 
-func newRequest(t *testing.T, method, target, body string, authorized course.Academic) *http.Request {
+func newHTTPRequest(t *testing.T, method, target, body string, authorized course.Academic) *http.Request {
 	t.Helper()
 
 	var r *http.Request

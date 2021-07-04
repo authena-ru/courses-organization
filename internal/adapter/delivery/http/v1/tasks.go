@@ -78,7 +78,7 @@ func (h handler) GetCourseTasks(w http.ResponseWriter, r *http.Request, courseID
 	}
 
 	if errors.Is(err, app.ErrCourseDoesntExist) {
-		httperr.BadRequest("course-not-found", err, w, r)
+		httperr.NotFound("course-not-found", err, w, r)
 
 		return
 	}
@@ -100,7 +100,7 @@ func (h handler) GetCourseTask(w http.ResponseWriter, r *http.Request, courseID 
 	}
 
 	if errors.Is(err, app.ErrCourseDoesntExist) {
-		httperr.BadRequest("course-not-found", err, w, r)
+		httperr.NotFound("course-not-found", err, w, r)
 
 		return
 	}
