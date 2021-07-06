@@ -6,9 +6,9 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/httperr"
 	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
+	"github.com/authena-ru/courses-organization/pkg/httperr"
 )
 
 func (h handler) AddTaskToCourse(w http.ResponseWriter, r *http.Request, courseID string) {

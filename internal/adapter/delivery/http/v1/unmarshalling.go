@@ -6,9 +6,9 @@ import (
 	"github.com/go-chi/render"
 
 	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/auth"
-	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/httperr"
 	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
+	"github.com/authena-ru/courses-organization/pkg/httperr"
 )
 
 func decode(w http.ResponseWriter, r *http.Request, v interface{}) bool {

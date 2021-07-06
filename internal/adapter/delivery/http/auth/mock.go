@@ -7,8 +7,8 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
 
-	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/httperr"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
+	"github.com/authena-ru/courses-organization/pkg/httperr"
 )
 
 func MockAuthHTTPMiddleware(next http.Handler) http.Handler {

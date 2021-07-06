@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-chi/render"
 
-	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/logging"
+	"github.com/authena-ru/courses-organization/pkg/logging"
 )
 
 func BadRequest(slug string, err error, w http.ResponseWriter, r *http.Request) {

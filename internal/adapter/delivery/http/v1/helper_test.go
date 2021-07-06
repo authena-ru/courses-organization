@@ -10,10 +10,10 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/auth"
-	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/logging"
 	v1 "github.com/authena-ru/courses-organization/internal/adapter/delivery/http/v1"
 	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
+	"github.com/authena-ru/courses-organization/pkg/logging"
 )
 
 func newHTTPHandler(t *testing.T, application app.Application) http.Handler {

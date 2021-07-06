@@ -5,9 +5,9 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/httperr"
 	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
+	"github.com/authena-ru/courses-organization/pkg/httperr"
 )
 
 func (h handler) GetAllCourseStudents(w http.ResponseWriter, _ *http.Request, _ string, _ GetAllCourseStudentsParams) {
