@@ -2,6 +2,8 @@ package v1_test
 
 import (
 	"bytes"
+	auth2 "github.com/authena-ru/courses-organization/internal/port/http/auth"
+	v12 "github.com/authena-ru/courses-organization/internal/port/http/v1"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -9,8 +11,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/sirupsen/logrus"
 
-	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/auth"
-	v1 "github.com/authena-ru/courses-organization/internal/adapter/delivery/http/v1"
 	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 	"github.com/authena-ru/courses-organization/pkg/logging"
@@ -22,7 +22,7 @@ func newHTTPHandler(t *testing.T, application app.Application) http.Handler {
 	router := chi.NewRouter()
 	router.Use(logging.NewStructuredLogger(logrus.StandardLogger()))
 
-	return v1.NewHandler(application, router)
+	return v12.NewHandler(application, router)
 }
 
 func newHTTPRequest(t *testing.T, method, target, body string, authorized course.Academic) *http.Request {
@@ -36,7 +36,7 @@ func newHTTPRequest(t *testing.T, method, target, body string, authorized course
 		r = httptest.NewRequest(method, target, nil)
 	}
 
-	r = r.WithContext(auth.WithAcademicInCtx(r.Context(), authorized))
+	r = r.WithContext(auth2.WithAcademicInCtx(r.Context(), authorized))
 
 	return r
 }

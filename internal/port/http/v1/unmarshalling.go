@@ -1,11 +1,11 @@
 package v1
 
 import (
+	auth2 "github.com/authena-ru/courses-organization/internal/port/http/auth"
 	"net/http"
 
 	"github.com/go-chi/render"
 
-	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/auth"
 	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 	"github.com/authena-ru/courses-organization/pkg/httperr"
@@ -291,7 +291,7 @@ func unmarshallPeriod(w http.ResponseWriter, r *http.Request, apiPeriod *CourseP
 }
 
 func unmarshallAcademic(w http.ResponseWriter, r *http.Request) (course.Academic, bool) {
-	academic, err := auth.AcademicFromCtx(r.Context())
+	academic, err := auth2.AcademicFromCtx(r.Context())
 	if err != nil {
 		httperr.Unauthorized("no-user-in-context", err, w, r)
 

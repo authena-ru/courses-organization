@@ -1,6 +1,8 @@
 package http
 
 import (
+	auth2 "github.com/authena-ru/courses-organization/internal/port/http/auth"
+	v12 "github.com/authena-ru/courses-organization/internal/port/http/v1"
 	"net/http"
 	"os"
 	"strings"
@@ -10,8 +12,6 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/sirupsen/logrus"
 
-	"github.com/authena-ru/courses-organization/internal/adapter/delivery/http/auth"
-	v1 "github.com/authena-ru/courses-organization/internal/adapter/delivery/http/v1"
 	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/pkg/logging"
 )
@@ -21,7 +21,7 @@ func NewHandler(app app.Application) http.Handler {
 	addMiddlewares(apiRouter)
 
 	rootRouter := chi.NewRouter()
-	rootRouter.Mount("/v1", v1.NewHandler(app, apiRouter))
+	rootRouter.Mount("/v1", v12.NewHandler(app, apiRouter))
 
 	return rootRouter
 }
@@ -32,7 +32,7 @@ func addMiddlewares(router *chi.Mux) {
 	router.Use(logging.NewStructuredLogger(logrus.StandardLogger()))
 	router.Use(middleware.Recoverer)
 	addCORSMiddleware(router)
-	router.Use(auth.MockAuthHTTPMiddleware)
+	router.Use(auth2.MockAuthHTTPMiddleware)
 	router.Use(middleware.NoCache)
 }
 

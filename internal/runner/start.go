@@ -2,10 +2,10 @@ package runner
 
 import (
 	"github.com/authena-ru/courses-organization/internal/app/query"
+	"github.com/authena-ru/courses-organization/internal/port/http"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
 
-	httpapi "github.com/authena-ru/courses-organization/internal/adapter/delivery/http"
 	mongorepo "github.com/authena-ru/courses-organization/internal/adapter/repository/mongodb"
 	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/app/command"
@@ -68,7 +68,7 @@ func newApplication(db *mongo.Database) app.Application {
 func startServer(cfg *config.Config, application app.Application) {
 	logrus.Info("Starting HTTP server on address :8080")
 
-	httpServer := server.New(cfg, httpapi.NewHandler(application))
+	httpServer := server.New(cfg, http.NewHandler(application))
 	err := httpServer.Run()
 
 	logrus.WithError(err).Fatal("HTTP server stopped")
