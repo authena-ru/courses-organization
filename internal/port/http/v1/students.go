@@ -15,7 +15,7 @@ func (h handler) GetAllCourseStudents(w http.ResponseWriter, _ *http.Request, _ 
 }
 
 func (h handler) AddStudentToCourse(w http.ResponseWriter, r *http.Request, courseID string) {
-	cmd, ok := unmarshallAddStudentCommand(w, r, courseID)
+	cmd, ok := unmarshalAddStudentCommand(w, r, courseID)
 	if !ok {
 		return
 	}
@@ -50,7 +50,7 @@ func (h handler) AddStudentToCourse(w http.ResponseWriter, r *http.Request, cour
 }
 
 func (h handler) RemoveStudentFromCourse(w http.ResponseWriter, r *http.Request, courseID string, studentID string) {
-	cmd, ok := unmarshallRemoveStudentCommand(w, r, courseID, studentID)
+	cmd, ok := unmarshalRemoveStudentCommand(w, r, courseID, studentID)
 	if !ok {
 		return
 	}

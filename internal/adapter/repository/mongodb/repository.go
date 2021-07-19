@@ -26,7 +26,7 @@ func NewCoursesRepository(db *mongo.Database) *CoursesRepository {
 }
 
 func (r *CoursesRepository) AddCourse(ctx context.Context, crs *course.Course) error {
-	_, err := r.courses.InsertOne(ctx, marshallCourseDocument(crs))
+	_, err := r.courses.InsertOne(ctx, marshalCourseDocument(crs))
 
 	return app.Wrap(app.ErrDatabaseProblems, err)
 }
@@ -41,7 +41,7 @@ func (r *CoursesRepository) GetCourse(ctx context.Context, courseID string) (*co
 		return nil, app.Wrap(app.ErrDatabaseProblems, err)
 	}
 
-	return unmarshallCourse(document), nil
+	return unmarshalCourse(document), nil
 }
 
 func (r *CoursesRepository) UpdateCourse(ctx context.Context, courseID string, updateFn command.UpdateFunction) error {
@@ -62,12 +62,12 @@ func (r *CoursesRepository) UpdateCourse(ctx context.Context, courseID string, u
 			return nil, app.Wrap(app.ErrDatabaseProblems, err)
 		}
 
-		crs := unmarshallCourse(document)
+		crs := unmarshalCourse(document)
 		updatedCourse, err := updateFn(ctx, crs)
 		if err != nil {
 			return nil, err
 		}
-		updatedCourseDocument := marshallCourseDocument(updatedCourse)
+		updatedCourseDocument := marshalCourseDocument(updatedCourse)
 
 		replaceOpts := options.Replace().SetUpsert(true)
 		filter := bson.M{"_id": updatedCourseDocument.ID}
@@ -102,7 +102,7 @@ func (r *CoursesRepository) FindTask(
 		return app.SpecificTask{}, app.ErrTaskDoesntExist
 	}
 
-	return unmarshallSpecificTask(academic, document.Tasks[0]), nil
+	return unmarshalSpecificTask(academic, document.Tasks[0]), nil
 }
 
 func makeFindTaskProjection(taskNumber int) bson.D {
@@ -138,7 +138,7 @@ func (r *CoursesRepository) FindAllTasks(
 		return nil, app.Wrap(app.ErrDatabaseProblems, err)
 	}
 
-	return unmarshallGeneralTasks(document.Tasks), nil
+	return unmarshalGeneralTasks(document.Tasks), nil
 }
 
 func makeFindAllTasksPipeline(

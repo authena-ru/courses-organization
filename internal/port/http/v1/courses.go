@@ -20,7 +20,7 @@ func (h handler) GetCourse(w http.ResponseWriter, _ *http.Request, _ string) {
 }
 
 func (h handler) CreateCourse(w http.ResponseWriter, r *http.Request) {
-	cmd, ok := unmarshallCreateCourseCommand(w, r)
+	cmd, ok := unmarshalCreateCourseCommand(w, r)
 	if !ok {
 		return
 	}
@@ -53,7 +53,7 @@ func (h handler) EditCourse(w http.ResponseWriter, _ *http.Request, _ string) {
 }
 
 func (h handler) ExtendCourse(w http.ResponseWriter, r *http.Request, courseID string) {
-	cmd, ok := unmarshallExtendCourseCommand(w, r, courseID)
+	cmd, ok := unmarshalExtendCourseCommand(w, r, courseID)
 	if !ok {
 		return
 	}

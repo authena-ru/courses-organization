@@ -12,7 +12,7 @@ import (
 )
 
 func (h handler) AddTaskToCourse(w http.ResponseWriter, r *http.Request, courseID string) {
-	cmd, ok := unmarshallAddTaskCommand(w, r, courseID)
+	cmd, ok := unmarshalAddTaskCommand(w, r, courseID)
 	if !ok {
 		return
 	}
@@ -65,14 +65,14 @@ func (h handler) AddTaskToCourse(w http.ResponseWriter, r *http.Request, courseI
 }
 
 func (h handler) GetCourseTasks(w http.ResponseWriter, r *http.Request, courseID string, params GetCourseTasksParams) {
-	qry, ok := unmarshallAllTasksQuery(w, r, courseID, params)
+	qry, ok := unmarshalAllTasksQuery(w, r, courseID, params)
 	if !ok {
 		return
 	}
 
 	tasks, err := h.app.Queries.AllTasks.Handle(r.Context(), qry)
 	if err == nil {
-		marshallGeneralTasks(w, r, tasks)
+		marshalGeneralTasks(w, r, tasks)
 
 		return
 	}
@@ -87,14 +87,14 @@ func (h handler) GetCourseTasks(w http.ResponseWriter, r *http.Request, courseID
 }
 
 func (h handler) GetCourseTask(w http.ResponseWriter, r *http.Request, courseID string, taskNumber int) {
-	qry, ok := unmarshallSpecificTaskQuery(w, r, courseID, taskNumber)
+	qry, ok := unmarshalSpecificTaskQuery(w, r, courseID, taskNumber)
 	if !ok {
 		return
 	}
 
 	task, err := h.app.Queries.SpecificTask.Handle(r.Context(), qry)
 	if err == nil {
-		marshallSpecificTask(w, r, task)
+		marshalSpecificTask(w, r, task)
 
 		return
 	}

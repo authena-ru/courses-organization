@@ -10,7 +10,7 @@ import (
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
-func marshallSpecificTask(w http.ResponseWriter, r *http.Request, task app.SpecificTask) {
+func marshalSpecificTask(w http.ResponseWriter, r *http.Request, task app.SpecificTask) {
 	type taskResponse struct {
 		TaskResponse
 		Deadline *Deadline   `json:"deadline,omitempty"`
@@ -24,17 +24,17 @@ func marshallSpecificTask(w http.ResponseWriter, r *http.Request, task app.Speci
 			Task: Task{
 				Title:       task.Title,
 				Description: task.Description,
-				Type:        marshallTaskType(task.Type),
+				Type:        marshalTaskType(task.Type),
 			},
 		},
-		Deadline: marshallDeadline(task.Deadline),
-		TestData: marshallTestData(task.TestData),
-		Points:   marshallTestPoints(task.Points),
+		Deadline: marshalDeadline(task.Deadline),
+		TestData: marshalTestData(task.TestData),
+		Points:   marshalTestPoints(task.Points),
 	}
 	render.Respond(w, r, response)
 }
 
-func marshallGeneralTasks(w http.ResponseWriter, r *http.Request, tasks []app.GeneralTask) {
+func marshalGeneralTasks(w http.ResponseWriter, r *http.Request, tasks []app.GeneralTask) {
 	response := make([]TaskResponse, 0, len(tasks))
 	for _, t := range tasks {
 		response = append(response, TaskResponse{
@@ -42,7 +42,7 @@ func marshallGeneralTasks(w http.ResponseWriter, r *http.Request, tasks []app.Ge
 			Task: Task{
 				Title:       t.Title,
 				Description: t.Description,
-				Type:        marshallTaskType(t.Type),
+				Type:        marshalTaskType(t.Type),
 			},
 		})
 	}
@@ -50,7 +50,7 @@ func marshallGeneralTasks(w http.ResponseWriter, r *http.Request, tasks []app.Ge
 	render.Respond(w, r, response)
 }
 
-func marshallTaskType(taskType course.TaskType) TaskType {
+func marshalTaskType(taskType course.TaskType) TaskType {
 	switch taskType {
 	case course.ManualCheckingType:
 		return TaskTypeMANUALCHECKING
@@ -63,7 +63,7 @@ func marshallTaskType(taskType course.TaskType) TaskType {
 	return "UNKNOWN"
 }
 
-func marshallDeadline(deadline *app.Deadline) *Deadline {
+func marshalDeadline(deadline *app.Deadline) *Deadline {
 	if deadline == nil {
 		return nil
 	}
@@ -74,7 +74,7 @@ func marshallDeadline(deadline *app.Deadline) *Deadline {
 	}
 }
 
-func marshallTestData(testData []app.TestData) []TestData {
+func marshalTestData(testData []app.TestData) []TestData {
 	marshalled := make([]TestData, 0, len(testData))
 
 	for _, td := range testData {
@@ -89,7 +89,7 @@ func marshallTestData(testData []app.TestData) []TestData {
 	return marshalled
 }
 
-func marshallTestPoints(testPoints []app.TestPoint) []TestPoint {
+func marshalTestPoints(testPoints []app.TestPoint) []TestPoint {
 	marshalled := make([]TestPoint, 0, len(testPoints))
 
 	for _, tp := range testPoints {

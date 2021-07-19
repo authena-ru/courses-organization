@@ -49,7 +49,7 @@ type testDataDocument struct {
 	OutputData string `bson:"outputData"`
 }
 
-func marshallCourseDocument(crs *course.Course) courseDocument {
+func marshalCourseDocument(crs *course.Course) courseDocument {
 	return courseDocument{
 		ID:    crs.ID(),
 		Title: crs.Title(),
@@ -62,11 +62,11 @@ func marshallCourseDocument(crs *course.Course) courseDocument {
 		CreatorID:     crs.CreatorID(),
 		Collaborators: crs.Collaborators(),
 		Students:      crs.Students(),
-		Tasks:         marshallTaskDocuments(crs.Tasks()),
+		Tasks:         marshalTaskDocuments(crs.Tasks()),
 	}
 }
 
-func marshallTaskDocuments(tasks []course.Task) []taskDocument {
+func marshalTaskDocuments(tasks []course.Task) []taskDocument {
 	taskDocuments := make([]taskDocument, 0, len(tasks))
 
 	for _, t := range tasks {
@@ -89,15 +89,15 @@ func marshallTaskDocuments(tasks []course.Task) []taskDocument {
 			Description: t.Description(),
 			Type:        t.Type(),
 			Deadline:    deadlineDoc,
-			TestData:    marshallTestDataDocuments(testData),
-			TestPoints:  marshallTestPointDocuments(testPoints),
+			TestData:    marshalTestDataDocuments(testData),
+			TestPoints:  marshalTestPointDocuments(testPoints),
 		})
 	}
 
 	return taskDocuments
 }
 
-func marshallTestDataDocuments(testData []course.TestData) []testDataDocument {
+func marshalTestDataDocuments(testData []course.TestData) []testDataDocument {
 	testDataDocuments := make([]testDataDocument, 0, len(testData))
 	for _, td := range testData {
 		testDataDocuments = append(testDataDocuments, testDataDocument{
@@ -109,7 +109,7 @@ func marshallTestDataDocuments(testData []course.TestData) []testDataDocument {
 	return testDataDocuments
 }
 
-func marshallTestPointDocuments(testPoints []course.TestPoint) []testPointDocument {
+func marshalTestPointDocuments(testPoints []course.TestPoint) []testPointDocument {
 	testPointDocuments := make([]testPointDocument, 0, len(testPoints))
 	for _, tp := range testPoints {
 		testPointDocuments = append(testPointDocuments, testPointDocument{

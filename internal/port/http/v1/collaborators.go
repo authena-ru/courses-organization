@@ -16,7 +16,7 @@ func (h handler) GetAllCourseCollaborators(w http.ResponseWriter, _ *http.Reques
 }
 
 func (h handler) AddCollaboratorToCourse(w http.ResponseWriter, r *http.Request, courseID string) {
-	cmd, ok := unmarshallAddCollaboratorCommand(w, r, courseID)
+	cmd, ok := unmarshalAddCollaboratorCommand(w, r, courseID)
 	if !ok {
 		return
 	}
@@ -53,7 +53,7 @@ func (h handler) RemoveCollaboratorFromCourse(
 	w http.ResponseWriter, r *http.Request,
 	courseID, teacherID string,
 ) {
-	cmd, ok := unmarshallRemoveCollaboratorCommand(w, r, courseID, teacherID)
+	cmd, ok := unmarshalRemoveCollaboratorCommand(w, r, courseID, teacherID)
 	if !ok {
 		return
 	}

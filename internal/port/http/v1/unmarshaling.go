@@ -21,11 +21,11 @@ func decode(w http.ResponseWriter, r *http.Request, v interface{}) bool {
 	return true
 }
 
-func unmarshallAllTasksQuery(
+func unmarshalAllTasksQuery(
 	w http.ResponseWriter, r *http.Request,
 	courseID string, params GetCourseTasksParams,
 ) (qry app.AllTasksQuery, ok bool) {
-	academic, ok := unmarshallAcademic(w, r)
+	academic, ok := unmarshalAcademic(w, r)
 	if !ok {
 		return
 	}
@@ -58,11 +58,11 @@ func unmarshallAllTasksQuery(
 	}, true
 }
 
-func unmarshallSpecificTaskQuery(
+func unmarshalSpecificTaskQuery(
 	w http.ResponseWriter, r *http.Request,
 	courseID string, taskNumber int,
 ) (qry app.SpecificTaskQuery, ok bool) {
-	academic, ok := unmarshallAcademic(w, r)
+	academic, ok := unmarshalAcademic(w, r)
 	if !ok {
 		return
 	}
@@ -74,11 +74,11 @@ func unmarshallSpecificTaskQuery(
 	}, true
 }
 
-func unmarshallAddStudentCommand(
+func unmarshalAddStudentCommand(
 	w http.ResponseWriter, r *http.Request,
 	courseID string,
 ) (cmd app.AddStudentCommand, ok bool) {
-	academic, ok := unmarshallAcademic(w, r)
+	academic, ok := unmarshalAcademic(w, r)
 	if !ok {
 		return
 	}
@@ -95,11 +95,11 @@ func unmarshallAddStudentCommand(
 	}, true
 }
 
-func unmarshallRemoveStudentCommand(
+func unmarshalRemoveStudentCommand(
 	w http.ResponseWriter, r *http.Request,
 	courseID, studentID string,
 ) (cmd app.RemoveStudentCommand, ok bool) {
-	academic, ok := unmarshallAcademic(w, r)
+	academic, ok := unmarshalAcademic(w, r)
 	if !ok {
 		return
 	}
@@ -111,11 +111,11 @@ func unmarshallRemoveStudentCommand(
 	}, true
 }
 
-func unmarshallAddCollaboratorCommand(
+func unmarshalAddCollaboratorCommand(
 	w http.ResponseWriter, r *http.Request,
 	courseID string,
 ) (cmd app.AddCollaboratorCommand, ok bool) {
-	academic, ok := unmarshallAcademic(w, r)
+	academic, ok := unmarshalAcademic(w, r)
 	if !ok {
 		return
 	}
@@ -132,11 +132,11 @@ func unmarshallAddCollaboratorCommand(
 	}, true
 }
 
-func unmarshallRemoveCollaboratorCommand(
+func unmarshalRemoveCollaboratorCommand(
 	w http.ResponseWriter, r *http.Request,
 	courseID, collaboratorID string,
 ) (cmd app.RemoveCollaboratorCommand, ok bool) {
-	academic, ok := unmarshallAcademic(w, r)
+	academic, ok := unmarshalAcademic(w, r)
 	if !ok {
 		return
 	}
@@ -148,8 +148,8 @@ func unmarshallRemoveCollaboratorCommand(
 	}, true
 }
 
-func unmarshallCreateCourseCommand(w http.ResponseWriter, r *http.Request) (cmd app.CreateCourseCommand, ok bool) {
-	academic, ok := unmarshallAcademic(w, r)
+func unmarshalCreateCourseCommand(w http.ResponseWriter, r *http.Request) (cmd app.CreateCourseCommand, ok bool) {
+	academic, ok := unmarshalAcademic(w, r)
 	if !ok {
 		return
 	}
@@ -159,7 +159,7 @@ func unmarshallCreateCourseCommand(w http.ResponseWriter, r *http.Request) (cmd 
 		return
 	}
 
-	period, ok := unmarshallPeriod(w, r, &rb.Period)
+	period, ok := unmarshalPeriod(w, r, &rb.Period)
 	if !ok {
 		return
 	}
@@ -172,11 +172,11 @@ func unmarshallCreateCourseCommand(w http.ResponseWriter, r *http.Request) (cmd 
 	}, true
 }
 
-func unmarshallExtendCourseCommand(
+func unmarshalExtendCourseCommand(
 	w http.ResponseWriter, r *http.Request,
 	courseID string,
 ) (cmd app.ExtendCourseCommand, ok bool) {
-	academic, ok := unmarshallAcademic(w, r)
+	academic, ok := unmarshalAcademic(w, r)
 	if !ok {
 		return
 	}
@@ -186,7 +186,7 @@ func unmarshallExtendCourseCommand(
 		return
 	}
 
-	period, ok := unmarshallPeriod(w, r, rb.Period)
+	period, ok := unmarshalPeriod(w, r, rb.Period)
 	if !ok {
 		return
 	}
@@ -200,11 +200,11 @@ func unmarshallExtendCourseCommand(
 	}, true
 }
 
-func unmarshallAddTaskCommand(
+func unmarshalAddTaskCommand(
 	w http.ResponseWriter, r *http.Request,
 	courseID string,
 ) (cmd app.AddTaskCommand, ok bool) {
-	academic, ok := unmarshallAcademic(w, r)
+	academic, ok := unmarshalAcademic(w, r)
 	if !ok {
 		return
 	}
@@ -219,22 +219,22 @@ func unmarshallAddTaskCommand(
 		return
 	}
 
-	taskType, ok := unmarshallTaskType(w, r, rb.Type)
+	taskType, ok := unmarshalTaskType(w, r, rb.Type)
 	if !ok {
 		return
 	}
 
-	deadline, ok := unmarshallDeadline(w, r, &rb.Deadline)
+	deadline, ok := unmarshalDeadline(w, r, &rb.Deadline)
 	if !ok {
 		return
 	}
 
-	testData, ok := unmarshallTestData(w, r, &rb.TestData)
+	testData, ok := unmarshalTestData(w, r, &rb.TestData)
 	if !ok {
 		return
 	}
 
-	testPoints, ok := unmarshallTestPoints(w, r, &rb.Points)
+	testPoints, ok := unmarshalTestPoints(w, r, &rb.Points)
 	if !ok {
 		return
 	}
@@ -251,7 +251,7 @@ func unmarshallAddTaskCommand(
 	}, true
 }
 
-func unmarshallTaskType(w http.ResponseWriter, r *http.Request, apiTaskType TaskType) (course.TaskType, bool) {
+func unmarshalTaskType(w http.ResponseWriter, r *http.Request, apiTaskType TaskType) (course.TaskType, bool) {
 	switch apiTaskType {
 	case TaskTypeMANUALCHECKING:
 		return course.ManualCheckingType, true
@@ -266,7 +266,7 @@ func unmarshallTaskType(w http.ResponseWriter, r *http.Request, apiTaskType Task
 	return course.TaskType(0), false
 }
 
-func unmarshallPeriod(w http.ResponseWriter, r *http.Request, apiPeriod *CoursePeriod) (course.Period, bool) {
+func unmarshalPeriod(w http.ResponseWriter, r *http.Request, apiPeriod *CoursePeriod) (course.Period, bool) {
 	if apiPeriod == nil {
 		return course.Period{}, true
 	}
@@ -290,7 +290,7 @@ func unmarshallPeriod(w http.ResponseWriter, r *http.Request, apiPeriod *CourseP
 	return domainPeriod, true
 }
 
-func unmarshallAcademic(w http.ResponseWriter, r *http.Request) (course.Academic, bool) {
+func unmarshalAcademic(w http.ResponseWriter, r *http.Request) (course.Academic, bool) {
 	academic, err := auth.AcademicFromCtx(r.Context())
 	if err != nil {
 		httperr.Unauthorized("no-user-in-context", err, w, r)
@@ -301,7 +301,7 @@ func unmarshallAcademic(w http.ResponseWriter, r *http.Request) (course.Academic
 	return academic, true
 }
 
-func unmarshallDeadline(w http.ResponseWriter, r *http.Request, apiDeadline *Deadline) (course.Deadline, bool) {
+func unmarshalDeadline(w http.ResponseWriter, r *http.Request, apiDeadline *Deadline) (course.Deadline, bool) {
 	if apiDeadline == nil {
 		return course.Deadline{}, true
 	}
@@ -316,7 +316,7 @@ func unmarshallDeadline(w http.ResponseWriter, r *http.Request, apiDeadline *Dea
 	return deadline, true
 }
 
-func unmarshallTestData(w http.ResponseWriter, r *http.Request, apiTestData *[]TestData) ([]course.TestData, bool) {
+func unmarshalTestData(w http.ResponseWriter, r *http.Request, apiTestData *[]TestData) ([]course.TestData, bool) {
 	if apiTestData == nil {
 		return nil, true
 	}
@@ -348,7 +348,7 @@ func unmarshallTestData(w http.ResponseWriter, r *http.Request, apiTestData *[]T
 	return testData, true
 }
 
-func unmarshallTestPoints(w http.ResponseWriter, r *http.Request, apiTestPoints *[]TestPoint) ([]course.TestPoint, bool) {
+func unmarshalTestPoints(w http.ResponseWriter, r *http.Request, apiTestPoints *[]TestPoint) ([]course.TestPoint, bool) {
 	if apiTestPoints == nil {
 		return nil, true
 	}
