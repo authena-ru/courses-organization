@@ -19,7 +19,7 @@ func (h handler) AddTaskToCourse(w http.ResponseWriter, r *http.Request, courseI
 
 	taskNumber, err := h.app.Commands.AddTask.Handle(r.Context(), cmd)
 	if err == nil {
-		w.Header().Set("Content-Location", fmt.Sprintf("courses/%s/tasks/%d", courseID, taskNumber))
+		w.Header().Set("Content-Location", fmt.Sprintf("/courses/%s/tasks/%d", courseID, taskNumber))
 		w.WriteHeader(http.StatusCreated)
 
 		return
