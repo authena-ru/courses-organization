@@ -1,9 +1,9 @@
 module github.com/authena-ru/courses-organization
 
-go 1.16
+go 1.17
 
 require (
-	github.com/deepmap/oapi-codegen v1.7.1
+	github.com/deepmap/oapi-codegen v1.8.2
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-chi/chi/v5 v5.0.3
 	github.com/go-chi/cors v1.2.0
