@@ -46,11 +46,11 @@ func newHTTPRequest(t *testing.T, method, target, body string, authorized course
 func requireAddTaskCommandsEqual(t *testing.T, expectedCommand, givenCommand app.AddTaskCommand) {
 	t.Helper()
 
-	require.Equal(t, expectedCommand.Academic, givenCommand.Academic)
-	require.Equal(t, expectedCommand.CourseID, givenCommand.CourseID)
-	require.Equal(t, expectedCommand.TaskTitle, givenCommand.TaskTitle)
-	require.Equal(t, expectedCommand.TaskDescription, givenCommand.TaskDescription)
-	require.Equal(t, expectedCommand.TaskType, givenCommand.TaskType)
+	require.Equalf(t, expectedCommand.Academic, givenCommand.Academic, "academics are not equal")
+	require.Equalf(t, expectedCommand.CourseID, givenCommand.CourseID, "course ID's are not equal")
+	require.Equalf(t, expectedCommand.TaskTitle, givenCommand.TaskTitle, "task titles are not equal")
+	require.Equalf(t, expectedCommand.TaskDescription, givenCommand.TaskDescription, "task descriptions are not equal")
+	require.Equalf(t, expectedCommand.TaskType, givenCommand.TaskType, "task types are not equal")
 	requireDatesEqual(t, expectedCommand.Deadline.GoodGradeTime(), givenCommand.Deadline.GoodGradeTime())
 	requireDatesEqual(t, expectedCommand.Deadline.ExcellentGradeTime(), givenCommand.Deadline.ExcellentGradeTime())
 }
@@ -61,7 +61,7 @@ func requireDatesEqual(t *testing.T, expectedDate, givenDate time.Time) {
 	expectedYear, expectedMonth, expectedDay := expectedDate.Date()
 	givenYear, givenMonth, givenDay := givenDate.Date()
 
-	require.Equal(t, expectedYear, givenYear)
-	require.Equal(t, expectedMonth, givenMonth)
-	require.Equal(t, expectedDay, givenDay)
+	require.Equalf(t, expectedYear, givenYear, "years are not equal")
+	require.Equalf(t, expectedMonth, givenMonth, "months are not equal")
+	require.Equalf(t, expectedDay, givenDay, "days are not equal")
 }
