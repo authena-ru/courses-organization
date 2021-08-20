@@ -55,7 +55,7 @@ linters:
     # - goconst
     - gocritic
     # - godox
-    # - goerr113
+    - goerr113
     # - gosec
     # - noctx
     # - prealloc
