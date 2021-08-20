@@ -6,7 +6,7 @@ import (
 )
 
 func unmarshalCourse(document courseDocument) *course.Course {
-	return course.UnmarshallFromDatabase(course.UnmarshallingParams{
+	return course.UnmarshalFromDatabase(course.UnmarshallingParams{
 		ID:            document.ID,
 		Title:         document.Title,
 		Period:        unmarshalPeriod(document.Period),

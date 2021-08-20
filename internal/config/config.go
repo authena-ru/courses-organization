@@ -45,7 +45,7 @@ func New(configsDir string) (*Config, error) {
 	}
 
 	var cfg Config
-	if err := unmarshall(&cfg); err != nil {
+	if err := unmarshal(&cfg); err != nil {
 		return nil, err
 	}
 
@@ -102,7 +102,7 @@ func setFromEnv(cfg *Config) {
 	cfg.Mongo.Password = viper.GetString("password")
 }
 
-func unmarshall(cfg *Config) error {
+func unmarshal(cfg *Config) error {
 	if err := viper.UnmarshalKey("http", &cfg.HTTP); err != nil {
 		return err
 	}

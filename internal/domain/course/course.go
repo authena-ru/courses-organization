@@ -117,8 +117,8 @@ func (c *Course) Extend(params CreationParams) (*Course, error) {
 		title:          extendedCourseTitle,
 		period:         extendedCoursePeriod,
 		started:        params.Started,
-		collaborators:  unmarshallIDs(append(c.Collaborators(), params.Collaborators...)),
-		students:       unmarshallIDs(append(c.Students(), params.Students...)),
+		collaborators:  unmarshalIDs(append(c.Collaborators(), params.Collaborators...)),
+		students:       unmarshalIDs(append(c.Students(), params.Students...)),
 		tasks:          make(map[int]*Task, len(c.tasks)),
 		nextTaskNumber: len(c.tasks) + 1,
 	}
@@ -182,19 +182,19 @@ type UnmarshallingTaskParams struct {
 	TestData    []TestData
 }
 
-// UnmarshallFromDatabase unmarshalls Course from the database.
+// UnmarshalFromDatabase unmarshalls Course from the database.
 // It should be used only for unmarshalling from the database!
-// Using UnmarshallFromDatabase may put domain into the invalid state!
-func UnmarshallFromDatabase(params UnmarshallingParams) *Course {
-	tasks, lastNumber := unmarshallTasks(params.Tasks)
+// Using UnmarshalFromDatabase may put domain into the invalid state!
+func UnmarshalFromDatabase(params UnmarshallingParams) *Course {
+	tasks, lastNumber := unmarshalTasks(params.Tasks)
 	crs := &Course{
 		id:             params.ID,
 		title:          params.Title,
 		period:         params.Period,
 		started:        params.Started,
 		creatorID:      params.CreatorID,
-		collaborators:  unmarshallIDs(params.Collaborators),
-		students:       unmarshallIDs(params.Students),
+		collaborators:  unmarshalIDs(params.Collaborators),
+		students:       unmarshalIDs(params.Students),
 		tasks:          tasks,
 		nextTaskNumber: lastNumber + 1,
 	}
@@ -202,7 +202,7 @@ func UnmarshallFromDatabase(params UnmarshallingParams) *Course {
 	return crs
 }
 
-func unmarshallIDs(ids []string) map[string]bool {
+func unmarshalIDs(ids []string) map[string]bool {
 	unmarshalled := make(map[string]bool, len(ids))
 	for _, id := range ids {
 		unmarshalled[id] = true
@@ -211,7 +211,7 @@ func unmarshallIDs(ids []string) map[string]bool {
 	return unmarshalled
 }
 
-func unmarshallTasks(taskParams []UnmarshallingTaskParams) (map[int]*Task, int) {
+func unmarshalTasks(taskParams []UnmarshallingTaskParams) (map[int]*Task, int) {
 	tasks := make(map[int]*Task, len(taskParams))
 	lastNumber := 0
 

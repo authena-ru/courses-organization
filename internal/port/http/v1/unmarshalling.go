@@ -211,7 +211,7 @@ func unmarshalAddTaskCommand(
 
 	rb := struct {
 		Task
-		Deadline Deadline
+		Deadline *Deadline
 		TestData []TestData
 		Points   []TestPoint
 	}{}
@@ -224,7 +224,7 @@ func unmarshalAddTaskCommand(
 		return
 	}
 
-	deadline, ok := unmarshalDeadline(w, r, &rb.Deadline)
+	deadline, ok := unmarshalDeadline(w, r, rb.Deadline)
 	if !ok {
 		return
 	}
