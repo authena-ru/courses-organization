@@ -40,7 +40,7 @@ func TestHandler_AddTaskToCourse(t *testing.T) {
 		ExpectedTaskNumber   int
 	}{
 		{
-			Name: "invalid_json",
+			Name: "bad_request",
 			RequestBody: `{
 				"title": "Task title"",
 				"description": "Task description",

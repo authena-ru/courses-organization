@@ -19,14 +19,15 @@ func TestHandler_CreateCourse(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		Name            string
-		RequestBody     string
-		Authorized      course.Academic
-		Command         app.CreateCourseCommand
-		PrepareHandler  func(expectedCommand app.CreateCourseCommand) mock.CreateCourseHandler
-		StatusCode      int
-		ResponseBody    string
-		ContentLocation string
+		Name                 string
+		RequestBody          string
+		Authorized           course.Academic
+		Command              app.CreateCourseCommand
+		PrepareHandler       func(expectedCommand app.CreateCourseCommand) mock.CreateCourseHandler
+		StatusCode           int
+		ShouldBeResponseBody bool
+		ResponseBody         string
+		ContentLocation      string
 	}{
 		{
 			Name:        "course_created",
@@ -46,7 +47,6 @@ func TestHandler_CreateCourse(t *testing.T) {
 				}
 			},
 			StatusCode:      http.StatusCreated,
-			ResponseBody:    "",
 			ContentLocation: "/courses/47e3a14f-c48d-4d86-b587-b4b319f4f733",
 		},
 		{
@@ -58,8 +58,9 @@ func TestHandler_CreateCourse(t *testing.T) {
 					return "", nil
 				}
 			},
-			StatusCode:   http.StatusBadRequest,
-			ResponseBody: `{"slug": "bad-request", "details": "json: cannot unmarshal number into Go struct field CreateCourseRequest.title of type string"}`,
+			StatusCode:           http.StatusBadRequest,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "bad-request", "details": "json: cannot unmarshal number into Go struct field CreateCourseRequest.title of type string"}`,
 		},
 		{
 			Name:        "invalid_course_parameters",
@@ -78,8 +79,9 @@ func TestHandler_CreateCourse(t *testing.T) {
 					return "", course.ErrEmptyCourseTitle
 				}
 			},
-			StatusCode:   http.StatusUnprocessableEntity,
-			ResponseBody: `{"slug": "invalid-course-parameters", "details": "empty course title"}`,
+			StatusCode:           http.StatusUnprocessableEntity,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "invalid-course-parameters", "details": "empty course title"}`,
 		},
 		{
 			Name:        "not_teacher_cant_create_course",
@@ -98,8 +100,9 @@ func TestHandler_CreateCourse(t *testing.T) {
 					return "", course.ErrNotTeacherCantCreateCourse
 				}
 			},
-			StatusCode:   http.StatusForbidden,
-			ResponseBody: `{"slug": "not-teacher-cant-create-course", "details": "not teacher can't create course"}`,
+			StatusCode:           http.StatusForbidden,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "not-teacher-cant-create-course", "details": "not teacher can't create course"}`,
 		},
 		{
 			Name:        "unexpected_error",
@@ -117,8 +120,9 @@ func TestHandler_CreateCourse(t *testing.T) {
 					return "", errors.New("unexpected error")
 				}
 			},
-			StatusCode:   http.StatusInternalServerError,
-			ResponseBody: `{"slug": "unexpected-error", "details": "unexpected error"}`,
+			StatusCode:           http.StatusInternalServerError,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "unexpected-error", "details": "unexpected error"}`,
 		},
 	}
 
@@ -142,7 +146,7 @@ func TestHandler_CreateCourse(t *testing.T) {
 			require.Equal(t, c.StatusCode, w.Code)
 			require.Equal(t, c.ContentLocation, w.Header().Get("Content-Location"))
 
-			if c.ResponseBody != "" {
+			if c.ShouldBeResponseBody {
 				require.JSONEq(t, c.ResponseBody, w.Body.String())
 			}
 		})
@@ -153,15 +157,16 @@ func TestHandler_ExtendCourse(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		Name            string
-		RequestBody     string
-		OriginCourseID  string
-		Authorized      course.Academic
-		Command         app.ExtendCourseCommand
-		PrepareHandler  func(expectedCommand app.ExtendCourseCommand) mock.ExtendCourseHandler
-		StatusCode      int
-		ResponseBody    string
-		ContentLocation string
+		Name                 string
+		RequestBody          string
+		OriginCourseID       string
+		Authorized           course.Academic
+		Command              app.ExtendCourseCommand
+		PrepareHandler       func(expectedCommand app.ExtendCourseCommand) mock.ExtendCourseHandler
+		StatusCode           int
+		ShouldBeResponseBody bool
+		ResponseBody         string
+		ContentLocation      string
 	}{
 		{
 			Name:           "course_extended",
@@ -182,7 +187,6 @@ func TestHandler_ExtendCourse(t *testing.T) {
 				}
 			},
 			StatusCode:      http.StatusCreated,
-			ResponseBody:    "",
 			ContentLocation: "/courses/83d7502c-6327-40cc-a1ca-f6f44889137f",
 		},
 		{
@@ -195,8 +199,9 @@ func TestHandler_ExtendCourse(t *testing.T) {
 					return "", nil
 				}
 			},
-			StatusCode:   http.StatusBadRequest,
-			ResponseBody: `{"slug": "bad-request", "details": "json: cannot unmarshal string into Go struct field ExtendCourseRequest.started of type bool"}`,
+			StatusCode:           http.StatusBadRequest,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "bad-request", "details": "json: cannot unmarshal string into Go struct field ExtendCourseRequest.started of type bool"}`,
 		},
 		{
 			Name:           "course_not_found",
@@ -215,8 +220,9 @@ func TestHandler_ExtendCourse(t *testing.T) {
 					return "", app.ErrCourseDoesntExist
 				}
 			},
-			StatusCode:   http.StatusNotFound,
-			ResponseBody: `{"slug": "course-not-found", "details": "course doesn't exist"}`,
+			StatusCode:           http.StatusNotFound,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "course-not-found", "details": "course doesn't exist"}`,
 		},
 		{
 			Name:           "invalid_course_parameters",
@@ -235,8 +241,9 @@ func TestHandler_ExtendCourse(t *testing.T) {
 					return "", course.ErrEmptyCourseTitle
 				}
 			},
-			StatusCode:   http.StatusUnprocessableEntity,
-			ResponseBody: `{"slug": "invalid-course-parameters", "details": "empty course title"}`,
+			StatusCode:           http.StatusUnprocessableEntity,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "invalid-course-parameters", "details": "empty course title"}`,
 		},
 		{
 			Name:           "academic_cant_edit_course",
@@ -255,8 +262,9 @@ func TestHandler_ExtendCourse(t *testing.T) {
 					return "", course.AcademicCantEditCourseError{}
 				}
 			},
-			StatusCode:   http.StatusForbidden,
-			ResponseBody: `{"slug": "academic-cant-edit-course", "details": "academic can't edit course"}`,
+			StatusCode:           http.StatusForbidden,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "academic-cant-edit-course", "details": "academic can't edit course"}`,
 		},
 		{
 			Name:           "not_teacher_cant_create_course",
@@ -275,8 +283,9 @@ func TestHandler_ExtendCourse(t *testing.T) {
 					return "", course.ErrNotTeacherCantCreateCourse
 				}
 			},
-			StatusCode:   http.StatusForbidden,
-			ResponseBody: `{"slug": "not-teacher-cant-create-course", "details": "not teacher can't create course"}`,
+			StatusCode:           http.StatusForbidden,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "not-teacher-cant-create-course", "details": "not teacher can't create course"}`,
 		},
 		{
 			Name:           "unexpected_error",
@@ -295,8 +304,9 @@ func TestHandler_ExtendCourse(t *testing.T) {
 					return "", errors.New("unexpected error")
 				}
 			},
-			StatusCode:   http.StatusInternalServerError,
-			ResponseBody: `{"slug": "unexpected-error", "details": "unexpected error"}`,
+			StatusCode:           http.StatusInternalServerError,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "unexpected-error", "details": "unexpected error"}`,
 		},
 	}
 
@@ -324,7 +334,7 @@ func TestHandler_ExtendCourse(t *testing.T) {
 			require.Equal(t, c.StatusCode, w.Code)
 			require.Equal(t, c.ContentLocation, w.Header().Get("Content-Location"))
 
-			if c.ResponseBody != "" {
+			if c.ShouldBeResponseBody {
 				require.JSONEq(t, c.ResponseBody, w.Body.String())
 			}
 		})

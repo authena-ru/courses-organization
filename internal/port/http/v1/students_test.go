@@ -19,14 +19,15 @@ func TestHandler_AddStudentToCourse(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		Name           string
-		RequestBody    string
-		Authorized     course.Academic
-		CourseID       string
-		Command        app.AddStudentCommand
-		PrepareHandler func(expectedCommand app.AddStudentCommand) mock.AddStudentHandler
-		StatusCode     int
-		ResponseBody   string
+		Name                 string
+		RequestBody          string
+		Authorized           course.Academic
+		CourseID             string
+		Command              app.AddStudentCommand
+		PrepareHandler       func(expectedCommand app.AddStudentCommand) mock.AddStudentHandler
+		StatusCode           int
+		ShouldBeResponseBody bool
+		ResponseBody         string
 	}{
 		{
 			Name:        "student_added_to_course",
@@ -45,8 +46,7 @@ func TestHandler_AddStudentToCourse(t *testing.T) {
 					return nil
 				}
 			},
-			StatusCode:   http.StatusNoContent,
-			ResponseBody: "",
+			StatusCode: http.StatusNoContent,
 		},
 		{
 			Name:        "bad_request",
@@ -58,7 +58,12 @@ func TestHandler_AddStudentToCourse(t *testing.T) {
 					return nil
 				}
 			},
-			StatusCode: http.StatusBadRequest,
+			StatusCode:           http.StatusBadRequest,
+			ShouldBeResponseBody: true,
+			ResponseBody: `{
+				"slug":"bad-request",
+				"details": "json: cannot unmarshal number into Go struct field AddStudentToCourseRequest.id of type string"
+			}`,
 		},
 		{
 			Name:        "course_not_found",
@@ -77,8 +82,9 @@ func TestHandler_AddStudentToCourse(t *testing.T) {
 					return app.ErrCourseDoesntExist
 				}
 			},
-			StatusCode:   http.StatusNotFound,
-			ResponseBody: `{"slug": "course-not-found", "details": "course doesn't exist"}`,
+			StatusCode:           http.StatusNotFound,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "course-not-found", "details": "course doesn't exist"}`,
 		},
 		{
 			Name:        "student_not_found",
@@ -97,8 +103,9 @@ func TestHandler_AddStudentToCourse(t *testing.T) {
 					return app.ErrStudentDoesntExist
 				}
 			},
-			StatusCode:   http.StatusUnprocessableEntity,
-			ResponseBody: `{"slug": "student-not-found", "details": "student doesn't exist"}`,
+			StatusCode:           http.StatusUnprocessableEntity,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "student-not-found", "details": "student doesn't exist"}`,
 		},
 		{
 			Name:        "academic_cant_edit_course",
@@ -117,8 +124,9 @@ func TestHandler_AddStudentToCourse(t *testing.T) {
 					return course.AcademicCantEditCourseError{}
 				}
 			},
-			StatusCode:   http.StatusForbidden,
-			ResponseBody: `{"slug": "academic-cant-edit-course", "details": "academic can't edit course"}`,
+			StatusCode:           http.StatusForbidden,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "academic-cant-edit-course", "details": "academic can't edit course"}`,
 		},
 		{
 			Name:        "unexpected_error",
@@ -137,8 +145,9 @@ func TestHandler_AddStudentToCourse(t *testing.T) {
 					return errors.New("unexpected error")
 				}
 			},
-			StatusCode:   http.StatusInternalServerError,
-			ResponseBody: `{"slug": "unexpected-error", "details": "unexpected error"}`,
+			StatusCode:           http.StatusInternalServerError,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "unexpected-error", "details": "unexpected error"}`,
 		},
 	}
 
@@ -165,7 +174,7 @@ func TestHandler_AddStudentToCourse(t *testing.T) {
 
 			require.Equal(t, c.StatusCode, w.Code)
 
-			if c.ResponseBody != "" {
+			if c.ShouldBeResponseBody {
 				require.JSONEq(t, c.ResponseBody, w.Body.String())
 			}
 		})
@@ -176,14 +185,15 @@ func TestHandler_RemoveStudentFromCourse(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		Name           string
-		Authorized     course.Academic
-		CourseID       string
-		StudentID      string
-		Command        app.RemoveStudentCommand
-		PrepareHandler func(expectedCommand app.RemoveStudentCommand) mock.RemoveStudentHandler
-		StatusCode     int
-		ResponseBody   string
+		Name                 string
+		Authorized           course.Academic
+		CourseID             string
+		StudentID            string
+		Command              app.RemoveStudentCommand
+		PrepareHandler       func(expectedCommand app.RemoveStudentCommand) mock.RemoveStudentHandler
+		StatusCode           int
+		ShouldBeResponseBody bool
+		ResponseBody         string
 	}{
 		{
 			Name:       "student_removed_from_course",
@@ -202,8 +212,7 @@ func TestHandler_RemoveStudentFromCourse(t *testing.T) {
 					return nil
 				}
 			},
-			StatusCode:   http.StatusNoContent,
-			ResponseBody: "",
+			StatusCode: http.StatusNoContent,
 		},
 		{
 			Name:       "course_not_found",
@@ -220,8 +229,9 @@ func TestHandler_RemoveStudentFromCourse(t *testing.T) {
 					return app.ErrCourseDoesntExist
 				}
 			},
-			StatusCode:   http.StatusNotFound,
-			ResponseBody: `{"slug": "course-not-found", "details": "course doesn't exist"}`,
+			StatusCode:           http.StatusNotFound,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "course-not-found", "details": "course doesn't exist"}`,
 		},
 		{
 			Name:       "course_student_not_found",
@@ -240,8 +250,9 @@ func TestHandler_RemoveStudentFromCourse(t *testing.T) {
 					return course.ErrCourseHasNoSuchStudent
 				}
 			},
-			StatusCode:   http.StatusNotFound,
-			ResponseBody: `{"slug": "course-student-not-found", "details": "course has no such student"}`,
+			StatusCode:           http.StatusNotFound,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "course-student-not-found", "details": "course has no such student"}`,
 		},
 		{
 			Name:       "academic_cant_edit_course",
@@ -260,8 +271,9 @@ func TestHandler_RemoveStudentFromCourse(t *testing.T) {
 					return course.AcademicCantEditCourseError{}
 				}
 			},
-			StatusCode:   http.StatusForbidden,
-			ResponseBody: `{"slug": "academic-cant-edit-course", "details": "academic can't edit course"}`,
+			StatusCode:           http.StatusForbidden,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "academic-cant-edit-course", "details": "academic can't edit course"}`,
 		},
 		{
 			Name:       "unexpected_error",
@@ -280,8 +292,9 @@ func TestHandler_RemoveStudentFromCourse(t *testing.T) {
 					return errors.New("unexpected error")
 				}
 			},
-			StatusCode:   http.StatusInternalServerError,
-			ResponseBody: `{"slug": "unexpected-error", "details": "unexpected error"}`,
+			StatusCode:           http.StatusInternalServerError,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "unexpected-error", "details": "unexpected error"}`,
 		},
 	}
 
@@ -308,7 +321,7 @@ func TestHandler_RemoveStudentFromCourse(t *testing.T) {
 
 			require.Equal(t, c.StatusCode, w.Code)
 
-			if c.ResponseBody != "" {
+			if c.ShouldBeResponseBody {
 				require.JSONEq(t, c.ResponseBody, w.Body.String())
 			}
 		})

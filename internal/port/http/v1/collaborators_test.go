@@ -19,14 +19,15 @@ func TestHandler_AddCollaboratorToCourse(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		Name           string
-		RequestBody    string
-		Authorized     course.Academic
-		CourseID       string
-		Command        app.AddCollaboratorCommand
-		PrepareHandler func(expectedCommand app.AddCollaboratorCommand) mock.AddCollaboratorsHandler
-		StatusCode     int
-		ResponseBody   string
+		Name                 string
+		RequestBody          string
+		Authorized           course.Academic
+		CourseID             string
+		Command              app.AddCollaboratorCommand
+		PrepareHandler       func(expectedCommand app.AddCollaboratorCommand) mock.AddCollaboratorsHandler
+		StatusCode           int
+		ShouldBeResponseBody bool
+		ResponseBody         string
 	}{
 		{
 			Name:        "collaborator_added_to_course",
@@ -45,8 +46,7 @@ func TestHandler_AddCollaboratorToCourse(t *testing.T) {
 					return nil
 				}
 			},
-			StatusCode:   http.StatusNoContent,
-			ResponseBody: "",
+			StatusCode: http.StatusNoContent,
 		},
 		{
 			Name:        "bad_request",
@@ -65,7 +65,8 @@ func TestHandler_AddCollaboratorToCourse(t *testing.T) {
 					return nil
 				}
 			},
-			StatusCode: http.StatusBadRequest,
+			StatusCode:           http.StatusBadRequest,
+			ShouldBeResponseBody: true,
 			ResponseBody: `{
 								"slug": "bad-request",
 								"details": "json: cannot unmarshal string into Go value of type v1.AddCollaboratorToCourseRequest"
@@ -88,8 +89,9 @@ func TestHandler_AddCollaboratorToCourse(t *testing.T) {
 					return app.ErrCourseDoesntExist
 				}
 			},
-			StatusCode:   http.StatusNotFound,
-			ResponseBody: `{"slug": "course-not-found", "details": "course doesn't exist"}`,
+			StatusCode:           http.StatusNotFound,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "course-not-found", "details": "course doesn't exist"}`,
 		},
 		{
 			Name:        "teacher_not_found",
@@ -108,8 +110,9 @@ func TestHandler_AddCollaboratorToCourse(t *testing.T) {
 					return app.ErrTeacherDoesntExist
 				}
 			},
-			StatusCode:   http.StatusUnprocessableEntity,
-			ResponseBody: `{"slug": "teacher-not-found", "details": "teacher doesn't exist"}`,
+			StatusCode:           http.StatusUnprocessableEntity,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "teacher-not-found", "details": "teacher doesn't exist"}`,
 		},
 		{
 			Name:        "academic_cant_edit_course",
@@ -128,8 +131,9 @@ func TestHandler_AddCollaboratorToCourse(t *testing.T) {
 					return course.AcademicCantEditCourseError{}
 				}
 			},
-			StatusCode:   http.StatusForbidden,
-			ResponseBody: `{"slug": "academic-cant-edit-course", "details": "academic can't edit course"}`,
+			StatusCode:           http.StatusForbidden,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "academic-cant-edit-course", "details": "academic can't edit course"}`,
 		},
 		{
 			Name:        "unexpected_error",
@@ -148,8 +152,9 @@ func TestHandler_AddCollaboratorToCourse(t *testing.T) {
 					return errors.New("unexpected error")
 				}
 			},
-			StatusCode:   http.StatusInternalServerError,
-			ResponseBody: `{"slug": "unexpected-error", "details": "unexpected error"}`,
+			StatusCode:           http.StatusInternalServerError,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "unexpected-error", "details": "unexpected error"}`,
 		},
 	}
 
@@ -176,7 +181,7 @@ func TestHandler_AddCollaboratorToCourse(t *testing.T) {
 
 			require.Equal(t, c.StatusCode, w.Code)
 
-			if c.ResponseBody != "" {
+			if c.ShouldBeResponseBody {
 				require.JSONEq(t, c.ResponseBody, w.Body.String())
 			}
 		})
@@ -187,14 +192,15 @@ func TestHandler_RemoveCollaboratorFromCourse(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		Name           string
-		Authorized     course.Academic
-		CourseID       string
-		CollaboratorID string
-		Command        app.RemoveCollaboratorCommand
-		PrepareHandler func(expectedCommand app.RemoveCollaboratorCommand) mock.RemoveCollaboratorHandler
-		StatusCode     int
-		ResponseBody   string
+		Name                 string
+		Authorized           course.Academic
+		CourseID             string
+		CollaboratorID       string
+		Command              app.RemoveCollaboratorCommand
+		PrepareHandler       func(expectedCommand app.RemoveCollaboratorCommand) mock.RemoveCollaboratorHandler
+		StatusCode           int
+		ShouldBeResponseBody bool
+		ResponseBody         string
 	}{
 		{
 			Name:           "collaborator_removed_from_course",
@@ -213,8 +219,7 @@ func TestHandler_RemoveCollaboratorFromCourse(t *testing.T) {
 					return nil
 				}
 			},
-			StatusCode:   http.StatusNoContent,
-			ResponseBody: "",
+			StatusCode: http.StatusNoContent,
 		},
 		{
 			Name:           "course_not_found",
@@ -233,8 +238,9 @@ func TestHandler_RemoveCollaboratorFromCourse(t *testing.T) {
 					return app.ErrCourseDoesntExist
 				}
 			},
-			StatusCode:   http.StatusNotFound,
-			ResponseBody: `{"slug": "course-not-found", "details": "course doesn't exist"}`,
+			StatusCode:           http.StatusNotFound,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "course-not-found", "details": "course doesn't exist"}`,
 		},
 		{
 			Name:           "course_collaborator_not_found",
@@ -253,8 +259,9 @@ func TestHandler_RemoveCollaboratorFromCourse(t *testing.T) {
 					return course.ErrCourseHasNoSuchCollaborator
 				}
 			},
-			StatusCode:   http.StatusNotFound,
-			ResponseBody: `{"slug": "course-collaborator-not-found", "details": "course has no such collaborator"}`,
+			StatusCode:           http.StatusNotFound,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "course-collaborator-not-found", "details": "course has no such collaborator"}`,
 		},
 		{
 			Name:           "academic_cant_edit_course",
@@ -273,8 +280,9 @@ func TestHandler_RemoveCollaboratorFromCourse(t *testing.T) {
 					return course.AcademicCantEditCourseError{}
 				}
 			},
-			StatusCode:   http.StatusForbidden,
-			ResponseBody: `{"slug": "academic-cant-edit-course", "details": "academic can't edit course"}`,
+			StatusCode:           http.StatusForbidden,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "academic-cant-edit-course", "details": "academic can't edit course"}`,
 		},
 		{
 			Name:           "unexpected_error",
@@ -293,8 +301,9 @@ func TestHandler_RemoveCollaboratorFromCourse(t *testing.T) {
 					return errors.New("unexpected error")
 				}
 			},
-			StatusCode:   http.StatusInternalServerError,
-			ResponseBody: `{"slug": "unexpected-error", "details": "unexpected error"}`,
+			StatusCode:           http.StatusInternalServerError,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "unexpected-error", "details": "unexpected error"}`,
 		},
 	}
 
@@ -321,7 +330,7 @@ func TestHandler_RemoveCollaboratorFromCourse(t *testing.T) {
 
 			require.Equal(t, c.StatusCode, w.Code)
 
-			if c.ResponseBody != "" {
+			if c.ShouldBeResponseBody {
 				require.JSONEq(t, c.ResponseBody, w.Body.String())
 			}
 		})
