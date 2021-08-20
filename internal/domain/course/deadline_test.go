@@ -21,26 +21,26 @@ func TestNewDeadline(t *testing.T) {
 	}{
 		{
 			Name:               "valid_time_for_creation_deadline",
-			ExcellentGradeTime: time.Date(2023, time.September, 22, 0, 0, 0, 0, time.Local),
-			GoodGradeTime:      time.Date(2023, time.October, 02, 0, 0, 0, 0, time.Local),
+			ExcellentGradeTime: time.Date(2023, time.September, 22, 0, 0, 0, 0, time.UTC),
+			GoodGradeTime:      time.Date(2023, time.October, 2, 0, 0, 0, 0, time.UTC),
 			ExpectedErr:        nil,
 		},
 		{
 			Name:               "zero_excellent_grade_time",
 			ExcellentGradeTime: time.Time{},
-			GoodGradeTime:      time.Date(2021, time.November, 01, 0, 0, 0, 0, time.Local),
+			GoodGradeTime:      time.Date(2021, time.November, 1, 0, 0, 0, 0, time.UTC),
 			ExpectedErr:        course.ErrZeroExcellentGradeTime,
 		},
 		{
 			Name:               "zero_good_grade_time",
-			ExcellentGradeTime: time.Date(2022, time.April, 02, 0, 0, 0, 0, time.Local),
+			ExcellentGradeTime: time.Date(2022, time.April, 2, 0, 0, 0, 0, time.UTC),
 			GoodGradeTime:      time.Time{},
 			ExpectedErr:        course.ErrZeroGoodGradeTime,
 		},
 		{
 			Name:               "excellent_grade_time_after_good",
-			ExcellentGradeTime: time.Date(2022, time.September, 28, 0, 0, 0, 0, time.Local),
-			GoodGradeTime:      time.Date(2022, time.September, 01, 0, 0, 0, 0, time.Local),
+			ExcellentGradeTime: time.Date(2022, time.September, 28, 0, 0, 0, 0, time.UTC),
+			GoodGradeTime:      time.Date(2022, time.September, 1, 0, 0, 0, 0, time.UTC),
 			ExpectedErr:        course.ErrExcellentGradeTimeAfterGood,
 		},
 	}
@@ -82,8 +82,8 @@ func TestDeadline_IsZero(t *testing.T) {
 		{
 			Name: "should_not_be_zero",
 			Deadline: course.MustNewDeadline(
-				time.Date(2021, time.October, 02, 0, 0, 0, 0, time.Local),
-				time.Date(2021, time.October, 12, 0, 0, 0, 0, time.Local),
+				time.Date(2021, time.October, 2, 0, 0, 0, 0, time.UTC),
+				time.Date(2021, time.October, 12, 0, 0, 0, 0, time.UTC),
 			),
 			ShouldBeZero: false,
 		},

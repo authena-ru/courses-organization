@@ -55,7 +55,7 @@ func TestHandler_AddTaskToCourse(t *testing.T) {
 			},
 			PrepareHandler: func(expectedCommand app.AddTaskCommand) mock.AddTaskHandler {
 				return func(_ context.Context, givenCommand app.AddTaskCommand) (int, error) {
-					requireAddTaskCommandsEqual(t, expectedCommand, givenCommand)
+					requireAddTaskCommandsEquals(t, expectedCommand, givenCommand)
 
 					return 1, nil
 				}
@@ -90,7 +90,7 @@ func TestHandler_AddTaskToCourse(t *testing.T) {
 			},
 			PrepareHandler: func(expectedCommand app.AddTaskCommand) mock.AddTaskHandler {
 				return func(_ context.Context, givenCommand app.AddTaskCommand) (int, error) {
-					requireAddTaskCommandsEqual(t, expectedCommand, givenCommand)
+					requireAddTaskCommandsEquals(t, expectedCommand, givenCommand)
 
 					return 2, nil
 				}
@@ -130,7 +130,7 @@ func TestHandler_AddTaskToCourse(t *testing.T) {
 			},
 			PrepareHandler: func(expectedCommand app.AddTaskCommand) mock.AddTaskHandler {
 				return func(_ context.Context, givenCommand app.AddTaskCommand) (int, error) {
-					requireAddTaskCommandsEqual(t, expectedCommand, givenCommand)
+					requireAddTaskCommandsEquals(t, expectedCommand, givenCommand)
 
 					return 3, nil
 				}

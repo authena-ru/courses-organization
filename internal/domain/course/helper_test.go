@@ -53,8 +53,8 @@ func addManualCheckingTaskToCourse(t *testing.T, academic course.Academic, crs *
 		Title:       "Manual checking task title",
 		Description: "Manual checking task description",
 		Deadline: course.MustNewDeadline(
-			time.Date(2025, time.September, 1, 0, 0, 0, 0, time.Local),
-			time.Date(2025, time.September, 15, 0, 0, 0, 0, time.Local),
+			time.Date(2025, time.September, 1, 0, 0, 0, 0, time.UTC),
+			time.Date(2025, time.September, 15, 0, 0, 0, 0, time.UTC),
 		),
 	})
 	require.NoError(t, err)
@@ -69,8 +69,8 @@ func addAutoCodeCheckingTaskToCourse(t *testing.T, academic course.Academic, crs
 		Title:       "Auto code checking task title",
 		Description: "Auto code checking task description",
 		Deadline: course.MustNewDeadline(
-			time.Date(2025, time.October, 1, 0, 0, 0, 0, time.Local),
-			time.Date(2025, time.October, 17, 0, 0, 0, 0, time.Local),
+			time.Date(2025, time.October, 1, 0, 0, 0, 0, time.UTC),
+			time.Date(2025, time.October, 17, 0, 0, 0, 0, time.UTC),
 		),
 		TestData: []course.TestData{course.MustNewTestData("1", "Print: 1")},
 	})
@@ -118,10 +118,10 @@ func requireExtendedCourse(
 
 	require.ElementsMatch(t, append(originCourse.Students(), params.Students...), extendedCourse.Students())
 	require.ElementsMatch(t, append(originCourse.Collaborators(), params.Collaborators...), extendedCourse.Collaborators())
-	requireCourseTasksEquals(t, originCourse, extendedCourse)
+	requireExtendedTasks(t, originCourse, extendedCourse)
 }
 
-func requireCourseTasksEquals(t *testing.T, originCourse, extendedCourse *course.Course) {
+func requireExtendedTasks(t *testing.T, originCourse, extendedCourse *course.Course) {
 	t.Helper()
 
 	require.Equal(t, originCourse.TasksNumber(), extendedCourse.TasksNumber())

@@ -18,8 +18,8 @@ func TestCourse_AddManualCheckingTask(t *testing.T) {
 		Title:       "Make container",
 		Description: "Containerization",
 		Deadline: course.MustNewDeadline(
-			time.Date(2021, time.September, 9, 0, 0, 0, 0, time.Local),
-			time.Date(2021, time.September, 21, 0, 0, 0, 0, time.Local),
+			time.Date(2021, time.September, 9, 0, 0, 0, 0, time.UTC),
+			time.Date(2021, time.September, 21, 0, 0, 0, 0, time.UTC),
 		),
 	}
 	testCases := []struct {
@@ -99,8 +99,8 @@ func TestCourse_AddAutoCodeCheckingTask(t *testing.T) {
 		Title:       "Print sum of two integers",
 		Description: "You should read two integers from console and print sum",
 		Deadline: course.MustNewDeadline(
-			time.Date(2023, time.November, 10, 0, 0, 0, 0, time.Local),
-			time.Date(2023, time.November, 20, 0, 0, 0, 0, time.Local),
+			time.Date(2023, time.November, 10, 0, 0, 0, 0, time.UTC),
+			time.Date(2023, time.November, 20, 0, 0, 0, 0, time.UTC),
 		),
 		TestData: []course.TestData{course.MustNewTestData("1 3", "4"), course.MustNewTestData("2 2", "4")},
 	}
@@ -417,15 +417,15 @@ func TestCourse_ReplaceTaskDeadline(t *testing.T) {
 	t.Parallel()
 
 	newDeadline := course.MustNewDeadline(
-		time.Date(2023, time.March, 10, 0, 0, 0, 0, time.Local),
-		time.Date(2023, time.March, 22, 0, 0, 0, 0, time.Local),
+		time.Date(2023, time.March, 10, 0, 0, 0, 0, time.UTC),
+		time.Date(2023, time.March, 22, 0, 0, 0, 0, time.UTC),
 	)
 	addTasks := func(crs *course.Course) (int, int) {
 		creator := course.MustNewAcademic("creator-id", course.TeacherType)
 		manualTaskNumber, err := crs.AddManualCheckingTask(creator, course.ManualCheckingTaskCreationParams{
 			Deadline: course.MustNewDeadline(
-				time.Date(2023, time.March, 1, 0, 0, 0, 9, time.Local),
-				time.Date(2023, time.March, 12, 0, 0, 0, 0, time.Local),
+				time.Date(2023, time.March, 1, 0, 0, 0, 9, time.UTC),
+				time.Date(2023, time.March, 12, 0, 0, 0, 0, time.UTC),
 			),
 		})
 		require.NoError(t, err)

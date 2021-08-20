@@ -36,8 +36,8 @@ func TestAddTaskHandler_Handle(t *testing.T) {
 				TaskDescription: "Do this task",
 				TaskType:        course.ManualCheckingType,
 				Deadline: course.MustNewDeadline(
-					time.Date(2043, time.November, 10, 0, 0, 0, 0, time.Local),
-					time.Date(2043, time.November, 23, 0, 0, 0, 0, time.Local),
+					time.Date(2043, time.November, 10, 0, 0, 0, 0, time.UTC),
+					time.Date(2043, time.November, 23, 0, 0, 0, 0, time.UTC),
 				),
 			},
 			PrepareCoursesRepository: addCourse,
