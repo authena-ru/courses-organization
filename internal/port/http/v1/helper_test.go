@@ -51,6 +51,8 @@ func requireAddTaskCommandsEquals(t *testing.T, expectedCommand, givenCommand ap
 	require.Equalf(t, expectedCommand.TaskTitle, givenCommand.TaskTitle, "task titles are not equal")
 	require.Equalf(t, expectedCommand.TaskDescription, givenCommand.TaskDescription, "task descriptions are not equal")
 	require.Equalf(t, expectedCommand.TaskType, givenCommand.TaskType, "task types are not equal")
+	require.ElementsMatchf(t, expectedCommand.TestData, givenCommand.TestData, "test data are not equal")
+	require.ElementsMatchf(t, expectedCommand.TestPoints, givenCommand.TestPoints, "test points are not equal")
 	requireDatesEquals(t, expectedCommand.Deadline.GoodGradeTime(), givenCommand.Deadline.GoodGradeTime())
 	requireDatesEquals(t, expectedCommand.Deadline.ExcellentGradeTime(), givenCommand.Deadline.ExcellentGradeTime())
 }

@@ -72,9 +72,8 @@ type addTaskHandler interface {
 	// Handle is AddTaskCommand handler.
 	// Adds task with manual checking, auto code checking or testing type,
 	// returns one of possible errors. app.ErrCourseDoesntExist, errors that can
-	// be detected using methods course.IsInvalidTaskParametersError, course.IsInvalidDeadlineError,
-	// course.IsInvalidTestDataError, course.IsInvalidTestPointError, course.IsAcademicCantEditCourseError
-	// and others without definition.
+	// be detected using methods course.IsInvalidTaskParametersError,
+	// course.IsAcademicCantEditCourseError and others without definition.
 	Handle(ctx context.Context, cmd AddTaskCommand) (int, error)
 }
 

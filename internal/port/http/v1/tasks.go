@@ -37,24 +37,6 @@ func (h handler) AddTaskToCourse(w http.ResponseWriter, r *http.Request, courseI
 		return
 	}
 
-	if course.IsInvalidDeadlineError(err) {
-		httperr.UnprocessableEntity("invalid-deadline", err, w, r)
-
-		return
-	}
-
-	if course.IsInvalidTestDataError(err) {
-		httperr.UnprocessableEntity("invalid-test-data", err, w, r)
-
-		return
-	}
-
-	if course.IsInvalidTestPointError(err) {
-		httperr.UnprocessableEntity("invalid-test-points", err, w, r)
-
-		return
-	}
-
 	if course.IsAcademicCantEditCourseError(err) {
 		httperr.Forbidden("academic-cant-edit-course", err, w, r)
 

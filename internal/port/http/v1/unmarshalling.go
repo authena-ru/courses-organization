@@ -261,7 +261,7 @@ func unmarshalTaskType(w http.ResponseWriter, r *http.Request, apiTaskType TaskT
 		return course.TestingType, true
 	}
 
-	httperr.BadRequest("invalid-task-type", nil, w, r)
+	httperr.UnprocessableEntity("invalid-task-type", nil, w, r)
 
 	return course.TaskType(0), false
 }
@@ -282,7 +282,7 @@ func unmarshalPeriod(w http.ResponseWriter, r *http.Request, apiPeriod *CoursePe
 
 	domainPeriod, err := course.NewPeriod(apiPeriod.AcademicStartYear, apiPeriod.AcademicEndYear, semester)
 	if err != nil {
-		httperr.BadRequest("invalid-course-period", err, w, r)
+		httperr.UnprocessableEntity("invalid-course-period", err, w, r)
 
 		return course.Period{}, false
 	}
@@ -293,7 +293,7 @@ func unmarshalPeriod(w http.ResponseWriter, r *http.Request, apiPeriod *CoursePe
 func unmarshalAcademic(w http.ResponseWriter, r *http.Request) (course.Academic, bool) {
 	academic, err := auth.AcademicFromCtx(r.Context())
 	if err != nil {
-		httperr.Unauthorized("no-user-in-context", err, w, r)
+		httperr.Unauthorized("unauthorized-academic", err, w, r)
 
 		return course.Academic{}, false
 	}
@@ -308,7 +308,7 @@ func unmarshalDeadline(w http.ResponseWriter, r *http.Request, apiDeadline *Dead
 
 	deadline, err := course.NewDeadline(apiDeadline.ExcellentGradeTime.Time, apiDeadline.GoodGradeTime.Time)
 	if err != nil {
-		httperr.BadRequest("invalid-task", err, w, r)
+		httperr.UnprocessableEntity("invalid-deadline", err, w, r)
 
 		return course.Deadline{}, false
 	}
@@ -337,7 +337,7 @@ func unmarshalTestData(w http.ResponseWriter, r *http.Request, apiTestData *[]Te
 
 		td, err := course.NewTestData(inputData, outputData)
 		if err != nil {
-			httperr.BadRequest("invalid-task", err, w, r)
+			httperr.UnprocessableEntity("invalid-test-data", err, w, r)
 
 			return nil, false
 		}
@@ -364,7 +364,7 @@ func unmarshalTestPoints(w http.ResponseWriter, r *http.Request, apiTestPoints *
 
 		tp, err := course.NewTestPoint(atp.Description, atp.Variants, correctVariantNumbers)
 		if err != nil {
-			httperr.BadRequest("invalid-task", err, w, r)
+			httperr.UnprocessableEntity("invalid-test-point", err, w, r)
 
 			return nil, false
 		}
