@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"testing"
 	"time"
@@ -14,7 +15,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/authena-ru/courses-organization/internal/app"
-	"github.com/authena-ru/courses-organization/internal/app/command/mock"
+	cmock "github.com/authena-ru/courses-organization/internal/app/command/mock"
+	qmock "github.com/authena-ru/courses-organization/internal/app/query/mock"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
@@ -33,7 +35,7 @@ func TestHandler_AddTaskToCourse(t *testing.T) {
 		RequestBody          string
 		Authorized           course.Academic
 		Command              app.AddTaskCommand
-		PrepareHandler       func(expectedCommand app.AddTaskCommand) mock.AddTaskHandler
+		PrepareHandler       func(expectedCommand app.AddTaskCommand) cmock.AddTaskHandler
 		StatusCode           int
 		ShouldBeResponseBody bool
 		ResponseBody         string
@@ -47,7 +49,7 @@ func TestHandler_AddTaskToCourse(t *testing.T) {
 				"type": "MANUAL_CHECKING",
 			}`,
 			Authorized: course.MustNewAcademic("0e248d6b-ce90-4588-8c24-51928a7de937", course.TeacherType),
-			PrepareHandler: func(_ app.AddTaskCommand) mock.AddTaskHandler {
+			PrepareHandler: func(_ app.AddTaskCommand) cmock.AddTaskHandler {
 				return func(_ context.Context, _ app.AddTaskCommand) (int, error) {
 					return 0, nil
 				}
@@ -79,7 +81,7 @@ func TestHandler_AddTaskToCourse(t *testing.T) {
 					time.Date(2021, time.September, 24, 0, 0, 0, 0, time.UTC),
 				),
 			},
-			PrepareHandler: func(expectedCommand app.AddTaskCommand) mock.AddTaskHandler {
+			PrepareHandler: func(expectedCommand app.AddTaskCommand) cmock.AddTaskHandler {
 				return func(_ context.Context, givenCommand app.AddTaskCommand) (int, error) {
 					requireAddTaskCommandsEquals(t, expectedCommand, givenCommand)
 
@@ -114,7 +116,7 @@ func TestHandler_AddTaskToCourse(t *testing.T) {
 					course.MustNewTestPoint("test point description", []string{"Yes", "No"}, []int{0}),
 				},
 			},
-			PrepareHandler: func(expectedCommand app.AddTaskCommand) mock.AddTaskHandler {
+			PrepareHandler: func(expectedCommand app.AddTaskCommand) cmock.AddTaskHandler {
 				return func(_ context.Context, givenCommand app.AddTaskCommand) (int, error) {
 					requireAddTaskCommandsEquals(t, expectedCommand, givenCommand)
 
@@ -154,7 +156,7 @@ func TestHandler_AddTaskToCourse(t *testing.T) {
 					time.Date(2021, 10, 1, 0, 0, 0, 0, time.UTC),
 				),
 			},
-			PrepareHandler: func(expectedCommand app.AddTaskCommand) mock.AddTaskHandler {
+			PrepareHandler: func(expectedCommand app.AddTaskCommand) cmock.AddTaskHandler {
 				return func(_ context.Context, givenCommand app.AddTaskCommand) (int, error) {
 					requireAddTaskCommandsEquals(t, expectedCommand, givenCommand)
 
@@ -179,7 +181,7 @@ func TestHandler_AddTaskToCourse(t *testing.T) {
 				TaskDescription: "Manual checking task #2 description",
 				TaskType:        course.ManualCheckingType,
 			},
-			PrepareHandler: func(expectedCommand app.AddTaskCommand) mock.AddTaskHandler {
+			PrepareHandler: func(expectedCommand app.AddTaskCommand) cmock.AddTaskHandler {
 				return func(_ context.Context, givenCommand app.AddTaskCommand) (int, error) {
 					requireAddTaskCommandsEquals(t, expectedCommand, givenCommand)
 
@@ -205,7 +207,7 @@ func TestHandler_AddTaskToCourse(t *testing.T) {
 				TaskDescription: "Description for task with too long title",
 				TaskType:        course.ManualCheckingType,
 			},
-			PrepareHandler: func(expectedCommand app.AddTaskCommand) mock.AddTaskHandler {
+			PrepareHandler: func(expectedCommand app.AddTaskCommand) cmock.AddTaskHandler {
 				return func(_ context.Context, givenCommand app.AddTaskCommand) (int, error) {
 					requireAddTaskCommandsEquals(t, expectedCommand, givenCommand)
 
@@ -228,7 +230,7 @@ func TestHandler_AddTaskToCourse(t *testing.T) {
 				}
 			}`,
 			Authorized: course.MustNewAcademic("f695f54c-65e0-46da-a3ce-ffe93a13641b", course.TeacherType),
-			PrepareHandler: func(_ app.AddTaskCommand) mock.AddTaskHandler {
+			PrepareHandler: func(_ app.AddTaskCommand) cmock.AddTaskHandler {
 				return func(_ context.Context, givenCommand app.AddTaskCommand) (int, error) {
 					return 0, nil
 				}
@@ -255,7 +257,7 @@ func TestHandler_AddTaskToCourse(t *testing.T) {
 				]
 			}`, tooLongOutputData),
 			Authorized: course.MustNewAcademic("c29e0dc8-59f4-48b0-926e-281bd7ee56b8", course.TeacherType),
-			PrepareHandler: func(_ app.AddTaskCommand) mock.AddTaskHandler {
+			PrepareHandler: func(_ app.AddTaskCommand) cmock.AddTaskHandler {
 				return func(_ context.Context, _ app.AddTaskCommand) (int, error) {
 					return 0, nil
 				}
@@ -279,7 +281,7 @@ func TestHandler_AddTaskToCourse(t *testing.T) {
 				]
 			}`,
 			Authorized: course.MustNewAcademic("fc0601f7-e8b2-4a0b-8adc-38d82eb4f80d", course.TeacherType),
-			PrepareHandler: func(_ app.AddTaskCommand) mock.AddTaskHandler {
+			PrepareHandler: func(_ app.AddTaskCommand) cmock.AddTaskHandler {
 				return func(_ context.Context, _ app.AddTaskCommand) (int, error) {
 					return 0, nil
 				}
@@ -296,7 +298,7 @@ func TestHandler_AddTaskToCourse(t *testing.T) {
 				"type": "UNKNOWN"
 			}`,
 			Authorized: course.MustNewAcademic("920e5b80-b7d2-468f-8fdd-707650ff16f2", course.TeacherType),
-			PrepareHandler: func(expectedCommand app.AddTaskCommand) mock.AddTaskHandler {
+			PrepareHandler: func(expectedCommand app.AddTaskCommand) cmock.AddTaskHandler {
 				return func(_ context.Context, _ app.AddTaskCommand) (int, error) {
 					return 0, nil
 				}
@@ -320,7 +322,7 @@ func TestHandler_AddTaskToCourse(t *testing.T) {
 				TaskDescription: "some description",
 				TaskType:        course.ManualCheckingType,
 			},
-			PrepareHandler: func(expectedCommand app.AddTaskCommand) mock.AddTaskHandler {
+			PrepareHandler: func(expectedCommand app.AddTaskCommand) cmock.AddTaskHandler {
 				return func(_ context.Context, givenCommand app.AddTaskCommand) (int, error) {
 					requireAddTaskCommandsEquals(t, expectedCommand, givenCommand)
 
@@ -346,7 +348,7 @@ func TestHandler_AddTaskToCourse(t *testing.T) {
 				TaskDescription: "D E S C R I P T I O N",
 				TaskType:        course.ManualCheckingType,
 			},
-			PrepareHandler: func(expectedCommand app.AddTaskCommand) mock.AddTaskHandler {
+			PrepareHandler: func(expectedCommand app.AddTaskCommand) cmock.AddTaskHandler {
 				return func(ctx context.Context, givenCommand app.AddTaskCommand) (int, error) {
 					requireAddTaskCommandsEquals(t, expectedCommand, givenCommand)
 
@@ -394,4 +396,175 @@ func TestHandler_AddTaskToCourse(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestHandler_GetCourseTasks(t *testing.T) {
+	t.Parallel()
+
+	const courseID = "3f399814-2c95-4e35-8920-8fdd12dbe0c1"
+
+	testCases := []struct {
+		Name                 string
+		Authorized           course.Academic
+		TypeQueryParam       string
+		TextQueryParam       string
+		Query                app.AllTasksQuery
+		PrepareHandler       func(expectedQuery app.AllTasksQuery) qmock.AllTasksHandler
+		StatusCode           int
+		ShouldBeResponseBody bool
+		ResponseBody         string
+	}{
+		{
+			Name:           "obtain_tasks",
+			Authorized:     course.MustNewAcademic("fc49c439-12bf-441a-a2cd-7da671dbc974", course.TeacherType),
+			TextQueryParam: "task",
+			Query: app.AllTasksQuery{
+				Academic: course.MustNewAcademic("fc49c439-12bf-441a-a2cd-7da671dbc974", course.TeacherType),
+				CourseID: courseID,
+				Text:     "task",
+			},
+			PrepareHandler: func(expectedQuery app.AllTasksQuery) qmock.AllTasksHandler {
+				return func(_ context.Context, givenQuery app.AllTasksQuery) ([]app.GeneralTask, error) {
+					require.Equalf(t, expectedQuery, givenQuery, "queries are not equal")
+
+					return []app.GeneralTask{
+						{
+							Number:      1,
+							Title:       "Manual checking task #1",
+							Description: "Manual checking task #1 description",
+							Type:        course.ManualCheckingType,
+						},
+						{
+							Number:      2,
+							Title:       "Testing task #2",
+							Description: "Testing task #2 description",
+							Type:        course.TestingType,
+						},
+						{
+							Number:      3,
+							Title:       "Auto code checking task #3",
+							Description: "Auto code checking task #3 description",
+							Type:        course.AutoCodeCheckingType,
+						},
+					}, nil
+				}
+			},
+			StatusCode:           http.StatusOK,
+			ShouldBeResponseBody: true,
+			ResponseBody: `[
+				{
+					"number": 1,
+					"title": "Manual checking task #1",
+					"description": "Manual checking task #1 description",
+					"type": "MANUAL_CHECKING"
+				},
+				{
+					"number": 2,
+					"title": "Testing task #2",
+					"description": "Testing task #2 description",
+					"type": "TESTING"
+				},
+				{
+					"number": 3,
+					"title": "Auto code checking task #3",
+					"description": "Auto code checking task #3 description",
+					"type": "AUTO_CODE_CHECKING"
+				}
+			]`,
+		},
+		{
+			Name:       "course_not_found",
+			Authorized: course.MustNewAcademic("ae1c44c1-fbf5-4196-94ee-513dff6433d5", course.TeacherType),
+			Query: app.AllTasksQuery{
+				Academic: course.MustNewAcademic("ae1c44c1-fbf5-4196-94ee-513dff6433d5", course.TeacherType),
+				CourseID: courseID,
+			},
+			PrepareHandler: func(expectedQuery app.AllTasksQuery) qmock.AllTasksHandler {
+				return func(_ context.Context, givenQuery app.AllTasksQuery) ([]app.GeneralTask, error) {
+					require.Equalf(t, expectedQuery, givenQuery, "queries are not equal")
+
+					return nil, app.ErrCourseDoesntExist
+				}
+			},
+			StatusCode:           http.StatusNotFound,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "course-not-found", "details": "course doesn't exist"}`,
+		},
+		{
+			Name:           "unexpected-error",
+			Authorized:     course.MustNewAcademic("9c82f562-8e0c-46a5-80bc-bc4517d2eead", course.TeacherType),
+			TypeQueryParam: "TESTING",
+			TextQueryParam: "test task",
+			Query: app.AllTasksQuery{
+				Academic: course.MustNewAcademic("9c82f562-8e0c-46a5-80bc-bc4517d2eead", course.TeacherType),
+				CourseID: courseID,
+				Type:     course.TestingType,
+				Text:     "test task",
+			},
+			PrepareHandler: func(expectedQuery app.AllTasksQuery) qmock.AllTasksHandler {
+				return func(_ context.Context, givenQuery app.AllTasksQuery) ([]app.GeneralTask, error) {
+					require.Equalf(t, expectedQuery, givenQuery, "queries are not equal")
+
+					return nil, errors.New("unexpected error")
+				}
+			},
+			StatusCode:           http.StatusInternalServerError,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "unexpected-error", "details": "unexpected error"}`,
+		},
+	}
+
+	for i := range testCases {
+		c := testCases[i]
+		t.Run(c.Name, func(t *testing.T) {
+			t.Parallel()
+
+			application := app.Application{
+				Queries: app.Queries{
+					AllTasks: c.PrepareHandler(c.Query),
+				},
+			}
+			h := newHTTPHandler(t, application)
+
+			w := httptest.NewRecorder()
+
+			targetURL := createGetCourseTasksQuery(t, courseID, c.TypeQueryParam, c.TextQueryParam)
+			r := newHTTPRequest(
+				t,
+				http.MethodGet, targetURL,
+				c.ResponseBody, c.Authorized,
+			)
+
+			h.ServeHTTP(w, r)
+
+			require.Equalf(t, c.StatusCode, w.Code, "codes are not equal")
+
+			if c.ShouldBeResponseBody {
+				require.JSONEq(t, c.ResponseBody, w.Body.String())
+			}
+		})
+	}
+}
+
+func createGetCourseTasksQuery(t *testing.T, courseID, typeQueryParam, textQueryParam string) string {
+	t.Helper()
+
+	baseURL, err := url.Parse(fmt.Sprintf("/courses/%s/tasks", courseID))
+	if err != nil {
+		require.NoError(t, err)
+	}
+
+	params := url.Values{}
+
+	if typeQueryParam != "" {
+		params.Add("type", typeQueryParam)
+	}
+
+	if textQueryParam != "" {
+		params.Add("text", textQueryParam)
+	}
+
+	baseURL.RawQuery = params.Encode()
+
+	return baseURL.String()
 }
