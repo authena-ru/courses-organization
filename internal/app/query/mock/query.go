@@ -11,3 +11,9 @@ type AllTasksHandler func(ctx context.Context, qry app.AllTasksQuery) ([]app.Gen
 func (m AllTasksHandler) Handle(ctx context.Context, qry app.AllTasksQuery) ([]app.GeneralTask, error) {
 	return m(ctx, qry)
 }
+
+type SpecificTaskHandler func(ctx context.Context, qry app.SpecificTaskQuery) (app.SpecificTask, error)
+
+func (m SpecificTaskHandler) Handle(ctx context.Context, qry app.SpecificTaskQuery) (app.SpecificTask, error) {
+	return m(ctx, qry)
+}

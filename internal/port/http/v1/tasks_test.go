@@ -532,7 +532,274 @@ func TestHandler_GetCourseTasks(t *testing.T) {
 			r := newHTTPRequest(
 				t,
 				http.MethodGet, targetURL,
-				c.ResponseBody, c.Authorized,
+				"", c.Authorized,
+			)
+
+			h.ServeHTTP(w, r)
+
+			require.Equalf(t, c.StatusCode, w.Code, "codes are not equal")
+
+			if c.ShouldBeResponseBody {
+				require.JSONEq(t, c.ResponseBody, w.Body.String())
+			}
+		})
+	}
+}
+
+func TestHandler_GetCourseTask(t *testing.T) {
+	t.Parallel()
+
+	const courseID = "d7d629f9-dfdf-4aaf-8970-bf615b6bf6e1"
+
+	testCases := []struct {
+		Name                 string
+		Authorized           course.Academic
+		TaskNumberPathParam  int
+		Query                app.SpecificTaskQuery
+		PrepareHandler       func(expectedQuery app.SpecificTaskQuery) qmock.SpecificTaskHandler
+		StatusCode           int
+		ShouldBeResponseBody bool
+		ResponseBody         string
+	}{
+		{
+			Name:                "obtain_manual_checking_task",
+			Authorized:          course.MustNewAcademic("b9391cc3-29f6-4e9f-bcbc-05a87e60ddb3", course.TeacherType),
+			TaskNumberPathParam: 12,
+			Query: app.SpecificTaskQuery{
+				Academic:   course.MustNewAcademic("b9391cc3-29f6-4e9f-bcbc-05a87e60ddb3", course.TeacherType),
+				CourseID:   courseID,
+				TaskNumber: 12,
+			},
+			PrepareHandler: func(expectedQuery app.SpecificTaskQuery) qmock.SpecificTaskHandler {
+				return func(_ context.Context, givenQuery app.SpecificTaskQuery) (app.SpecificTask, error) {
+					require.Equalf(t, expectedQuery, givenQuery, "queries are not equal")
+
+					return app.SpecificTask{
+						Number:      12,
+						Title:       "Bruh task",
+						Description: "Some interesting task",
+						Type:        course.ManualCheckingType,
+						Deadline: &app.Deadline{
+							ExcellentGradeTime: time.Date(2021, time.February, 1, 0, 0, 0, 0, time.UTC),
+							GoodGradeTime:      time.Date(2021, time.February, 28, 0, 0, 0, 0, time.UTC),
+						},
+					}, nil
+				}
+			},
+			StatusCode:           http.StatusOK,
+			ShouldBeResponseBody: true,
+			ResponseBody: `{
+				"number": 12,
+				"title": "Bruh task",
+				"description": "Some interesting task",
+				"type": "MANUAL_CHECKING",
+				"deadline": {
+					"excellentGradeTime": "2021-02-01",
+					"goodGradeTime": "2021-02-28"
+				}
+			}`,
+		},
+		{
+			Name:                "obtain_testing_task",
+			Authorized:          course.MustNewAcademic("cde4d5f0-649c-4e2c-8209-2e63efa0dfed", course.TeacherType),
+			TaskNumberPathParam: 34,
+			Query: app.SpecificTaskQuery{
+				Academic:   course.MustNewAcademic("cde4d5f0-649c-4e2c-8209-2e63efa0dfed", course.TeacherType),
+				CourseID:   courseID,
+				TaskNumber: 34,
+			},
+			PrepareHandler: func(expectedQuery app.SpecificTaskQuery) qmock.SpecificTaskHandler {
+				return func(_ context.Context, givenQuery app.SpecificTaskQuery) (app.SpecificTask, error) {
+					require.Equalf(t, expectedQuery, givenQuery, "queries are not equal")
+
+					return app.SpecificTask{
+						Number:      34,
+						Title:       "Some task",
+						Description: "Not interesting task",
+						Type:        course.TestingType,
+						Points: []app.TestPoint{
+							{
+								Description:           "2 + 2",
+								Variants:              []string{"5", "6", "4"},
+								CorrectVariantNumbers: []int{2},
+								SingleCorrectVariant:  true,
+							},
+							{
+								Description:           "12 + 6 * 2",
+								Variants:              []string{"24", "36", "30"},
+								CorrectVariantNumbers: []int{0},
+								SingleCorrectVariant:  true,
+							},
+							{
+								Description:           "3 / 6",
+								Variants:              []string{"1/2", "0.5", "1.5"},
+								CorrectVariantNumbers: []int{0, 1},
+								SingleCorrectVariant:  false,
+							},
+						},
+					}, nil
+				}
+			},
+			StatusCode:           http.StatusOK,
+			ShouldBeResponseBody: true,
+			ResponseBody: `{
+				"number": 34,
+				"title": "Some task",
+				"description": "Not interesting task",
+				"type": "TESTING",
+				"points": [
+					{
+						"description": "2 + 2",
+						"variants": ["5", "6", "4"],
+						"correctVariantNumbers": [2],
+						"singleCorrectVariant": true
+					},
+					{
+						"description": "12 + 6 * 2",
+						"variants": ["24", "36", "30"],
+						"correctVariantNumbers": [0],
+						"singleCorrectVariant": true
+					},
+					{
+						"description": "3 / 6",
+						"variants": ["1/2", "0.5", "1.5"],
+						"correctVariantNumbers": [0, 1],
+						"singleCorrectVariant": false
+					}
+				]
+			}`,
+		},
+		{
+			Name:                "obtain_auto_code_checking_task",
+			Authorized:          course.MustNewAcademic("e35e637c-8c9c-48aa-b766-0c5bdb1544cd", course.TeacherType),
+			TaskNumberPathParam: 22,
+			Query: app.SpecificTaskQuery{
+				Academic:   course.MustNewAcademic("e35e637c-8c9c-48aa-b766-0c5bdb1544cd", course.TeacherType),
+				CourseID:   courseID,
+				TaskNumber: 22,
+			},
+			PrepareHandler: func(expectedQuery app.SpecificTaskQuery) qmock.SpecificTaskHandler {
+				return func(_ context.Context, givenQuery app.SpecificTaskQuery) (app.SpecificTask, error) {
+					require.Equalf(t, expectedQuery, givenQuery, "queries are not equal")
+
+					return app.SpecificTask{
+						Number:      22,
+						Title:       "Bad task",
+						Description: "Bad description",
+						Type:        course.AutoCodeCheckingType,
+						TestData: []app.TestData{
+							{
+								InputData:  "2 + 2",
+								OutputData: "4",
+							},
+							{
+								InputData:  "'2' + '2'",
+								OutputData: "'22'",
+							},
+						},
+					}, nil
+				}
+			},
+			StatusCode:           http.StatusOK,
+			ShouldBeResponseBody: true,
+			ResponseBody: `{
+				"number": 22,
+				"title": "Bad task",
+				"description": "Bad description",
+				"type": "AUTO_CODE_CHECKING",
+				"testData": [
+					{
+						"inputData": "2 + 2",
+						"outputData": "4"
+					},
+					{
+						"inputData": "'2' + '2'",
+						"outputData": "'22'"
+					}
+				]
+			}`,
+		},
+		{
+			Name:                "course_not_found",
+			Authorized:          course.MustNewAcademic("98a41b0b-4ba9-46df-a36e-59ecf9fb96f3", course.TeacherType),
+			TaskNumberPathParam: 39,
+			Query: app.SpecificTaskQuery{
+				Academic:   course.MustNewAcademic("98a41b0b-4ba9-46df-a36e-59ecf9fb96f3", course.TeacherType),
+				CourseID:   courseID,
+				TaskNumber: 39,
+			},
+			PrepareHandler: func(expectedQuery app.SpecificTaskQuery) qmock.SpecificTaskHandler {
+				return func(_ context.Context, givenQuery app.SpecificTaskQuery) (app.SpecificTask, error) {
+					require.Equalf(t, expectedQuery, givenQuery, "queries are not equal")
+
+					return app.SpecificTask{}, app.ErrCourseDoesntExist
+				}
+			},
+			StatusCode:           http.StatusNotFound,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "course-not-found", "details": "course doesn't exist"}`,
+		},
+		{
+			Name:                "course_task_not_found",
+			Authorized:          course.MustNewAcademic("b9a0bd7a-f0f7-4597-98ae-89bd9e11c1cc", course.TeacherType),
+			TaskNumberPathParam: 24,
+			Query: app.SpecificTaskQuery{
+				Academic:   course.MustNewAcademic("b9a0bd7a-f0f7-4597-98ae-89bd9e11c1cc", course.TeacherType),
+				CourseID:   courseID,
+				TaskNumber: 24,
+			},
+			PrepareHandler: func(expectedQuery app.SpecificTaskQuery) qmock.SpecificTaskHandler {
+				return func(_ context.Context, givenQuery app.SpecificTaskQuery) (app.SpecificTask, error) {
+					require.Equalf(t, expectedQuery, givenQuery, "queries are not equal")
+
+					return app.SpecificTask{}, app.ErrTaskDoesntExist
+				}
+			},
+			StatusCode:           http.StatusNotFound,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "course-task-not-found", "details": "course task doesn't exist"}`,
+		},
+		{
+			Name:                "unexpected_error",
+			Authorized:          course.MustNewAcademic("7e860439-fc35-4a94-b6d4-d6e2ce9a337b", course.TeacherType),
+			TaskNumberPathParam: 19,
+			Query: app.SpecificTaskQuery{
+				Academic:   course.MustNewAcademic("7e860439-fc35-4a94-b6d4-d6e2ce9a337b", course.TeacherType),
+				CourseID:   courseID,
+				TaskNumber: 19,
+			},
+			PrepareHandler: func(expectedQuery app.SpecificTaskQuery) qmock.SpecificTaskHandler {
+				return func(_ context.Context, givenQuery app.SpecificTaskQuery) (app.SpecificTask, error) {
+					require.Equalf(t, expectedQuery, givenQuery, "queries are not equal")
+
+					return app.SpecificTask{}, errors.New("unexpected error")
+				}
+			},
+			StatusCode:           http.StatusInternalServerError,
+			ShouldBeResponseBody: true,
+			ResponseBody:         `{"slug": "unexpected-error", "details": "unexpected error"}`,
+		},
+	}
+
+	for i := range testCases {
+		c := testCases[i]
+		t.Run(c.Name, func(t *testing.T) {
+			t.Parallel()
+
+			application := app.Application{
+				Queries: app.Queries{
+					SpecificTask: c.PrepareHandler(c.Query),
+				},
+			}
+			h := newHTTPHandler(t, application)
+
+			w := httptest.NewRecorder()
+
+			targetURL := fmt.Sprintf("/courses/%v/tasks/%v", courseID, c.TaskNumberPathParam)
+			r := newHTTPRequest(
+				t,
+				http.MethodGet, targetURL,
+				"", c.Authorized,
 			)
 
 			h.ServeHTTP(w, r)

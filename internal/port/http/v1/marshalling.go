@@ -93,9 +93,11 @@ func marshalTestPoints(testPoints []app.TestPoint) []TestPoint {
 	marshalled := make([]TestPoint, 0, len(testPoints))
 
 	for _, tp := range testPoints {
-		var correctVariantNumbers *[]int
+		var correctVariantNumbers []int
+
 		if tp.CorrectVariantNumbers != nil {
-			correctVariantNumbers = &tp.CorrectVariantNumbers
+			correctVariantNumbers = make([]int, len(tp.CorrectVariantNumbers))
+			copy(correctVariantNumbers, tp.CorrectVariantNumbers)
 		}
 
 		singleCorrectVariant := tp.SingleCorrectVariant
@@ -103,7 +105,7 @@ func marshalTestPoints(testPoints []app.TestPoint) []TestPoint {
 		marshalled = append(marshalled, TestPoint{
 			Description:           tp.Description,
 			Variants:              tp.Variants,
-			CorrectVariantNumbers: correctVariantNumbers,
+			CorrectVariantNumbers: &correctVariantNumbers,
 			SingleCorrectVariant:  &singleCorrectVariant,
 		})
 	}
