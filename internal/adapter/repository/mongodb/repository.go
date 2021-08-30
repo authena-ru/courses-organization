@@ -234,3 +234,9 @@ func makeCourseForAcademicFilter(academic course.Academic, courseID string) bson
 
 	return bson.D{{Key: "_id", Value: courseID}, academicSubFilter}
 }
+
+func (r *CoursesRepository) RemoveAllCourses(ctx context.Context) error {
+	_, err := r.courses.DeleteMany(ctx, bson.D{})
+
+	return errors.Wrap(err, "unable to remove all courses")
+}
