@@ -12,7 +12,7 @@ lint:
 	golangci-lint run
 
 test-unit:
-	go test --short -v -race -coverpkg=./... -coverprofile=cover.out ./...
+	go test --short -v -race -coverpkg=./... -coverprofile=cover-all.out ./...
 
 test-integration:
 	make run-test-db
@@ -20,6 +20,8 @@ test-integration:
 	make stop-test-db
 
 test-cover:
+	cat cover-all.out | grep -v .gen.go > cover.out
+	rm cover-all.out
 	go tool cover -html=cover.out -o cover.html
 
 
