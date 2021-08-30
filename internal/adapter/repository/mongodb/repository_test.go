@@ -4,6 +4,10 @@ import (
 	"context"
 	"testing"
 
+	"github.com/pkg/errors"
+
+	"github.com/authena-ru/courses-organization/internal/app"
+
 	"github.com/stretchr/testify/suite"
 
 	"github.com/authena-ru/courses-organization/internal/adapter/repository/mongodb"
@@ -102,6 +106,52 @@ func (s *CoursesRepositoryTestSuite) TestCoursesRepository_AddCourse() {
 			s.Require().NoError(err)
 
 			s.requirePersistedCourseEquals(expectedCourse)
+		})
+	}
+}
+
+func (s *CoursesRepositoryTestSuite) TestCoursesRepository_GetCourse() {
+	existingCourse := course.MustNewCourse(course.CreationParams{
+		ID:      "dfe52190-ed85-4130-aba7-409c0bc21a49",
+		Creator: course.MustNewAcademic("7b07ce84-d8aa-454b-9d01-305b211fe730", course.TeacherType),
+		Title:   "New brand existing course",
+		Period:  course.MustNewPeriod(2027, 2028, course.SecondSemester),
+		Started: false,
+	})
+
+	err := s.repository.AddCourse(context.Background(), existingCourse)
+	s.Require().NoError(err)
+
+	testCases := []struct {
+		Name          string
+		CourseIDToGet string
+		ExpectedErr   error
+	}{
+		{
+			Name:          "existing_course",
+			CourseIDToGet: existingCourse.ID(),
+		},
+		{
+			Name:          "non_existing_course",
+			CourseIDToGet: "23c645b3-9c94-4d5b-86e5-c8a3f9a47db3",
+			ExpectedErr:   app.ErrCourseDoesntExist,
+		},
+	}
+
+	for i := range testCases {
+		c := testCases[i]
+
+		s.Run(c.Name, func() {
+			givenCourse, err := s.repository.GetCourse(context.Background(), c.CourseIDToGet)
+
+			if c.ExpectedErr != nil {
+				s.Require().True(errors.Is(err, c.ExpectedErr))
+
+				return
+			}
+
+			s.Require().NoError(err)
+			s.Require().Equal(existingCourse, givenCourse)
 		})
 	}
 }
