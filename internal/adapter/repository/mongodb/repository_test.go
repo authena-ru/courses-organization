@@ -110,11 +110,6 @@ func (s *CoursesRepositoryTestSuite) newCoursesRepository() *mongodb.CoursesRepo
 	return mongodb.NewCoursesRepository(s.db)
 }
 
-func (s *CoursesRepositoryTestSuite) removeAllCourses(repo *mongodb.CoursesRepository) {
-	err := repo.RemoveAllCourses(context.Background())
-	s.Require().NoError(err)
-}
-
 func (s *CoursesRepositoryTestSuite) requirePersistedCourseEquals(expectedCourse *course.Course) {
 	persistedCourse, err := s.repository.GetCourse(context.Background(), expectedCourse.ID())
 	s.Require().NoError(err)
