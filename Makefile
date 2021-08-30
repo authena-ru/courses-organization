@@ -16,7 +16,7 @@ test-unit:
 
 test-integration:
 	make run-test-db
-	go test -v -race ./internal/adapter/...
+	go test -v -race -cover ./internal/adapter/...
 	make stop-test-db
 
 test-cover:
