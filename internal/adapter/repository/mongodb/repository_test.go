@@ -5,12 +5,10 @@ import (
 	"testing"
 
 	"github.com/pkg/errors"
-
-	"github.com/authena-ru/courses-organization/internal/app"
-
 	"github.com/stretchr/testify/suite"
 
 	"github.com/authena-ru/courses-organization/internal/adapter/repository/mongodb"
+	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
@@ -58,7 +56,7 @@ func (s *CoursesRepositoryTestSuite) TestCoursesRepository_AddCourse() {
 			},
 		},
 		{
-			Name: "course_wit_collaborators",
+			Name: "course_with_collaborators",
 			CoursesFactory: func() *course.Course {
 				return course.MustNewCourse(course.CreationParams{
 					ID:      "1e2339f9-7d31-42c9-bbfc-302c1471f48b",
