@@ -12,16 +12,18 @@ lint:
 	golangci-lint run
 
 test-unit:
-	go test --short -v -race -coverpkg=./... -coverprofile=cover-all.out ./...
+	go test --short -v -race -coverpkg=./... -coverprofile=unit-all.out ./...
+	cat unit-all.out | grep -v .gen.go > unit.out
+	rm unit-all.out
 
 test-integration:
 	make run-test-db
-	go test -v -race -cover ./internal/adapter/...
+	go test -v -race -coverprofile=integration.out ./internal/adapter/...
 	make stop-test-db
 
 test-cover:
-	cat cover-all.out | grep -v .gen.go > cover.out
-	rm cover-all.out
+	go install github.com/wadey/gocovmerge@latest
+	gocovmerge unit.out integration.out > cover.out
 	go tool cover -html=cover.out -o cover.html
 
 
