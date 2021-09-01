@@ -69,9 +69,9 @@ func (r *CoursesRepository) UpdateCourse(ctx context.Context, courseID string, u
 		}
 		updatedCourseDocument := marshalCourseDocument(updatedCourse)
 
-		replaceOpts := options.Replace().SetUpsert(true)
+		replaceOpt := options.Replace().SetUpsert(true)
 		filter := bson.M{"_id": updatedCourseDocument.ID}
-		if _, err := r.courses.ReplaceOne(ctx, filter, updatedCourseDocument, replaceOpts); err != nil {
+		if _, err := r.courses.ReplaceOne(ctx, filter, updatedCourseDocument, replaceOpt); err != nil {
 			return nil, app.Wrap(app.ErrDatabaseProblems, err)
 		}
 
@@ -87,10 +87,10 @@ func (r *CoursesRepository) FindTask(
 ) (app.SpecificTask, error) {
 	filter := makeCourseForAcademicFilter(academic, courseID)
 	projection := makeFindTaskProjection(taskNumber)
-	opt := options.FindOne().SetProjection(projection)
+	findOpt := options.FindOne().SetProjection(projection)
 
 	var document courseDocument
-	if err := r.courses.FindOne(ctx, filter, opt).Decode(&document); err != nil {
+	if err := r.courses.FindOne(ctx, filter, findOpt).Decode(&document); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return app.SpecificTask{}, app.Wrap(app.ErrCourseDoesntExist, err)
 		}
