@@ -46,38 +46,30 @@ linters:
     - wastedassign
     - promlinter
     - bodyclose
-    #    - dupl
     - godot
     - funlen
     - wsl
-    # - gochecknoglobals
-    # - gochecknoinits
-    # - goconst
+    - gochecknoglobals
+    - gochecknoinits
+    - goconst
     - gocritic
-    # - godox
+    - godox
     - goerr113
-    # - gosec
-    # - noctx
-    # - prealloc
-    # - stylecheck
-    # - testpackage
-    # - cyclop
-    # - errorlint
+    - gosec
+    - noctx
+    - prealloc
+    - stylecheck
+    - testpackage
+    - cyclop
+    - errorlint
     - nlreturn
-    # - revive
-    # - tagliatelle
+    - revive
+    - tagliatelle
     - unparam
 
 issues:
   exclude-rules:
     - path: (_test\.go|tests)
       linters:
-        - bodyclose
         - dupl
         - funlen
-        - goerr113
-        #- gosec
-        #- noctx
-    - path: (internal/adapter/delivery/http)
-      linters:
-        - godot
