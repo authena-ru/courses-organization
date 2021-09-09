@@ -9,6 +9,8 @@ import (
 const (
 	defaultHTTPPort      = "8080"
 	defaultHTTPRWTimeout = 10 * time.Second
+
+	LocalEnv = "local"
 )
 
 type (
@@ -90,9 +92,19 @@ func parseAppFromEnv() error {
 
 func parseConfigFile(configsDir, env string) error {
 	viper.AddConfigPath(configsDir)
+	viper.SetConfigName("main")
+
+	if err := viper.ReadInConfig(); err != nil {
+		return err
+	}
+
+	if env == LocalEnv {
+		return nil
+	}
+
 	viper.SetConfigName(env)
 
-	return viper.ReadInConfig()
+	return viper.MergeInConfig()
 }
 
 func setFromEnv(cfg *Config) {
