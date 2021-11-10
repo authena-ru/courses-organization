@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/authena-ru/courses-organization/internal/app/command"
+
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/suite"
 
@@ -92,15 +94,11 @@ func (s *CoursesRepositoryTestSuite) TestCoursesRepository_AddCourse() {
 		},
 	}
 
-	for i := range testCases {
-		c := testCases[i]
-
+	for _, c := range testCases {
 		s.Run(c.Name, func() {
 			expectedCourse := c.CoursesFactory()
 
-			ctx := context.Background()
-
-			err := s.repository.AddCourse(ctx, expectedCourse)
+			err := s.repository.AddCourse(context.Background(), expectedCourse)
 			s.Require().NoError(err)
 
 			s.requirePersistedCourseEquals(expectedCourse)
@@ -136,9 +134,7 @@ func (s *CoursesRepositoryTestSuite) TestCoursesRepository_GetCourse() {
 		},
 	}
 
-	for i := range testCases {
-		c := testCases[i]
-
+	for _, c := range testCases {
 		s.Run(c.Name, func() {
 			givenCourse, err := s.repository.GetCourse(context.Background(), c.CourseIDToGet)
 
@@ -150,6 +146,59 @@ func (s *CoursesRepositoryTestSuite) TestCoursesRepository_GetCourse() {
 
 			s.Require().NoError(err)
 			s.Require().Equal(existingCourse, givenCourse)
+		})
+	}
+}
+
+func (s *CoursesRepositoryTestSuite) TestCoursesRepository_UpdateCourse() {
+	courseToUpdate := course.MustNewCourse(course.CreationParams{
+		ID:            "a9ddc049-38c7-474f-b4b7-593b686482ea",
+		Creator:       course.MustNewAcademic("243886c7-5215-4574-9cb5-50c84cf7e2fe", course.TeacherType),
+		Title:         "New course that will change",
+		Period:        course.MustNewPeriod(2030, 2031, course.FirstSemester),
+		Started:       false,
+		Collaborators: []string{"5a475f3f-c8cf-477e-9ba5-0e428923b089"},
+		Students:      []string{"d4a28d9b-7d05-4639-a067-4a5e5cb4e057"},
+	})
+
+	err := s.repository.AddCourse(context.Background(), courseToUpdate)
+	s.Require().NoError(err)
+
+	testCases := []struct {
+		Name            string
+		UpdatedCourseID string
+		Update          command.UpdateFunction
+		CourseUpdated   func(crs *course.Course) bool
+		ExpectedErr     error
+	}{
+		{
+			Name:            "non_existing_course",
+			UpdatedCourseID: "b59aa2a2-2d2a-4cd8-916b-234fdb2827a7",
+			Update: func(_ context.Context, crs *course.Course) (*course.Course, error) {
+				return crs, nil
+			},
+			ExpectedErr: app.ErrCourseDoesntExist,
+		},
+	}
+
+	for _, c := range testCases {
+		s.Run(c.Name, func() {
+			ctx := context.Background()
+
+			err := s.repository.UpdateCourse(ctx, c.UpdatedCourseID, c.Update)
+
+			if c.ExpectedErr != nil {
+				s.Require().True(errors.Is(err, c.ExpectedErr))
+
+				return
+			}
+
+			s.Require().NoError(err)
+
+			courseFromDB, err := s.repository.GetCourse(ctx, c.UpdatedCourseID)
+			s.Require().NoError(err)
+
+			s.Require().True(c.CourseUpdated(courseFromDB))
 		})
 	}
 }
