@@ -1,6 +1,8 @@
 package runner
 
 import (
+	"fmt"
+
 	"github.com/authena-ru/courses-organization/internal/app/query"
 	"github.com/authena-ru/courses-organization/internal/port/http"
 	"github.com/sirupsen/logrus"
@@ -66,7 +68,7 @@ func newApplication(db *mongo.Database) app.Application {
 }
 
 func startServer(cfg *config.Config, application app.Application) {
-	logrus.Info("Starting HTTP server on address :8080")
+	logrus.Info(fmt.Sprintf("Starting HTTP server on address :%s", cfg.HTTP.Port))
 
 	httpServer := server.New(cfg, http.NewHandler(application))
 	err := httpServer.Run()
