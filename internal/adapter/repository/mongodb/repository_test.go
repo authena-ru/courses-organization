@@ -78,7 +78,7 @@ func (s *CoursesRepositoryTestSuite) TestCoursesRepository_FindCourse() {
 			Name:           "not_found_course_for_another_academic",
 			Academic:       anotherAcademic,
 			CourseIDToFind: existingCourse.ID(),
-			//ExpectedErr:    app.ErrCourseDoesntExist,
+			ExpectedErr:    app.ErrCourseDoesntExist,
 		},
 		{
 			Name:           "course_doesnt_exist",
