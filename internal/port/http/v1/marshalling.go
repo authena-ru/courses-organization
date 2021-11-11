@@ -10,6 +10,18 @@ import (
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
+func marshalCommonCourse(w http.ResponseWriter, r *http.Request, crs app.CommonCourse) {
+	response := GetCourseResponse{
+		Id:          crs.ID,
+		Title:       crs.Title,
+		Period:      marshalPeriod(crs.Period),
+		CreatorId:   crs.CreatorID,
+		Started:     crs.Started,
+		TasksNumber: crs.TasksNumber,
+	}
+	render.Respond(w, r, response)
+}
+
 func marshalSpecificTask(w http.ResponseWriter, r *http.Request, task app.SpecificTask) {
 	type taskResponse struct {
 		TaskResponse
@@ -61,6 +73,25 @@ func marshalTaskType(taskType course.TaskType) TaskType {
 	}
 
 	return "UNKNOWN"
+}
+
+func marshalSemester(semester course.Semester) Semester {
+	switch semester {
+	case course.FirstSemester:
+		return SemesterFIRST
+	case course.SecondSemester:
+		return SemesterSECOND
+	}
+
+	return "UNKNOWN"
+}
+
+func marshalPeriod(period app.Period) CoursePeriod {
+	return CoursePeriod{
+		AcademicStartYear: period.AcademicStartYear,
+		AcademicEndYear:   period.AcademicEndYear,
+		Semester:          marshalSemester(period.Semester),
+	}
 }
 
 func marshalDeadline(deadline *app.Deadline) *Deadline {

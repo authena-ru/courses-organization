@@ -65,6 +65,17 @@ func unmarshalTestPoints(documents []testPointDocument) []course.TestPoint {
 	return testPoints
 }
 
+func unmarshallCommonCourse(document courseDocument) app.CommonCourse {
+	return app.CommonCourse{
+		ID:          document.ID,
+		Title:       document.Title,
+		Period:      unmarshallQueryPeriod(document.Period),
+		CreatorID:   document.CreatorID,
+		Started:     document.Started,
+		TasksNumber: len(document.Tasks),
+	}
+}
+
 func unmarshalSpecificTask(academic course.Academic, document taskDocument) app.SpecificTask {
 	forTeacher := academic.Type() == course.TeacherType
 
@@ -76,6 +87,14 @@ func unmarshalSpecificTask(academic course.Academic, document taskDocument) app.
 		Deadline:    unmarshalQueryDeadline(document.Deadline),
 		TestData:    unmarshalQueryTestData(forTeacher, document.TestData),
 		Points:      unmarshalQueryTestPoints(forTeacher, document.TestPoints),
+	}
+}
+
+func unmarshallQueryPeriod(document periodDocument) app.Period {
+	return app.Period{
+		AcademicStartYear: document.AcademicStartYear,
+		AcademicEndYear:   document.AcademicEndYear,
+		Semester:          document.Semester,
 	}
 }
 

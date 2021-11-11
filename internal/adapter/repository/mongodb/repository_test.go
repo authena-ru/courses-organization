@@ -40,6 +40,70 @@ func TestCoursesRepository(t *testing.T) {
 	})
 }
 
+func (s *CoursesRepositoryTestSuite) TestCoursesRepository_FindCourse() {
+	courseTeacher := course.MustNewAcademic("623bac67-d4b7-4474-8236-d4e5e3d2b374", course.TeacherType)
+	courseStudent := course.MustNewAcademic("ad2ee15f-0805-42dc-8b7c-003c440e88c7", course.StudentType)
+	anotherAcademic := course.MustNewAcademic("1f5f202a-8935-44eb-9544-ae78c4e90d46", course.StudentType)
+
+	existingCourse := course.MustNewCourse(course.CreationParams{
+		ID:            "a551847e-c529-48a3-bf4f-f5e91c888fa0",
+		Creator:       course.MustNewAcademic("f7f02ce0-9d3f-4843-a379-a7773c29e7c2", course.TeacherType),
+		Title:         "New brand existing course",
+		Period:        course.MustNewPeriod(2041, 2042, course.SecondSemester),
+		Started:       true,
+		Collaborators: []string{courseTeacher.ID()},
+		Students:      []string{courseStudent.ID()},
+	})
+
+	err := s.repository.AddCourse(context.Background(), existingCourse)
+	s.Require().NoError(err)
+
+	testCases := []struct {
+		Name           string
+		Academic       course.Academic
+		CourseIDToFind string
+		ExpectedErr    error
+	}{
+		{
+			Name:           "found_course_for_teacher",
+			Academic:       courseTeacher,
+			CourseIDToFind: existingCourse.ID(),
+		},
+		{
+			Name:           "found_course_for_student",
+			Academic:       courseStudent,
+			CourseIDToFind: existingCourse.ID(),
+		},
+		{
+			Name:           "not_found_course_for_another_academic",
+			Academic:       anotherAcademic,
+			CourseIDToFind: existingCourse.ID(),
+			ExpectedErr:    app.ErrCourseDoesntExist,
+		},
+		{
+			Name:           "course_doesnt_exist",
+			Academic:       courseTeacher,
+			CourseIDToFind: "27d5cd20-9da5-4636-85d5-12cd07a0c0ff",
+			ExpectedErr:    app.ErrCourseDoesntExist,
+		},
+	}
+
+	for _, c := range testCases {
+		s.Run(c.Name, func() {
+			foundCourse, err := s.repository.FindCourse(context.Background(), c.Academic, c.CourseIDToFind)
+
+			if c.ExpectedErr != nil {
+				s.Require().True(errors.Is(err, c.ExpectedErr))
+
+				return
+			}
+
+			s.Require().NoError(err)
+			s.Require().Equal(existingCourse.ID(), foundCourse.ID)
+		})
+	}
+}
+
 func (s *CoursesRepositoryTestSuite) TestCoursesRepository_AddCourse() {
 	testCases := []struct {
 		Name           string

@@ -21,6 +21,22 @@ func decode(w http.ResponseWriter, r *http.Request, v interface{}) bool {
 	return true
 }
 
+func unmarshalSpecificCourseQuery(
+	w http.ResponseWriter,
+	r *http.Request,
+	courseID string,
+) (qry app.SpecificCourseQuery, ok bool) {
+	academic, ok := unmarshalAcademic(w, r)
+	if !ok {
+		return
+	}
+
+	return app.SpecificCourseQuery{
+		Academic: academic,
+		CourseID: courseID,
+	}, true
+}
+
 func unmarshalAllTasksQuery(
 	w http.ResponseWriter, r *http.Request,
 	courseID string, params GetCourseTasksParams,

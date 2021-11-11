@@ -6,36 +6,53 @@ import (
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
-type SpecificTask struct {
-	Number      int
-	Title       string
-	Description string
-	Type        course.TaskType
-	Deadline    *Deadline
-	TestData    []TestData
-	Points      []TestPoint
-}
+type (
+	CommonCourse struct {
+		ID          string
+		Title       string
+		Period      Period
+		CreatorID   string
+		Started     bool
+		TasksNumber int
+	}
 
-type Deadline struct {
-	ExcellentGradeTime time.Time
-	GoodGradeTime      time.Time
-}
+	SpecificTask struct {
+		Number      int
+		Title       string
+		Description string
+		Type        course.TaskType
+		Deadline    *Deadline
+		TestData    []TestData
+		Points      []TestPoint
+	}
 
-type TestData struct {
-	InputData  string
-	OutputData string
-}
+	GeneralTask struct {
+		Number      int
+		Title       string
+		Description string
+		Type        course.TaskType
+	}
 
-type TestPoint struct {
-	Description           string
-	Variants              []string
-	CorrectVariantNumbers []int
-	SingleCorrectVariant  bool
-}
+	Period struct {
+		AcademicStartYear int
+		AcademicEndYear   int
+		Semester          course.Semester
+	}
 
-type GeneralTask struct {
-	Number      int
-	Title       string
-	Description string
-	Type        course.TaskType
-}
+	Deadline struct {
+		ExcellentGradeTime time.Time
+		GoodGradeTime      time.Time
+	}
+
+	TestData struct {
+		InputData  string
+		OutputData string
+	}
+
+	TestPoint struct {
+		Description           string
+		Variants              []string
+		CorrectVariantNumbers []int
+		SingleCorrectVariant  bool
+	}
+)

@@ -25,6 +25,23 @@ func NewCoursesRepository(db *mongo.Database) *CoursesRepository {
 	return &CoursesRepository{courses: db.Collection(coursesCollection)}
 }
 
+func (r *CoursesRepository) FindCourse(
+	ctx context.Context,
+	academic course.Academic,
+	courseID string,
+) (app.CommonCourse, error) {
+	filter := makeCourseForAcademicFilter(academic, courseID)
+
+	var document courseDocument
+	if err := r.courses.FindOne(ctx, filter).Decode(&document); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return app.CommonCourse{}, app.Wrap(app.ErrCourseDoesntExist, err)
+		}
+	}
+
+	return unmarshallCommonCourse(document), nil
+}
+
 func (r *CoursesRepository) AddCourse(ctx context.Context, crs *course.Course) error {
 	_, err := r.courses.InsertOne(ctx, marshalCourseDocument(crs))
 

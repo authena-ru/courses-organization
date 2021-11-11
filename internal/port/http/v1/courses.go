@@ -15,8 +15,26 @@ func (h handler) GetAllCourses(w http.ResponseWriter, _ *http.Request, _ GetAllC
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-func (h handler) GetCourse(w http.ResponseWriter, _ *http.Request, _ string) {
-	w.WriteHeader(http.StatusNotImplemented)
+func (h handler) GetCourse(w http.ResponseWriter, r *http.Request, courseID string) {
+	qry, ok := unmarshalSpecificCourseQuery(w, r, courseID)
+	if !ok {
+		return
+	}
+
+	crs, err := h.app.Queries.SpecificCourse.Handle(r.Context(), qry)
+	if err == nil {
+		marshalCommonCourse(w, r, crs)
+
+		return
+	}
+
+	if errors.Is(err, app.ErrCourseDoesntExist) {
+		httperr.NotFound("course-not-found", err, w, r)
+
+		return
+	}
+
+	httperr.InternalServerError("unexpected-error", err, w, r)
 }
 
 func (h handler) CreateCourse(w http.ResponseWriter, r *http.Request) {
