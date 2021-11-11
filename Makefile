@@ -18,7 +18,7 @@ test-unit:
 
 test-integration:
 	make run-test-db
-	go test -v -race -coverprofile=integration.out ./internal/adapter/...
+	-go test -v -race -coverprofile=integration.out ./internal/adapter/...
 	make stop-test-db
 
 test-cover:
