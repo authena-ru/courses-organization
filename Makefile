@@ -5,11 +5,14 @@ openapi:
 	oapi-codegen -generate types -o internal/port/http/v1/openapi_type.gen.go -package v1 api/openapi/courses-organization.yaml
 	oapi-codegen -generate chi-server -o internal/port/http/v1/openapi_server.gen.go -package v1 api/openapi/courses-organization.yaml
 
-build:
-	go build ./...
+go-build:
+	go build -o ./.bin/coursesorg ./cmd/coursesorg
 
 lint:
 	golangci-lint run
+
+dev: go-build
+	docker-compose -f ./deployments/dev/docker-compose.yml --project-directory . up --build --remove-orphans coursesorg
 
 test-unit:
 	go test --short -v -race -coverpkg=./... -coverprofile=unit-all.out ./...

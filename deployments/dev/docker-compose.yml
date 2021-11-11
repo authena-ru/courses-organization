@@ -1,0 +1,32 @@
+version: '3.4'
+
+services:
+  coursesorg:
+    image: coursesorg
+    container_name: coursesorg
+    build:
+      context: .
+      dockerfile: ./build/package/dev/Dockerfile
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./.bin/:/root/
+      - ./configs/:/root/configs/
+    depends_on:
+      - mongodb
+    env_file:
+      - .env
+
+  mongodb:
+    image: mongo:4.4-bionic
+    container_name: mongo-express
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+      - MONGODB_DATABASE=coursesorg
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=qwerty
+    volumes:
+      - ./.data/db:/data/db
+    ports:
+      - '27018:27017'
