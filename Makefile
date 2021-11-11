@@ -18,7 +18,8 @@ test-unit:
 
 test-integration:
 	make run-test-db
-	go test -v -race -coverprofile=integration.out ./internal/adapter/... || make stop-test-db
+	-go test -v -race -coverprofile=integration.out ./internal/adapter/...
+	make stop-test-db
 
 test-cover:
 	go install github.com/wadey/gocovmerge@latest
