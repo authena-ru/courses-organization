@@ -6,13 +6,13 @@ openapi:
 	oapi-codegen -generate chi-server -o internal/port/http/v1/openapi_server.gen.go -package v1 api/openapi/courses-organization.yaml
 
 go-build:
-	go build -o ./.bin/coursesorg ./cmd/coursesorg
+	go mod download && CGO_ENABLED=0 GOOS=linux go build -o ./.bin/coursesorg ./cmd/coursesorg
 
 lint:
 	golangci-lint run
 
 dev: go-build
-	docker-compose -f ./deployments/dev/docker-compose.yml --project-directory . up --build --remove-orphans coursesorg
+	docker-compose -f ./deployments/dev/docker-compose.yml --project-directory . up --remove-orphans coursesorg
 
 test-unit:
 	go test --short -v -race -coverpkg=./... -coverprofile=unit-all.out ./...
