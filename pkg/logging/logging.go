@@ -1,7 +1,9 @@
 package logging
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -22,18 +24,27 @@ func (l *StructuredLogger) NewLogEntry(r *http.Request) middleware.LogEntry {
 	logFields := logrus.Fields{}
 
 	if reqID := middleware.GetReqID(r.Context()); reqID != "" {
-		logFields["req_id"] = reqID
+		logFields["request_id"] = reqID
 	}
 
 	logFields["http_method"] = r.Method
 	logFields["remote_address"] = r.RemoteAddr
 	logFields["uri"] = r.RequestURI
+	logFields["request_body"] = copyRequestBody(r)
 
 	entry.Logger = entry.Logger.WithFields(logFields)
 
 	entry.Logger.Info("Request started")
 
 	return entry
+}
+
+func copyRequestBody(r *http.Request) string {
+	body, _ := io.ReadAll(r.Body)
+	_ = r.Body.Close()
+	r.Body = io.NopCloser(bytes.NewBuffer(body))
+
+	return string(body)
 }
 
 type StructuredLoggerEntry struct {
