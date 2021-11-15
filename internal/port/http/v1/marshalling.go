@@ -10,8 +10,23 @@ import (
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
+func marshalCommonCourses(w http.ResponseWriter, r *http.Request, courses []app.CommonCourse) {
+	response := make(GetAllCoursesResponse, 0, len(courses))
+	for _, c := range courses {
+		response = append(response, marshalCommonCourseToCourseResponse(c))
+	}
+
+	render.Respond(w, r, response)
+}
+
 func marshalCommonCourse(w http.ResponseWriter, r *http.Request, crs app.CommonCourse) {
-	response := GetCourseResponse{
+	response := marshalCommonCourseToCourseResponse(crs)
+
+	render.Respond(w, r, response)
+}
+
+func marshalCommonCourseToCourseResponse(crs app.CommonCourse) Course {
+	return Course{
 		Id:          crs.ID,
 		Title:       crs.Title,
 		Period:      marshalPeriod(crs.Period),
@@ -19,7 +34,6 @@ func marshalCommonCourse(w http.ResponseWriter, r *http.Request, crs app.CommonC
 		Started:     crs.Started,
 		TasksNumber: crs.TasksNumber,
 	}
-	render.Respond(w, r, response)
 }
 
 func marshalSpecificTask(w http.ResponseWriter, r *http.Request, task app.SpecificTask) {
@@ -43,6 +57,7 @@ func marshalSpecificTask(w http.ResponseWriter, r *http.Request, task app.Specif
 		TestData: marshalTestData(task.TestData),
 		Points:   marshalTestPoints(task.Points),
 	}
+
 	render.Respond(w, r, response)
 }
 

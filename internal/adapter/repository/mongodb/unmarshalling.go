@@ -65,11 +65,20 @@ func unmarshalTestPoints(documents []testPointDocument) []course.TestPoint {
 	return testPoints
 }
 
-func unmarshallCommonCourse(document courseDocument) app.CommonCourse {
+func unmarshalCommonCourses(documents []courseDocument) []app.CommonCourse {
+	courses := make([]app.CommonCourse, 0, len(documents))
+	for _, d := range documents {
+		courses = append(courses, unmarshalCommonCourse(d))
+	}
+
+	return courses
+}
+
+func unmarshalCommonCourse(document courseDocument) app.CommonCourse {
 	return app.CommonCourse{
 		ID:          document.ID,
 		Title:       document.Title,
-		Period:      unmarshallQueryPeriod(document.Period),
+		Period:      unmarshalQueryPeriod(document.Period),
 		CreatorID:   document.CreatorID,
 		Started:     document.Started,
 		TasksNumber: len(document.Tasks),
@@ -90,7 +99,7 @@ func unmarshalSpecificTask(academic course.Academic, document taskDocument) app.
 	}
 }
 
-func unmarshallQueryPeriod(document periodDocument) app.Period {
+func unmarshalQueryPeriod(document periodDocument) app.Period {
 	return app.Period{
 		AcademicStartYear: document.AcademicStartYear,
 		AcademicEndYear:   document.AcademicEndYear,

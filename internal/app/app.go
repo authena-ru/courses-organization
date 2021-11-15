@@ -82,15 +82,22 @@ type (
 type (
 	Queries struct {
 		SpecificCourse specificCourseHandler
+		AllCourses     allCoursesHandler
 		SpecificTask   specificTaskHandler
 		AllTasks       allTasksHandler
 	}
 
 	specificCourseHandler interface {
 		// Handle is SpecificCourseQuery handler.
-		// Returns course with given ID.
+		// Returns course of academic with given ID.
 		// If course doesn't exist, an error equal app.ErrCourseDoesntExist.
 		Handle(ctx context.Context, qry SpecificCourseQuery) (CommonCourse, error)
+	}
+
+	allCoursesHandler interface {
+		// Handle is AllCoursesQuery handler.
+		// Returns courses of academic.
+		Handle(ctx context.Context, qry AllCoursesQuery) ([]CommonCourse, error)
 	}
 
 	specificTaskHandler interface {

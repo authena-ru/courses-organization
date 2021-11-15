@@ -39,7 +39,44 @@ func (r *CoursesRepository) FindCourse(
 		}
 	}
 
-	return unmarshallCommonCourse(document), nil
+	return unmarshalCommonCourse(document), nil
+}
+
+func (r *CoursesRepository) FindAllCourses(
+	ctx context.Context,
+	academic course.Academic,
+	params query.CoursesFilterParams,
+) ([]app.CommonCourse, error) {
+	filter := makeFindAllCoursesFilter(academic, params)
+
+	cursor, err := r.courses.Find(ctx, filter)
+	if err != nil {
+		return nil, app.Wrap(app.ErrDatabaseProblems, err)
+	}
+
+	var documents []courseDocument
+	if err := cursor.All(ctx, &documents); err != nil {
+		return nil, app.Wrap(app.ErrDatabaseProblems, err)
+	}
+
+	return unmarshalCommonCourses(documents), nil
+}
+
+func makeFindAllCoursesFilter(academic course.Academic, filterParams query.CoursesFilterParams) bson.D {
+	return bson.D{makeCoursesForAcademicFilter(academic), makeFindCoursesTitleFilter(filterParams)}
+}
+
+func makeFindCoursesTitleFilter(filterParams query.CoursesFilterParams) bson.E {
+	if filterParams.Title == "" {
+		return bson.E{}
+	}
+
+	regex := primitive.Regex{Pattern: filterParams.Title, Options: "i"}
+
+	return bson.E{
+		Key:   "title",
+		Value: regex,
+	}
 }
 
 func (r *CoursesRepository) AddCourse(ctx context.Context, crs *course.Course) error {
@@ -223,33 +260,34 @@ func makeFindAllTasksTypeFilter(filterParams query.TasksFilterParams) bson.D {
 }
 
 func makeCourseForAcademicFilter(academic course.Academic, courseID string) bson.D {
-	var academicSubFilter bson.E
+	return bson.D{{Key: "_id", Value: courseID}, makeCoursesForAcademicFilter(academic)}
+}
+
+func makeCoursesForAcademicFilter(academic course.Academic) bson.E {
 	if academic.Type() == course.StudentType {
-		academicSubFilter = bson.E{
+		return bson.E{
 			Key: "students", Value: bson.D{{
 				Key: "$elemMatch", Value: bson.D{{
 					Key: "$eq", Value: academic.ID(),
 				}},
 			}},
 		}
-	} else {
-		academicSubFilter = bson.E{
-			Key: "$or", Value: bson.A{
-				bson.D{{
-					Key: "creatorId", Value: academic.ID(),
-				}},
-				bson.D{{
-					Key: "collaborators", Value: bson.D{{
-						Key: "$elemMatch", Value: bson.D{{
-							Key: "$eq", Value: academic.ID(),
-						}},
-					}},
-				}},
-			},
-		}
 	}
 
-	return bson.D{{Key: "_id", Value: courseID}, academicSubFilter}
+	return bson.E{
+		Key: "$or", Value: bson.A{
+			bson.D{{
+				Key: "creatorId", Value: academic.ID(),
+			}},
+			bson.D{{
+				Key: "collaborators", Value: bson.D{{
+					Key: "$elemMatch", Value: bson.D{{
+						Key: "$eq", Value: academic.ID(),
+					}},
+				}},
+			}},
+		},
+	}
 }
 
 func (r *CoursesRepository) RemoveAllCourses(ctx context.Context) error {
