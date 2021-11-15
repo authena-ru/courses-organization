@@ -27,8 +27,9 @@ MONGO_PASSWORD=qwerty
 ### Commands
 
 - ``make openapi`` — generates boilerplate code, types and server interface that conforms to OpenAPI
-- ``make build`` — builds project
+- ``make go-build`` — builds project for GOOS=linux
 - ``make lint`` — runs linters
+- ``make dev`` - runs dev environment
 - ``make test-unit`` — runs unit tests and save cover profile
 - ``make test-integration`` — runs integration tests and save cover profile
 - ``make test-cover`` — builds code cover report
