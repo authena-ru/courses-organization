@@ -7,7 +7,6 @@ import (
 
 	"github.com/authena-ru/courses-organization/internal/app"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
-
 	"github.com/authena-ru/courses-organization/pkg/httperr"
 )
 
