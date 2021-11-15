@@ -30,7 +30,10 @@ func (l *StructuredLogger) NewLogEntry(r *http.Request) middleware.LogEntry {
 	logFields["http_method"] = r.Method
 	logFields["remote_address"] = r.RemoteAddr
 	logFields["uri"] = r.RequestURI
-	logFields["request_body"] = copyRequestBody(r)
+
+	if requestBody := copyRequestBody(r); requestBody != "" {
+		logFields["request_body"] = requestBody
+	}
 
 	entry.Logger = entry.Logger.WithFields(logFields)
 
