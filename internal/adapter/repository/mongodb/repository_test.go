@@ -4,13 +4,13 @@ import (
 	"context"
 	"testing"
 
-	"github.com/authena-ru/courses-organization/internal/app/command"
-
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/authena-ru/courses-organization/internal/adapter/repository/mongodb"
 	"github.com/authena-ru/courses-organization/internal/app"
+	"github.com/authena-ru/courses-organization/internal/app/command"
+	"github.com/authena-ru/courses-organization/internal/app/query"
 	"github.com/authena-ru/courses-organization/internal/domain/course"
 )
 
@@ -55,8 +55,7 @@ func (s *CoursesRepositoryTestSuite) TestCoursesRepository_FindCourse() {
 		Students:      []string{courseStudent.ID()},
 	})
 
-	err := s.repository.AddCourse(context.Background(), existingCourse)
-	s.Require().NoError(err)
+	s.addCourses(existingCourse)
 
 	testCases := []struct {
 		Name           string
@@ -102,6 +101,87 @@ func (s *CoursesRepositoryTestSuite) TestCoursesRepository_FindCourse() {
 			s.Require().Equal(existingCourse.ID(), foundCourse.ID)
 		})
 	}
+}
+
+func (s *CoursesRepositoryTestSuite) TestCoursesRepository_FindAllCourses() {
+	courseTeacher := course.MustNewAcademic("fdd8bd0a-a6da-4ba9-b60a-cd1093a480bf", course.TeacherType)
+	courseStudent := course.MustNewAcademic("244a26f9-9c33-4585-843b-822b04d4cb76", course.StudentType)
+	anotherAcademic := course.MustNewAcademic("e6377c3b-90ae-4028-896a-c867d7dc0738", course.StudentType)
+
+	physicsCourse := course.MustNewCourse(course.CreationParams{
+		ID:            "270d886e-097c-4334-8b0e-496464645dec",
+		Creator:       course.MustNewAcademic("b639b230-80c1-456d-9f8e-e84459abc7a7", course.TeacherType),
+		Title:         "Physics course",
+		Period:        course.MustNewPeriod(2021, 2022, course.FirstSemester),
+		Started:       true,
+		Collaborators: []string{courseTeacher.ID()},
+		Students:      []string{courseStudent.ID()},
+	})
+	mathCourse := course.MustNewCourse(course.CreationParams{
+		ID:            "47b36fbb-61e3-42fe-bb72-3908b909542f",
+		Creator:       course.MustNewAcademic("b3a30eb3-ea5c-441b-adba-a36a834494c4", course.TeacherType),
+		Title:         "Math course",
+		Period:        course.MustNewPeriod(2021, 2022, course.FirstSemester),
+		Started:       true,
+		Collaborators: []string{courseTeacher.ID()},
+		Students:      []string{courseStudent.ID()},
+	})
+
+	s.addCourses(physicsCourse, mathCourse)
+
+	testCases := []struct {
+		Name         string
+		Academic     course.Academic
+		FilterParams query.CoursesFilterParams
+		ExpectedIDs  []string
+	}{
+		{
+			Name:         "found_courses_for_teacher",
+			Academic:     courseTeacher,
+			FilterParams: query.CoursesFilterParams{},
+			ExpectedIDs:  []string{"270d886e-097c-4334-8b0e-496464645dec", "47b36fbb-61e3-42fe-bb72-3908b909542f"},
+		},
+		{
+			Name:         "found_courses_for_student",
+			Academic:     courseStudent,
+			FilterParams: query.CoursesFilterParams{},
+			ExpectedIDs:  []string{"270d886e-097c-4334-8b0e-496464645dec", "47b36fbb-61e3-42fe-bb72-3908b909542f"},
+		},
+		{
+			Name:         "not_found_courses_for_another_academic",
+			Academic:     anotherAcademic,
+			FilterParams: query.CoursesFilterParams{},
+		},
+		{
+			Name:         "found_course_by_title",
+			Academic:     courseStudent,
+			FilterParams: query.CoursesFilterParams{Title: "phys"},
+			ExpectedIDs:  []string{"270d886e-097c-4334-8b0e-496464645dec"},
+		},
+		{
+			Name:         "not_found_course_by_title",
+			Academic:     courseTeacher,
+			FilterParams: query.CoursesFilterParams{Title: "kqu"},
+		},
+	}
+
+	for _, c := range testCases {
+		s.Run(c.Name, func() {
+			courses, err := s.repository.FindAllCourses(context.Background(), c.Academic, c.FilterParams)
+			s.Require().NoError(err)
+
+			s.Require().ElementsMatch(c.ExpectedIDs, mapCommonCoursesToIDS(courses))
+		})
+	}
+}
+
+func mapCommonCoursesToIDS(courses []app.CommonCourse) []string {
+	ids := make([]string, 0, len(courses))
+	for _, c := range courses {
+		ids = append(ids, c.ID)
+	}
+
+	return ids
 }
 
 func (s *CoursesRepositoryTestSuite) TestCoursesRepository_AddCourse() {
@@ -179,8 +259,7 @@ func (s *CoursesRepositoryTestSuite) TestCoursesRepository_GetCourse() {
 		Started: false,
 	})
 
-	err := s.repository.AddCourse(context.Background(), existingCourse)
-	s.Require().NoError(err)
+	s.addCourses(existingCourse)
 
 	testCases := []struct {
 		Name          string
@@ -225,8 +304,7 @@ func (s *CoursesRepositoryTestSuite) TestCoursesRepository_UpdateCourse() {
 		Students:      []string{"d4a28d9b-7d05-4639-a067-4a5e5cb4e057"},
 	})
 
-	err := s.repository.AddCourse(context.Background(), courseToUpdate)
-	s.Require().NoError(err)
+	s.addCourses(courseToUpdate)
 
 	testCases := []struct {
 		Name            string
@@ -271,7 +349,20 @@ func (s *CoursesRepositoryTestSuite) newCoursesRepository() *mongodb.CoursesRepo
 	return mongodb.NewCoursesRepository(s.db)
 }
 
+func (s *CoursesRepositoryTestSuite) addCourses(courses ...*course.Course) {
+	s.T().Helper()
+
+	ctx := context.Background()
+
+	for _, c := range courses {
+		err := s.repository.AddCourse(ctx, c)
+		s.Require().NoError(err)
+	}
+}
+
 func (s *CoursesRepositoryTestSuite) requirePersistedCourseEquals(expectedCourse *course.Course) {
+	s.T().Helper()
+
 	persistedCourse, err := s.repository.GetCourse(context.Background(), expectedCourse.ID())
 	s.Require().NoError(err)
 

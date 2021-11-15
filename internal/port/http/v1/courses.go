@@ -11,8 +11,20 @@ import (
 	"github.com/authena-ru/courses-organization/pkg/httperr"
 )
 
-func (h handler) GetAllCourses(w http.ResponseWriter, _ *http.Request, _ GetAllCoursesParams) {
-	w.WriteHeader(http.StatusNotImplemented)
+func (h handler) GetAllCourses(w http.ResponseWriter, r *http.Request, params GetAllCoursesParams) {
+	qry, ok := unmarshalAllCoursesQuery(w, r, params)
+	if !ok {
+		return
+	}
+
+	courses, err := h.app.Queries.AllCourses.Handle(r.Context(), qry)
+	if err == nil {
+		marshalCommonCourses(w, r, courses)
+
+		return
+	}
+
+	httperr.InternalServerError("unexpected-error", err, w, r)
 }
 
 func (h handler) GetCourse(w http.ResponseWriter, r *http.Request, courseID string) {
