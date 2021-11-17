@@ -8,7 +8,7 @@ Courses organization domain for Authena course passing project
 
 ### Prerequisites
 
-- go 1.16
+- go 1.17
 - Docker
 - golangci-lint
 
